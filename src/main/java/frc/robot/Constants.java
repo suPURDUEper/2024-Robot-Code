@@ -16,33 +16,6 @@ import edu.wpi.first.math.util.Units;
  */
 public final class Constants {
 
-  public static class ElevatorConstants {
-    public static final double kMaxTravelMeters = Units.inchesToMeters(21);
-    public static final double kGearRatio = 9.0 / 1.0;
-    public static final double kSprocketPitchDiameter = Units.inchesToMeters(1.751);
-    public static final double kMetersPerRotation = kGearRatio * kSprocketPitchDiameter * Math.PI;
-    public static final float kForwardSoftLimit = (float) Units.inchesToMeters(21);
-    public static final float kReverseSoftLimit = 0;
-  }
-
-  public static class ClimberConstants {
-    public static final double kMaxTravelMeters = Units.inchesToMeters(21);
-    public static final double kPlanetaryGearRatio = (25.0 / 1.0);
-    public static final double kSprocketGearRatio = (48.0 / 16.0);
-    public static final float kForwardSoftLimit = 0;
-    public static final float kReverseSoftLimit = 0;
-  }
-
-  public static class TiltConstants {
-    public static final double kPlanetaryGearRatio = (9.0 / 1.0);
-    public static final double kSectorGearRatio = (240.0 / 10.0);
-    public static final int kForwardSoftLimit = 0;
-    public static final int kReverseSoftLimit = 0;
-    public static final double kAbsoluteEncoderOffset = 0;
-    public static final double kEncoderPositionConversion = 0;
-    public static final boolean kAbsoluteEncoderInverted = true;
-  }
-
   // All canID constants go in here
   public static class CANIDs {
     public static final int kIntakeMotor = 0;
@@ -58,5 +31,32 @@ public final class Constants {
   public static class DIOPorts {
     public static final int kFeederBreakBeam = 0;
     public static final int kAmpBreakBeam = 0;
+  }
+
+  public static class ElevatorConstants {
+    public static final double kMaxTravelMeters = Units.inchesToMeters(21);
+    public static final double kGearRatio = 9.0 / 1.0;
+    public static final double kSprocketPitchDiameter = Units.inchesToMeters(1.751);
+    public static final double kMetersPerRotation = kGearRatio * kSprocketPitchDiameter * Math.PI;
+    public static final float kForwardSoftLimit = (float) Units.inchesToMeters(21);
+    public static final float kReverseSoftLimit = 0;
+  }
+
+  public static class ClimberConstants {
+    public static final double kPlanetaryGearRatio = (25.0 / 1.0);
+    public static final double kSprocketGearRatio = (48.0 / 16.0);
+    public static final double kAbsoluteEncoderOffset = 0;
+    public static final float kForwardSoftLimit = 0;
+    public static final float kReverseSoftLimit = 0;
+  }
+
+  public static class TiltConstants {
+    public static final double kPlanetaryGearRatio = (9.0 / 1.0);
+    public static final double kSectorGearRatio = (240.0 / 10.0);
+    public static final int kForwardSoftLimit = 0;
+    public static final int kReverseSoftLimit = 0;
+    public static final double kAbsoluteEncoderOffset = 0;
+    public static final double kEncoderPositionConversion = 0;
+    public static final boolean kAbsoluteEncoderInverted = true;
   }
 }

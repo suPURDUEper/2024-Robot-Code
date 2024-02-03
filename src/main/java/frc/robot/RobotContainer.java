@@ -9,7 +9,12 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.vendor.motorcontroller.SparkMax;
+import frc.robot.subsystems.Amp;
+import frc.robot.subsystems.Climber;
+import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Shooter;
+import frc.robot.subsystems.ShooterTilt;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -19,6 +24,11 @@ import frc.robot.subsystems.Intake;
  */
 public class RobotContainer {
   private final Intake intake = new Intake();
+  private final Amp amp = new Amp();
+  private final Climber climber = new Climber();
+  private final Elevator elevator = new Elevator();
+  private final Shooter shooter = new Shooter();
+  private final ShooterTilt shooterTilt = new ShooterTilt();
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {

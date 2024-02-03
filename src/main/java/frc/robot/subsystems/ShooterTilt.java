@@ -21,11 +21,11 @@ import frc.robot.Constants.TiltConstants;
 public class ShooterTilt extends SubsystemBase {
 
   SparkMax tiltMotor;
-  SparkAbsoluteEncoder climbAbsoluteEncoder;
+  SparkAbsoluteEncoder tiltAbsoluteEncoder;
 
   public ShooterTilt() {
     tiltMotor = new SparkMax(CANIDs.kTiltMotor).withInitializer(ShooterTilt::sparkMaxInitializer);
-    climbAbsoluteEncoder = tiltMotor.getAbsoluteEncoder(Type.kDutyCycle);
+    tiltAbsoluteEncoder = tiltMotor.getAbsoluteEncoder(Type.kDutyCycle);
   }
 
   @Override
