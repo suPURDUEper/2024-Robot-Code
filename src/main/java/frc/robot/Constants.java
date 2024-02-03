@@ -14,28 +14,37 @@ package frc.robot;
  */
 public final class Constants {
 
-  public static class ElevatorConstants {
-
-    public static float kForwardSoftLimit;
-    public static float kReverseSoftLimit;
-    public static double kMetersPerRotation;
-
-  }
-
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
   }
 
+  public static class ClimberConstants {
+    public static final int kForwardSoftLimit = 0;
+    public static final int kReverseSoftLimit = 0;
+
+  }
+
+  public static class TiltConstants {
+    public static final int kForwardSoftLimit = 0;
+    public static final int kReverseSoftLimit = 0;
+  }
+//All canID constants go in here
   public static class CANIDs {
     public static final int kIntakeMotor = 0;
     public static final int kFeederMotor = 0;
     public static final int kAmpMotor = 0;
     public static final int kClimberMotor = 0;
-    public static final int kTiltMotor = 0;
-    public static final int kElevatorMotor = 0;
     public static final int kClimber2Motor = 0;
+    public static final int kElevatorMotor = 0;
+    public static final int kTiltMotor = 0;
   }
 
+  public static class ElevatorConstants {
+    public static final int kForwardSoftLimit = 0;
+    public static final int kReverseSoftLimit = 0;
+    public static final int kMetersPerRotation = 0;
+  }
+//All DIOport constants go in here
   public static class DIOPorts {
     public static final int kFeederBreakBeam = 0;
     public static final int kAmpBreakBeam = 0;
