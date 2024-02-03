@@ -37,7 +37,7 @@ public final class Constants {
     public static final double kPlanetaryGearRatio = (9.0 / 1.0);
     public static final double kSectorGearRatio = (240.0 / 10.0);
     public static final double kAbsoluteEncoderOffset = 0;
-    public static final float kForwardSoftLimit = ;
+    public static final float kForwardSoftLimit = 0;
     public static final float kReverseSoftLimit = 0;
   }
 
@@ -56,11 +56,6 @@ public final class Constants {
     public static final int kTiltMotor = 0;
   }
 
-  public static class ElevatorConstants {
-    public static final int kForwardSoftLimit = 0;
-    public static final int kReverseSoftLimit = 0;
-    public static final int kMetersPerRotation = 0;
-  }
 //All DIOport constants go in here
   public static class DIOPorts {
     public static final int kFeederBreakBeam = 0;
