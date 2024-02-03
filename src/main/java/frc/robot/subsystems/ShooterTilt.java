@@ -21,13 +21,15 @@ import frc.robot.Constants.CANIDs;
 import frc.robot.Constants.ClimberConstants;
 import frc.robot.Constants.TiltConstants;
 
-public class ShooterAngle extends SubsystemBase {
+public class ShooterTilt extends SubsystemBase {
   /** Creates a new ShooterAnfle. */
-  CANSparkMax tiltMotor = new CANSparkMax(CANIDs.kTiltMotor, MotorType.kBrushless);
+  SparkMax tiltMotor;
 
   SparkAbsoluteEncoder climbAbsoluteEncoder = tiltMotor.getAbsoluteEncoder(Type.kDutyCycle);
 
-  public ShooterAngle() {}
+  public ShooterTilt() {
+    tiltMotor = new SparkMax(CANIDs.kTiltMotor, MotorType.kBrushless).withInitializer(ShooterTilt::sparkMaxInitializer);
+  }
 
   @Override
   public void periodic() {
