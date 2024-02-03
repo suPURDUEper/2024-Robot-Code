@@ -5,8 +5,8 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.AbsoluteEncoder;
+import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkBase.SoftLimitDirection;
-import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxExtensions;
 import com.revrobotics.SparkAbsoluteEncoder;
@@ -19,15 +19,13 @@ import frc.robot.Constants.CANIDs;
 import frc.robot.Constants.TiltConstants;
 
 public class ShooterTilt extends SubsystemBase {
-  /** Creates a new ShooterAnfle. */
-  SparkMax tiltMotor;
 
-  SparkAbsoluteEncoder climbAbsoluteEncoder = tiltMotor.getAbsoluteEncoder(Type.kDutyCycle);
+  SparkMax tiltMotor;
+  SparkAbsoluteEncoder climbAbsoluteEncoder;
 
   public ShooterTilt() {
-    tiltMotor =
-        new SparkMax(CANIDs.kTiltMotor, MotorType.kBrushless)
-            .withInitializer(ShooterTilt::sparkMaxInitializer);
+    tiltMotor = new SparkMax(CANIDs.kTiltMotor).withInitializer(ShooterTilt::sparkMaxInitializer);
+    climbAbsoluteEncoder = tiltMotor.getAbsoluteEncoder(Type.kDutyCycle);
   }
 
   @Override
@@ -49,6 +47,12 @@ public class ShooterTilt extends SubsystemBase {
         SparkMaxUtils.check(
             sparkMax.setSoftLimit(
                 SoftLimitDirection.kReverse, (float) TiltConstants.kReverseSoftLimit));
+    errors += SparkMaxUtils.check(encoder.setZeroOffset(TiltConstants.kAbsoluteEncoderOffset));
+    errors +=
+        SparkMaxUtils.check(
+            encoder.setPositionConversionFactor(TiltConstants.kEncoderPositionConversion));
+    errors += SparkMaxUtils.check(encoder.setInverted(TiltConstants.kAbsoluteEncoderInverted));
+    errors += SparkMaxUtils.check(sparkMax.setIdleMode(IdleMode.kBrake));
     SparkMax.setFrameStrategy(sparkMax, FrameStrategy.kPosition);
     return errors == 0;
   }

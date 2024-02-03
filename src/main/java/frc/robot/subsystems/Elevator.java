@@ -6,7 +6,6 @@ package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkBase.SoftLimitDirection;
-import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxExtensions;
 import com.revrobotics.RelativeEncoder;
@@ -22,7 +21,8 @@ public class Elevator extends SubsystemBase {
   CANSparkMax elevatorMotor;
 
   public Elevator() {
-    elevatorMotor = new CANSparkMax(CANIDs.kElevatorMotor, MotorType.kBrushless);
+    elevatorMotor =
+        new SparkMax(CANIDs.kElevatorMotor).withInitializer(Elevator::sparkMaxInitializer);
   }
 
   @Override

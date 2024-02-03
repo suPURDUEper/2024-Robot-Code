@@ -5,8 +5,8 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.AbsoluteEncoder;
+import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkBase.SoftLimitDirection;
-import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxExtensions;
 import com.revrobotics.SparkAbsoluteEncoder;
@@ -17,23 +17,22 @@ import frc.lib.vendor.motorcontroller.SparkMax.FrameStrategy;
 import frc.lib.vendor.motorcontroller.SparkMaxUtils;
 import frc.robot.Constants.CANIDs;
 import frc.robot.Constants.ClimberConstants;
+import frc.robot.Constants.TiltConstants;
 
 public class Climber extends SubsystemBase {
   /** Creates a new Climber. */
-  CANSparkMax climberMotor;
+  SparkMax climberMotor;
 
-  CANSparkMax climber2Motor;
-  SparkAbsoluteEncoder climbAbsoluteEncoder = climber2Motor.getAbsoluteEncoder(Type.kDutyCycle);
+  SparkMax climberMotorFollower;
+  SparkAbsoluteEncoder climbAbsoluteEncoder;
 
   public Climber() {
+    climberMotorFollower = new SparkMax(CANIDs.kClimber2Motor);
     climberMotor =
-        new SparkMax(CANIDs.kClimberMotor, MotorType.kBrushless)
-            .withInitializer(Climber::sparkMaxInitializer);
-    climber2Motor =
-        new SparkMax(CANIDs.kClimber2Motor, MotorType.kBrushless)
-            .withInitializer(Climber::sparkMaxInitializer);
-    ;
-    climbAbsoluteEncoder = climber2Motor.getAbsoluteEncoder(Type.kDutyCycle);
+        new SparkMax(CANIDs.kClimberMotor)
+            .withInitializer(Climber::sparkMaxInitializer)
+            .withFollower(climberMotorFollower, true);
+    climbAbsoluteEncoder = climberMotorFollower.getAbsoluteEncoder(Type.kDutyCycle);
   }
 
   @Override
@@ -55,6 +54,12 @@ public class Climber extends SubsystemBase {
         SparkMaxUtils.check(
             sparkMax.setSoftLimit(
                 SoftLimitDirection.kReverse, (float) ClimberConstants.kReverseSoftLimit));
+    errors += SparkMaxUtils.check(encoder.setZeroOffset(TiltConstants.kAbsoluteEncoderOffset));
+    errors +=
+        SparkMaxUtils.check(
+            encoder.setPositionConversionFactor(TiltConstants.kEncoderPositionConversion));
+    errors += SparkMaxUtils.check(encoder.setInverted(TiltConstants.kAbsoluteEncoderInverted));
+    errors += SparkMaxUtils.check(sparkMax.setIdleMode(IdleMode.kBrake));
     SparkMax.setFrameStrategy(sparkMax, FrameStrategy.kPosition);
     return errors == 0;
   }

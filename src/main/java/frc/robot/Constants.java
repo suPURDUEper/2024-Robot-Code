@@ -33,17 +33,14 @@ public final class Constants {
     public static final float kReverseSoftLimit = 0;
   }
 
-  public static class ShooterAngleConstants {
+  public static class TiltConstants {
     public static final double kPlanetaryGearRatio = (9.0 / 1.0);
     public static final double kSectorGearRatio = (240.0 / 10.0);
-    public static final double kAbsoluteEncoderOffset = 0;
-    public static final float kForwardSoftLimit = 0;
-    public static final float kReverseSoftLimit = 0;
-  }
-
-  public static class TiltConstants {
     public static final int kForwardSoftLimit = 0;
     public static final int kReverseSoftLimit = 0;
+    public static final double kAbsoluteEncoderOffset = 0;
+    public static final double kEncoderPositionConversion = 0;
+    public static final boolean kAbsoluteEncoderInverted = true;
   }
 
   // All canID constants go in here
