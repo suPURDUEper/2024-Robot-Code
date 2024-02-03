@@ -45,7 +45,8 @@ public final class Constants {
     public static final int kForwardSoftLimit = 0;
     public static final int kReverseSoftLimit = 0;
   }
-//All canID constants go in here
+
+  // All canID constants go in here
   public static class CANIDs {
     public static final int kIntakeMotor = 0;
     public static final int kFeederMotor = 0;
@@ -56,7 +57,7 @@ public final class Constants {
     public static final int kTiltMotor = 0;
   }
 
-//All DIOport constants go in here
+  // All DIOport constants go in here
   public static class DIOPorts {
     public static final int kFeederBreakBeam = 0;
     public static final int kAmpBreakBeam = 0;

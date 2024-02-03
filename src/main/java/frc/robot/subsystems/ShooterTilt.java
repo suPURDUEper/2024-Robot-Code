@@ -11,14 +11,11 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxExtensions;
 import com.revrobotics.SparkAbsoluteEncoder;
 import com.revrobotics.SparkAbsoluteEncoder.Type;
-
-import edu.wpi.first.networktables.TableListener;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.vendor.motorcontroller.SparkMax;
 import frc.lib.vendor.motorcontroller.SparkMax.FrameStrategy;
 import frc.lib.vendor.motorcontroller.SparkMaxUtils;
 import frc.robot.Constants.CANIDs;
-import frc.robot.Constants.ClimberConstants;
 import frc.robot.Constants.TiltConstants;
 
 public class ShooterTilt extends SubsystemBase {
@@ -28,7 +25,9 @@ public class ShooterTilt extends SubsystemBase {
   SparkAbsoluteEncoder climbAbsoluteEncoder = tiltMotor.getAbsoluteEncoder(Type.kDutyCycle);
 
   public ShooterTilt() {
-    tiltMotor = new SparkMax(CANIDs.kTiltMotor, MotorType.kBrushless).withInitializer(ShooterTilt::sparkMaxInitializer);
+    tiltMotor =
+        new SparkMax(CANIDs.kTiltMotor, MotorType.kBrushless)
+            .withInitializer(ShooterTilt::sparkMaxInitializer);
   }
 
   @Override
@@ -37,8 +36,9 @@ public class ShooterTilt extends SubsystemBase {
   }
 
   private static Boolean sparkMaxInitializer(CANSparkMax sparkMax, Boolean isInit) {
-int errors = 0;
-    AbsoluteEncoder encoder = sparkMax.getAbsoluteEncoder(com.revrobotics.SparkAbsoluteEncoder.Type.kDutyCycle);
+    int errors = 0;
+    AbsoluteEncoder encoder =
+        sparkMax.getAbsoluteEncoder(com.revrobotics.SparkAbsoluteEncoder.Type.kDutyCycle);
     errors += SparkMaxUtils.check(SparkMaxUtils.setDefaultsForNeo(sparkMax));
     errors += SparkMaxUtils.check(CANSparkMaxExtensions.setInverted(sparkMax, false));
     errors +=

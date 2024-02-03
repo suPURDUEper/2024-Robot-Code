@@ -4,13 +4,12 @@
 
 package frc.robot.subsystems;
 
-import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.AbsoluteEncoder;
+import com.revrobotics.CANSparkBase.SoftLimitDirection;
+import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxExtensions;
-import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkAbsoluteEncoder;
-import com.revrobotics.CANSparkBase.SoftLimitDirection;
 import com.revrobotics.SparkAbsoluteEncoder.Type;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.vendor.motorcontroller.SparkMax;
@@ -43,8 +42,9 @@ public class Climber extends SubsystemBase {
   }
 
   private static Boolean sparkMaxInitializer(CANSparkMax sparkMax, Boolean isInit) {
-   int errors = 0;
-    AbsoluteEncoder encoder = sparkMax.getAbsoluteEncoder(com.revrobotics.SparkAbsoluteEncoder.Type.kDutyCycle);
+    int errors = 0;
+    AbsoluteEncoder encoder =
+        sparkMax.getAbsoluteEncoder(com.revrobotics.SparkAbsoluteEncoder.Type.kDutyCycle);
     errors += SparkMaxUtils.check(SparkMaxUtils.setDefaultsForNeo(sparkMax));
     errors += SparkMaxUtils.check(CANSparkMaxExtensions.setInverted(sparkMax, false));
     errors +=
@@ -58,7 +58,4 @@ public class Climber extends SubsystemBase {
     SparkMax.setFrameStrategy(sparkMax, FrameStrategy.kPosition);
     return errors == 0;
   }
-
-  
-  }
-
+}
