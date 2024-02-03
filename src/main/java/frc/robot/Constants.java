@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.util.Units;
+
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
  * constants. This class should not be used for any other purpose. All constants should be declared
@@ -15,11 +17,28 @@ package frc.robot;
 public final class Constants {
 
   public static class ElevatorConstants {
+    public static final double kMaxTravelMeters = Units.inchesToMeters(21);
+    public static final double kGearRatio = 9.0 / 1.0;
+    public static final double kSprocketPitchDiameter = Units.inchesToMeters(1.751);
+    public static final double kMetersPerRotation = kGearRatio * kSprocketPitchDiameter * Math.PI;
+    public static final float kForwardSoftLimit = (float) Units.inchesToMeters(21);
+    public static final float kReverseSoftLimit = 0;
+  }
 
-    public static float kForwardSoftLimit;
-    public static float kReverseSoftLimit;
-    public static double kMetersPerRotation;
+  public static class ClimberConstants {
+    public static final double kMaxTravelMeters = Units.inchesToMeters(21);
+    public static final double kPlanetaryGearRatio = (25.0 / 1.0);
+    public static final double kSprocketGearRatio = (48.0 / 16.0);
+    public static final float kForwardSoftLimit = 0;
+    public static final float kReverseSoftLimit = 0;
+  }
 
+  public static class ShooterAngleConstants {
+    public static final double kPlanetaryGearRatio = (9.0 / 1.0);
+    public static final double kSectorGearRatio = (240.0 / 10.0);
+    public static final double kAbsoluteEncoderOffset = 0;
+    public static final float kForwardSoftLimit = ;
+    public static final float kReverseSoftLimit = 0;
   }
 
   public static class OperatorConstants {
