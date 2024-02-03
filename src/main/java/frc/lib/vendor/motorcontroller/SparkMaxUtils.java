@@ -1,7 +1,7 @@
 package frc.lib.vendor.motorcontroller;
 
-import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
+import com.revrobotics.CANSparkMax;
 import com.revrobotics.REVLibError;
 import com.revrobotics.RelativeEncoder;
 import edu.wpi.first.wpilibj.Timer;

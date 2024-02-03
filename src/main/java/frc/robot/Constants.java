@@ -22,6 +22,9 @@ public final class Constants {
     public static final int kIntakeMotor = 0;
     public static final int kFeederMotor = 0;
     public static final int kAmpMotor = 0;
+    public static final int kClimberMotor = 0;
+    public static final int kTiltMotor = 0;
+    public static final int kElevatorMotor = 0;
   }
 
   public static class DIOPorts {

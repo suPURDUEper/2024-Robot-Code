@@ -5,7 +5,6 @@ import com.revrobotics.CANSparkMaxHandle;
 import com.revrobotics.MotorFeedbackSensor;
 import com.revrobotics.REVLibError;
 import com.revrobotics.SparkPIDController;
-
 import edu.wpi.first.wpilibj.Timer;
 import frc.lib.controller.PIDGains;
 import frc.lib.monitor.HealthMonitor;
@@ -199,7 +198,6 @@ public class SparkMax extends CANSparkMax {
     controller.setFeedbackDevice(sensor);
     return new SparkMaxController(this, controller, ControlType.kPosition, gains, -1.0, 1.0);
   }
-
 
   /**
    * Create a profiled PID controller based on the spark max smart motion

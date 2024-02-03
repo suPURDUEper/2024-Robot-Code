@@ -155,7 +155,7 @@ public class CANSparkMaxSim1 {
       }
 
       return (CANSparkMaxJNI.c_SparkMax_IsLimitEnabled(
-              m_sparkMax.sparkMaxHandle, SparkMaxLimitSwitch.Direction.kForward.value)
+              m_sparkMax.sparkMaxHandle, SparkLimitSwitch.Direction.kForward.value)
           && m_forwardLimit);
     } else {
       if ((m_sparkMax.getSoftLimit(SoftLimitDirection.kReverse) > m_position.get())
@@ -165,7 +165,7 @@ public class CANSparkMaxSim1 {
       }
 
       return (CANSparkMaxJNI.c_SparkMax_IsLimitEnabled(
-              m_sparkMax.sparkMaxHandle, SparkMaxLimitSwitch.Direction.kReverse.value)
+              m_sparkMax.sparkMaxHandle, SparkLimitSwitch.Direction.kReverse.value)
           && m_reverseLimit);
     }
   }
