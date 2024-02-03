@@ -14,6 +14,14 @@ package frc.robot;
  */
 public final class Constants {
 
+  public static class ElevatorConstants {
+
+    public static float kForwardSoftLimit;
+    public static float kReverseSoftLimit;
+    public static double kMetersPerRotation;
+
+  }
+
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
   }
@@ -25,6 +33,7 @@ public final class Constants {
     public static final int kClimberMotor = 0;
     public static final int kTiltMotor = 0;
     public static final int kElevatorMotor = 0;
+    public static final int kClimber2Motor = 0;
   }
 
   public static class DIOPorts {

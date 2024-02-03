@@ -4,8 +4,7 @@
 
 package frc.robot.subsystems;
 
-import com.revrobotics.CANSparkLowLevel.MotorType;
-import com.revrobotics.CANSparkMax;
+import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -15,7 +14,7 @@ import frc.robot.Constants.DIOPorts;
 
 public class Amp extends SubsystemBase {
   /** Creates a new Amp. */
-  CANSparkMax ampMotor = new CANSparkMax(CANIDs.kIntakeMotor, MotorType.kBrushless);
+  TalonFX ampMotor = new TalonFX(CANIDs.kIntakeMotor);
 
   DigitalInput ampBreakBeam = new DigitalInput(DIOPorts.kAmpBreakBeam);
 
