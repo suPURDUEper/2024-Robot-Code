@@ -21,9 +21,11 @@ public final class Constants {
   public static class CANIDs {
     public static final int kIntakeMotor = 0;
     public static final int kFeederMotor = 0;
+    public static final int kAmpMotor = 0;
   }
 
   public static class DIOPorts {
     public static final int kFeederBreakBeam = 0;
+    public static final int kAmpBreakBeam = 0;
   }
 }
