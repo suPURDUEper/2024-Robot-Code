@@ -7,10 +7,10 @@
 
 package org.littletonrobotics.util;
 
-import frc.robot.Constants;
 import java.util.HashMap;
 import java.util.Map;
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
+import org.surpurdueper.robot.Constants;
 
 /**
  * Class for a tunable number. Gets value from dashboard in tuning mode, returns default if not or

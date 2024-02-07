@@ -8,8 +8,8 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import edu.wpi.first.wpilibj.simulation.SimDeviceSim;
-import frc.lib.util.MovingAverageFilterSim;
-import frc.lib.util.NoiseGenerator;
+import org.frc3005.lib.util.MovingAverageFilterSim;
+import org.frc3005.lib.util.NoiseGenerator;
 import org.tinylog.Logger;
 
 public class CANSparkMaxSim1 {
