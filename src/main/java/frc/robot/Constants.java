@@ -26,11 +26,11 @@ public final class Constants {
     public static final int kElevatorMotor = 0;
     public static final int kTiltMotor = 0;
   }
-
   // All DIOport constants go in here
   public static class DIOPorts {
     public static final int kFeederBreakBeam = 0;
     public static final int kAmpBreakBeam = 0;
+    public static final int kTiltEncoder = 0;
   }
 
   public static class ElevatorConstants {
@@ -58,5 +58,7 @@ public final class Constants {
     public static final double kAbsoluteEncoderOffset = 0;
     public static final double kEncoderPositionConversion = 0;
     public static final boolean kAbsoluteEncoderInverted = true;
+    public static final int kStatorCurrentLimit = 0;
+    public static final double kGearRatio = kPlanetaryGearRatio*kSectorGearRatio;
   }
 }

@@ -4,28 +4,34 @@
 
 package frc.robot.subsystems;
 
-import com.revrobotics.AbsoluteEncoder;
-import com.revrobotics.CANSparkBase.IdleMode;
-import com.revrobotics.CANSparkBase.SoftLimitDirection;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMaxExtensions;
-import com.revrobotics.SparkAbsoluteEncoder;
-import com.revrobotics.SparkAbsoluteEncoder.Type;
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.FeedbackConfigs;
+import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.configs.SoftwareLimitSwitchConfigs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.GravityTypeValue;
+import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.lib.vendor.motorcontroller.SparkMax;
-import frc.lib.vendor.motorcontroller.SparkMax.FrameStrategy;
-import frc.lib.vendor.motorcontroller.SparkMaxUtils;
+import frc.robot.Constants;
 import frc.robot.Constants.CANIDs;
+import frc.robot.Constants.DIOPorts;
 import frc.robot.Constants.TiltConstants;
 
 public class ShooterTilt extends SubsystemBase {
 
-  SparkMax tiltMotor;
-  SparkAbsoluteEncoder tiltAbsoluteEncoder;
+  TalonFX tiltMotor;
+  DutyCycleEncoder tiltAbsoluteEncoder;
+  TalonFXConfiguration tiltConfig;
 
   public ShooterTilt() {
-    tiltMotor = new SparkMax(CANIDs.kTiltMotor).withInitializer(ShooterTilt::sparkMaxInitializer);
-    tiltAbsoluteEncoder = tiltMotor.getAbsoluteEncoder(Type.kDutyCycle);
+    tiltMotor = new TalonFX(CANIDs.kTiltMotor);
+    configureTalonFx(tiltMotor);
+    tiltAbsoluteEncoder = new DutyCycleEncoder(DIOPorts.kTiltEncoder);
+    // tilt returns radians :)
+    tiltAbsoluteEncoder.setDistancePerRotation(
+        (Constants.TiltConstants.kAbsoluteEncoderInverted ? -1 : 1) * 2 * Math.PI);
+    tiltAbsoluteEncoder.setPositionOffset(TiltConstants.kAbsoluteEncoderOffset);
   }
 
   @Override
@@ -33,27 +39,29 @@ public class ShooterTilt extends SubsystemBase {
     // This method will be called once per scheduler run
   }
 
-  private static Boolean sparkMaxInitializer(CANSparkMax sparkMax, Boolean isInit) {
-    int errors = 0;
-    AbsoluteEncoder encoder =
-        sparkMax.getAbsoluteEncoder(com.revrobotics.SparkAbsoluteEncoder.Type.kDutyCycle);
-    errors += SparkMaxUtils.check(SparkMaxUtils.setDefaultsForNeo(sparkMax));
-    errors += SparkMaxUtils.check(CANSparkMaxExtensions.setInverted(sparkMax, false));
-    errors +=
-        SparkMaxUtils.check(
-            sparkMax.setSoftLimit(
-                SoftLimitDirection.kForward, (float) TiltConstants.kForwardSoftLimit));
-    errors +=
-        SparkMaxUtils.check(
-            sparkMax.setSoftLimit(
-                SoftLimitDirection.kReverse, (float) TiltConstants.kReverseSoftLimit));
-    errors += SparkMaxUtils.check(encoder.setZeroOffset(TiltConstants.kAbsoluteEncoderOffset));
-    errors +=
-        SparkMaxUtils.check(
-            encoder.setPositionConversionFactor(TiltConstants.kEncoderPositionConversion));
-    errors += SparkMaxUtils.check(encoder.setInverted(TiltConstants.kAbsoluteEncoderInverted));
-    errors += SparkMaxUtils.check(sparkMax.setIdleMode(IdleMode.kBrake));
-    SparkMax.setFrameStrategy(sparkMax, FrameStrategy.kPosition);
-    return errors == 0;
+  public void configureTalonFx(TalonFX tiltMotor) {
+    CurrentLimitsConfigs currentConfig =
+        new CurrentLimitsConfigs()
+            .withStatorCurrentLimit(TiltConstants.kStatorCurrentLimit)
+            .withStatorCurrentLimitEnable(true);
+    FeedbackConfigs feedbackConfig =
+        new FeedbackConfigs().withSensorToMechanismRatio(TiltConstants.kGearRatio);
+    Slot0Configs slot0config =
+        new Slot0Configs()
+            .withGravityType(GravityTypeValue.Arm_Cosine)
+            .withKP(0)
+            .withKI(0)
+            .withKD(0)
+            .withKS(0)
+            .withKV(0)
+            .withKA(0)
+            .withKG(0);
+    SoftwareLimitSwitchConfigs softlimitConfig =
+        new SoftwareLimitSwitchConfigs()
+            .withForwardSoftLimitThreshold(TiltConstants.kForwardSoftLimit)
+            .withForwardSoftLimitEnable(false)
+            .withReverseSoftLimitThreshold(TiltConstants.kReverseSoftLimit)
+            .withReverseSoftLimitEnable(false);
+    tiltConfig = new TalonFXConfiguration();
   }
 }
