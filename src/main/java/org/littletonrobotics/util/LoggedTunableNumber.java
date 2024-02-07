@@ -9,7 +9,6 @@ package org.littletonrobotics.util;
 
 import java.util.HashMap;
 import java.util.Map;
-import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 import org.surpurdueper.robot.Constants;
 
 /**
