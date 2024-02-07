@@ -16,6 +16,8 @@ import edu.wpi.first.math.util.Units;
  */
 public final class Constants {
 
+  public static boolean tuningMode = true;
+
   // All canID constants go in here
   public static class CANIDs {
     public static final int kIntakeMotor = 0;
