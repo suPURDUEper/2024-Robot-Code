@@ -4,11 +4,6 @@
 
 package frc.robot.subsystems;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.littletonrobotics.util.LoggedTunableNumber;
-
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
@@ -22,6 +17,9 @@ import frc.robot.Constants;
 import frc.robot.Constants.CANIDs;
 import frc.robot.Constants.DIOPorts;
 import frc.robot.Constants.TiltConstants;
+import java.util.ArrayList;
+import java.util.List;
+import org.littletonrobotics.util.LoggedTunableNumber;
 
 public class ShooterTilt extends SubsystemBase {
 
@@ -65,15 +63,15 @@ public class ShooterTilt extends SubsystemBase {
       if (gain.hasChanged(hashCode())) {
         // Send new PID gains to talon
         Slot0Configs slot0config =
-        new Slot0Configs()
-            .withGravityType(GravityTypeValue.Arm_Cosine)
-            .withKP(kp.get())
-            .withKI(ki.get())
-            .withKD(kd.get())
-            .withKS(ks.get())
-            .withKV(kv.get())
-            .withKA(ka.get())
-            .withKG(kg.get());
+            new Slot0Configs()
+                .withGravityType(GravityTypeValue.Arm_Cosine)
+                .withKP(kp.get())
+                .withKI(ki.get())
+                .withKD(kd.get())
+                .withKS(ks.get())
+                .withKV(kv.get())
+                .withKA(ka.get())
+                .withKG(kg.get());
         tiltMotor.getConfigurator().apply(slot0config);
         break;
       }
@@ -104,6 +102,12 @@ public class ShooterTilt extends SubsystemBase {
             .withForwardSoftLimitEnable(false)
             .withReverseSoftLimitThreshold(TiltConstants.kReverseSoftLimit)
             .withReverseSoftLimitEnable(false);
-    tiltConfig = new TalonFXConfiguration();
+    tiltConfig =
+        new TalonFXConfiguration()
+            .withSoftwareLimitSwitch(softlimitConfig)
+            .withSlot0(slot0config)
+            .withCurrentLimits(currentConfig)
+            .withFeedback(feedbackConfig);
+    tiltMotor.getConfigurator().apply(tiltConfig);
   }
 }

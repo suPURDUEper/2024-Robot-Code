@@ -7,9 +7,9 @@
 
 package org.littletonrobotics.util;
 
+import frc.robot.Constants;
 import java.util.HashMap;
 import java.util.Map;
-import frc.robot.Constants;
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
 /**
