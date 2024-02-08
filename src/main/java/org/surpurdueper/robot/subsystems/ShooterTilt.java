@@ -4,11 +4,16 @@
 
 package org.surpurdueper.robot.subsystems;
 
+import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
+import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.SoftwareLimitSwitchConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.ControlRequest;
+import com.ctre.phoenix6.controls.MotionMagicExpoTorqueCurrentFOC;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
@@ -23,10 +28,12 @@ import org.surpurdueper.robot.Constants.TiltConstants;
 
 public class ShooterTilt extends SubsystemBase {
 
-  TalonFX tiltMotor;
-  DutyCycleEncoder tiltAbsoluteEncoder;
-  TalonFXConfiguration tiltConfig;
+  // Class variables
+  private TalonFX tiltMotor;
+  private DutyCycleEncoder tiltAbsoluteEncoder;
+  private TalonFXConfiguration tiltConfig;
 
+  // Tunable numbers
   private static final LoggedTunableNumber kp = new LoggedTunableNumber("ShooterTilt/Kp");
   private static final LoggedTunableNumber ki = new LoggedTunableNumber("ShooterTilt/Ki");
   private static final LoggedTunableNumber kd = new LoggedTunableNumber("ShooterTilt/Kd");
@@ -34,31 +41,42 @@ public class ShooterTilt extends SubsystemBase {
   private static final LoggedTunableNumber kv = new LoggedTunableNumber("ShooterTilt/Kv");
   private static final LoggedTunableNumber ka = new LoggedTunableNumber("ShooterTilt/Ka");
   private static final LoggedTunableNumber kg = new LoggedTunableNumber("ShooterTilt/Kg");
+  private static final LoggedTunableNumber profileKv = new LoggedTunableNumber("ShooterTilt/Kv");
+  private static final LoggedTunableNumber profileKa = new LoggedTunableNumber("ShooterTilt/Ka");
   private static final List<LoggedTunableNumber> pidGains = new ArrayList<>();
 
+  // Control requests
+  private final ControlRequest voltagRequest = new VoltageOut(0);
+  private final ControlRequest torqueRequest =
+      new MotionMagicExpoTorqueCurrentFOC(0, 0, 0, false, false, false);
+
   static {
-    kp.initDefault(0.0);
-    ki.initDefault(0.0);
-    kd.initDefault(0.0);
-    ks.initDefault(0.0);
-    kv.initDefault(0.0);
-    ka.initDefault(0.0);
-    kg.initDefault(0.0);
-    pidGains.addAll(List.of(kp, ki, kd, ks, kv, ka, kg));
+    kp.initDefault(TiltConstants.kp);
+    ki.initDefault(TiltConstants.ki);
+    kd.initDefault(TiltConstants.kd);
+    ks.initDefault(TiltConstants.ks);
+    kv.initDefault(TiltConstants.kv);
+    ka.initDefault(TiltConstants.ka);
+    kg.initDefault(TiltConstants.kg);
+    profileKv.initDefault(TiltConstants.profileKv);
+    profileKa.initDefault(TiltConstants.profileKa);
+    pidGains.addAll(List.of(kp, ki, kd, ks, kv, ka, kg, profileKa, profileKv));
   }
 
   public ShooterTilt() {
     tiltMotor = new TalonFX(CANIDs.kTiltMotor);
     configureTalonFx(tiltMotor);
     tiltAbsoluteEncoder = new DutyCycleEncoder(DIOPorts.kTiltEncoder);
-    // tilt returns radians :)
+    // tilt returns rotations :)
     tiltAbsoluteEncoder.setDistancePerRotation(
-        (Constants.TiltConstants.kAbsoluteEncoderInverted ? -1 : 1) * 2 * Math.PI);
+        Constants.TiltConstants.kAbsoluteEncoderInverted ? -1 : 1);
     tiltAbsoluteEncoder.setPositionOffset(TiltConstants.kAbsoluteEncoderOffset);
+    tiltMotor.setPosition(tiltAbsoluteEncoder.getAbsolutePosition());
   }
 
   @Override
   public void periodic() {
+    // Update tunable numbers
     for (LoggedTunableNumber gain : pidGains) {
       if (gain.hasChanged(hashCode())) {
         // Send new PID gains to talon
@@ -72,11 +90,16 @@ public class ShooterTilt extends SubsystemBase {
                 .withKV(kv.get())
                 .withKA(ka.get())
                 .withKG(kg.get());
-        tiltMotor.getConfigurator().apply(slot0config);
+        MotionMagicConfigs motionMagicConfigs =
+            new MotionMagicConfigs()
+                .withMotionMagicExpo_kA(profileKa.get())
+                .withMotionMagicExpo_kV(profileKv.get());
+        tiltMotor
+            .getConfigurator()
+            .apply(tiltConfig.withSlot0(slot0config).withMotionMagic(motionMagicConfigs));
         break;
       }
     }
-    // This method will be called once per scheduler run
   }
 
   public void configureTalonFx(TalonFX tiltMotor) {
@@ -96,6 +119,10 @@ public class ShooterTilt extends SubsystemBase {
             .withKV(kv.get())
             .withKA(ka.get())
             .withKG(kg.get());
+    MotionMagicConfigs motionMagicConfigs =
+        new MotionMagicConfigs()
+            .withMotionMagicExpo_kA(profileKv.get())
+            .withMotionMagicExpo_kV(profileKa.get());
     SoftwareLimitSwitchConfigs softlimitConfig =
         new SoftwareLimitSwitchConfigs()
             .withForwardSoftLimitThreshold(TiltConstants.kForwardSoftLimit)
@@ -107,7 +134,8 @@ public class ShooterTilt extends SubsystemBase {
             .withSoftwareLimitSwitch(softlimitConfig)
             .withSlot0(slot0config)
             .withCurrentLimits(currentConfig)
-            .withFeedback(feedbackConfig);
+            .withFeedback(feedbackConfig)
+            .withMotionMagic(motionMagicConfigs);
     tiltMotor.getConfigurator().apply(tiltConfig);
   }
 }

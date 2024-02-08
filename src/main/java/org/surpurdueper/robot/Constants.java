@@ -56,12 +56,22 @@ public final class Constants {
   public static class TiltConstants {
     public static final double kPlanetaryGearRatio = (9.0 / 1.0);
     public static final double kSectorGearRatio = (240.0 / 10.0);
+    public static final double kGearRatio = kPlanetaryGearRatio * kSectorGearRatio;
     public static final int kForwardSoftLimit = 0;
     public static final int kReverseSoftLimit = 0;
     public static final double kAbsoluteEncoderOffset = 0;
     public static final double kEncoderPositionConversion = 0;
     public static final boolean kAbsoluteEncoderInverted = true;
     public static final int kStatorCurrentLimit = 0;
-    public static final double kGearRatio = kPlanetaryGearRatio * kSectorGearRatio;
+
+    public static final double kp = 0;         // amps applied per rotation of error
+    public static final double ki = 0;         // leave at 0
+    public static final double kd = 0;         // amps applied per rps of error
+    public static final double ks = 0;         // minimum amount of amps to move arm
+    public static final double kv = 0;         // Probably leave at 0
+    public static final double ka = 0;         // Amps required to accelerate arm 1 rot/s^2
+    public static final double kg = 0;         // Amps required to hold arm level at 0 degrees
+    public static final double profileKv = 0;  // Kv of arm brushed motor model in volts/rps
+    public static final double profileKa = 0;  // Ka of arm brushed motor model in volts/(rps/s)
   }
 }
