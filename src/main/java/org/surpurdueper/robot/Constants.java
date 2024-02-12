@@ -27,6 +27,8 @@ public final class Constants {
     public static final int kClimber2Motor = 0;
     public static final int kElevatorMotor = 0;
     public static final int kTiltMotor = 0;
+    public static final int kShooterRightMotor = 0;
+    public static final int kShooterLeftMotor = 0;
   }
 
   // All DIOport constants go in here
@@ -64,14 +66,27 @@ public final class Constants {
     public static final boolean kAbsoluteEncoderInverted = true;
     public static final int kStatorCurrentLimit = 0;
 
-    public static final double kp = 0;         // amps applied per rotation of error
-    public static final double ki = 0;         // leave at 0
-    public static final double kd = 0;         // amps applied per rps of error
-    public static final double ks = 0;         // minimum amount of amps to move arm
-    public static final double kv = 0;         // Probably leave at 0
-    public static final double ka = 0;         // Amps required to accelerate arm 1 rot/s^2
-    public static final double kg = 0;         // Amps required to hold arm level at 0 degrees
-    public static final double profileKv = 0;  // Kv of arm brushed motor model in volts/rps
-    public static final double profileKa = 0;  // Ka of arm brushed motor model in volts/(rps/s)
+    public static final double kp = 0; // amps applied per rotation of error
+    public static final double ki = 0; // leave at 0
+    public static final double kd = 0; // amps applied per rps of error
+    public static final double ks = 0; // minimum amount of amps to move arm
+    public static final double kv = 0; // Probably leave at 0
+    public static final double ka = 0; // Amps required to accelerate arm 1 rot/s^2
+    public static final double kg = 0; // Amps required to hold arm level at 0 degrees
+    public static final double profileKv = 0; // Kv of arm brushed motor model in volts/rps
+    public static final double profileKa = 0; // Ka of arm brushed motor model in volts/(rps/s)
+  }
+
+  public static class ShooterConstants {
+    public static final double kGearRatio = 1.0 / 2.0;
+    public static final int kStatorCurrentLimit = 0;
+
+    public static final double kp = 0; // amps applied per rotation of error
+    public static final double ki = 0; // leave at 0
+    public static final double kd = 0; // amps applied per rps of error
+    public static final double ks = 0; // minimum amount of amps to move arm
+    public static final double kv = 0; // Probably leave at 0
+    public static final double ka = 0; // Amps required to accelerate arm 1 rot/s^2
+    public static final double kg = 0; // Amps required to hold arm level at 0 degrees
   }
 }

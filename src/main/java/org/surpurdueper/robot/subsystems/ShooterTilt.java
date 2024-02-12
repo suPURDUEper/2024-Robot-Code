@@ -4,18 +4,21 @@
 
 package org.surpurdueper.robot.subsystems;
 
-import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
+import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.SoftwareLimitSwitchConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.ControlRequest;
 import com.ctre.phoenix6.controls.MotionMagicExpoTorqueCurrentFOC;
+import com.ctre.phoenix6.controls.StaticBrake;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
+import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.util.ArrayList;
@@ -46,8 +49,9 @@ public class ShooterTilt extends SubsystemBase {
   private static final List<LoggedTunableNumber> pidGains = new ArrayList<>();
 
   // Control requests
-  private final ControlRequest voltagRequest = new VoltageOut(0);
-  private final ControlRequest torqueRequest =
+  private final StaticBrake stopRequest = new StaticBrake();
+  private final VoltageOut voltagRequest = new VoltageOut(0);
+  private final MotionMagicExpoTorqueCurrentFOC torqueRequest =
       new MotionMagicExpoTorqueCurrentFOC(0, 0, 0, false, false, false);
 
   static {
@@ -65,7 +69,7 @@ public class ShooterTilt extends SubsystemBase {
 
   public ShooterTilt() {
     tiltMotor = new TalonFX(CANIDs.kTiltMotor);
-    configureTalonFx(tiltMotor);
+    configureTalonFx();
     tiltAbsoluteEncoder = new DutyCycleEncoder(DIOPorts.kTiltEncoder);
     // tilt returns rotations :)
     tiltAbsoluteEncoder.setDistancePerRotation(
@@ -102,7 +106,35 @@ public class ShooterTilt extends SubsystemBase {
     }
   }
 
-  public void configureTalonFx(TalonFX tiltMotor) {
+  public void setVoltage(double volts) {
+    tiltMotor.setControl(voltagRequest.withOutput(volts));
+  }
+
+  public void setPositionRads(double position) {
+    setPositionRotations(Units.radiansToRotations(position));
+  }
+
+  public void setPositionDegrees(double position) {
+    setPositionDegrees(Units.degreesToRotations(position));
+  }
+
+  public void setPositionRotations(double position) {
+    tiltMotor.setControl(torqueRequest.withPosition(position));
+  }
+
+  public void stop() {
+    tiltMotor.setControl(stopRequest);
+  }
+
+  public boolean isAtPosition() {
+    return false; // TODO
+  }
+
+  public void configureTalonFx() {
+    MotorOutputConfigs motorOutputConfigs =
+        new MotorOutputConfigs()
+            .withNeutralMode(NeutralModeValue.Brake)
+            .withInverted(InvertedValue.Clockwise_Positive);
     CurrentLimitsConfigs currentConfig =
         new CurrentLimitsConfigs()
             .withStatorCurrentLimit(TiltConstants.kStatorCurrentLimit)
@@ -131,6 +163,7 @@ public class ShooterTilt extends SubsystemBase {
             .withReverseSoftLimitEnable(false);
     tiltConfig =
         new TalonFXConfiguration()
+            .withMotorOutput(motorOutputConfigs)
             .withSoftwareLimitSwitch(softlimitConfig)
             .withSlot0(slot0config)
             .withCurrentLimits(currentConfig)
