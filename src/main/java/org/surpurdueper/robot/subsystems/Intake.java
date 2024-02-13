@@ -8,11 +8,12 @@ import com.revrobotics.CANSparkMaxExtensions;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.frc3005.lib.vendor.motorcontroller.SparkMax;
 import org.frc3005.lib.vendor.motorcontroller.SparkMax.FrameStrategy;
 import org.frc3005.lib.vendor.motorcontroller.SparkMaxUtils;
+import org.surpurdueper.robot.Constants.CANIDs;
+import org.surpurdueper.robot.Constants.DIOPorts;
 
 public class Intake extends SubsystemBase {
 
@@ -41,9 +42,8 @@ public class Intake extends SubsystemBase {
     feederMotor.stopMotor();
   }
 
-  public Command intake() {
-    return new FunctionalCommand(
-        null, this::runForward, interrupted -> this.stop(), feederBreakBeam::get, this);
+  public Command load() {
+    return Commands.startEnd(this::runForward, this::stop, this).until(feederBreakBeam::get);
   }
 
   public Command fire() {

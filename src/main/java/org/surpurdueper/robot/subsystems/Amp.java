@@ -4,36 +4,70 @@
 
 package org.surpurdueper.robot.subsystems;
 
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.MotorOutputConfigs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.CoastOut;
+import com.ctre.phoenix6.controls.StaticBrake;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import org.surpurdueper.robot.Constants.AmpConstants;
 import org.surpurdueper.robot.Constants.CANIDs;
 import org.surpurdueper.robot.Constants.DIOPorts;
 
 public class Amp extends SubsystemBase {
-  /** Creates a new Amp. */
-  TalonFX ampMotor = new TalonFX(CANIDs.kIntakeMotor);
 
-  DigitalInput ampBreakBeam = new DigitalInput(DIOPorts.kAmpBreakBeam);
+  private TalonFX ampMotor = new TalonFX(CANIDs.kIntakeMotor);
+  private DigitalInput ampBreakBeam = new DigitalInput(DIOPorts.kAmpBreakBeam);
+  private VoltageOut voltageRequest = new VoltageOut(0);
+  private StaticBrake stopRequest = new StaticBrake();
+  private CoastOut coastRequest = new CoastOut();
 
-  public Amp() {}
-
-  @Override
-  public void periodic() {
-    // This method will be called once per scheduler run
+  public Amp() {
+    ampMotor = new TalonFX(CANIDs.kIntakeMotor);
+    ampBreakBeam = new DigitalInput(DIOPorts.kAmpBreakBeam);
   }
 
-  public Command amp() {
+  public Command load() {
     return Commands.startEnd(
-        () -> {
-          ampMotor.setVoltage(12);
-        },
-        () -> {
-          ampMotor.stopMotor();
-          ;
-        },
-        this);
+            () -> ampMotor.setControl(voltageRequest.withOutput(AmpConstants.kLoadVoltage)),
+            () -> ampMotor.setControl(stopRequest),
+            this)
+        .until(ampBreakBeam::get);
+  }
+
+  public Command score() {
+    return Commands.startEnd(
+            () -> ampMotor.setControl(voltageRequest.withOutput(AmpConstants.kScoreVoltage)),
+            () -> ampMotor.setControl(coastRequest),
+            this)
+        .withTimeout(0);
+  }
+
+  public void configureTalonFx(TalonFX motor) {
+    MotorOutputConfigs motorOutputConfigs =
+        new MotorOutputConfigs()
+            .withNeutralMode(NeutralModeValue.Brake)
+            .withInverted(InvertedValue.Clockwise_Positive);
+    CurrentLimitsConfigs currentConfig =
+        new CurrentLimitsConfigs()
+            .withStatorCurrentLimit(AmpConstants.kStatorCurrentLimit)
+            .withStatorCurrentLimitEnable(true)
+            .withSupplyCurrentLimit(AmpConstants.kSupplyCurrentLimit)
+            .withSupplyCurrentThreshold(AmpConstants.kSupplyCurrentLimitThreshold)
+            .withSupplyTimeThreshold(AmpConstants.kSupplyTimeThreshold)
+            .withSupplyCurrentLimitEnable(true);
+    motor
+        .getConfigurator()
+        .apply(
+            new TalonFXConfiguration()
+                .withMotorOutput(motorOutputConfigs)
+                .withCurrentLimits(currentConfig));
   }
 }

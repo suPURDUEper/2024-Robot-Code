@@ -38,6 +38,17 @@ public final class Constants {
     public static final int kTiltEncoder = 0;
   }
 
+  public static class AmpConstants {
+
+    public static final double kStatorCurrentLimit = 0;
+    public static final double kSupplyCurrentLimit = 0;
+    public static final double kSupplyCurrentLimitThreshold = 0;
+    public static final double kSupplyTimeThreshold = 0;
+    public static final double kLoadVoltage = 0;
+    public static final double kScoreVoltage = 0;
+
+  }
+
   public static class ElevatorConstants {
     public static final double kMaxTravelMeters = Units.inchesToMeters(21);
     public static final double kGearRatio = 9.0 / 1.0;
@@ -75,6 +86,8 @@ public final class Constants {
     public static final double kg = 0; // Amps required to hold arm level at 0 degrees
     public static final double profileKv = 0; // Kv of arm brushed motor model in volts/rps
     public static final double profileKa = 0; // Ka of arm brushed motor model in volts/(rps/s)
+
+    public static final double kPositionTolerance = 0;
   }
 
   public static class ShooterConstants {
@@ -88,5 +101,6 @@ public final class Constants {
     public static final double kv = 0; // Probably leave at 0
     public static final double ka = 0; // Amps required to accelerate arm 1 rot/s^2
     public static final double kg = 0; // Amps required to hold arm level at 0 degrees
+    public static final double kShooterRpsTolerance = 0;
   }
 }

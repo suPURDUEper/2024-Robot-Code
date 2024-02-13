@@ -4,13 +4,6 @@
 
 package org.surpurdueper.robot.subsystems;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.littletonrobotics.util.LoggedTunableNumber;
-import org.surpurdueper.robot.Constants.CANIDs;
-import org.surpurdueper.robot.Constants.ShooterConstants;
-
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
@@ -24,13 +17,17 @@ import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-
 import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import java.util.ArrayList;
+import java.util.List;
+import org.littletonrobotics.util.LoggedTunableNumber;
+import org.surpurdueper.robot.Constants.CANIDs;
+import org.surpurdueper.robot.Constants.ShooterConstants;
 
 public class Shooter extends SubsystemBase {
 
@@ -38,6 +35,8 @@ public class Shooter extends SubsystemBase {
   private TalonFX shooterLeft;
   private TalonFX shooterRight;
   private TalonFXConfiguration config;
+  private double shooterLeftTargetRps = 0;
+  private double shooterRightTargetRps = 0;
 
   // Tunable numbers
   private static final LoggedTunableNumber kp = new LoggedTunableNumber("ShooterTilt/Kp");
@@ -90,14 +89,12 @@ public class Shooter extends SubsystemBase {
   }
 
   private void setupSysIdTiming(TalonFX motorToTest) {
-     /* Speed up signals for better charaterization data */
-        BaseStatusSignal.setUpdateFrequencyForAll(250,
-            motorToTest.getPosition(),
-            motorToTest.getVelocity(),
-            motorToTest.getMotorVoltage());
+    /* Speed up signals for better charaterization data */
+    BaseStatusSignal.setUpdateFrequencyForAll(
+        250, motorToTest.getPosition(), motorToTest.getVelocity(), motorToTest.getMotorVoltage());
 
-        /* Optimize out the other signals, since they're not particularly helpful for us */
-        motorToTest.optimizeBusUtilization();
+    /* Optimize out the other signals, since they're not particularly helpful for us */
+    motorToTest.optimizeBusUtilization();
   }
 
   @Override
@@ -118,6 +115,20 @@ public class Shooter extends SubsystemBase {
         break;
       }
     }
+  }
+
+  public void setShooterRps(double shooterLeftRps, double shooterRightRps) {
+    shooterLeftTargetRps = shooterLeftRps;
+    shooterRightTargetRps = shooterRightRps;
+    shooterLeft.setControl(velocityRequest.withVelocity(shooterLeftTargetRps));
+    shooterRight.setControl(velocityRequest.withVelocity(shooterRightTargetRps));
+  }
+
+  public boolean isShooterAtSpeed() {
+    return Math.abs(shooterLeft.getVelocity().getValue() - shooterLeftTargetRps)
+            < ShooterConstants.kShooterRpsTolerance
+        && Math.abs(shooterLeft.getVelocity().getValue() - shooterLeftTargetRps)
+            < ShooterConstants.kShooterRpsTolerance;
   }
 
   public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {

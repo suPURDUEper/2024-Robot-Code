@@ -24,7 +24,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.util.ArrayList;
 import java.util.List;
 import org.littletonrobotics.util.LoggedTunableNumber;
-import org.surpurdueper.robot.Constants;
 import org.surpurdueper.robot.Constants.CANIDs;
 import org.surpurdueper.robot.Constants.DIOPorts;
 import org.surpurdueper.robot.Constants.TiltConstants;
@@ -35,6 +34,7 @@ public class ShooterTilt extends SubsystemBase {
   private TalonFX tiltMotor;
   private DutyCycleEncoder tiltAbsoluteEncoder;
   private TalonFXConfiguration tiltConfig;
+  private double targetRotations = -1;
 
   // Tunable numbers
   private static final LoggedTunableNumber kp = new LoggedTunableNumber("ShooterTilt/Kp");
@@ -72,8 +72,7 @@ public class ShooterTilt extends SubsystemBase {
     configureTalonFx();
     tiltAbsoluteEncoder = new DutyCycleEncoder(DIOPorts.kTiltEncoder);
     // tilt returns rotations :)
-    tiltAbsoluteEncoder.setDistancePerRotation(
-        Constants.TiltConstants.kAbsoluteEncoderInverted ? -1 : 1);
+    tiltAbsoluteEncoder.setDistancePerRotation(TiltConstants.kAbsoluteEncoderInverted ? -1 : 1);
     tiltAbsoluteEncoder.setPositionOffset(TiltConstants.kAbsoluteEncoderOffset);
     tiltMotor.setPosition(tiltAbsoluteEncoder.getAbsolutePosition());
   }
@@ -115,11 +114,12 @@ public class ShooterTilt extends SubsystemBase {
   }
 
   public void setPositionDegrees(double position) {
-    setPositionDegrees(Units.degreesToRotations(position));
+    setPositionRotations(Units.degreesToRotations(position));
   }
 
   public void setPositionRotations(double position) {
-    tiltMotor.setControl(torqueRequest.withPosition(position));
+    targetRotations = position;
+    tiltMotor.setControl(torqueRequest.withPosition(targetRotations));
   }
 
   public void stop() {
@@ -127,7 +127,8 @@ public class ShooterTilt extends SubsystemBase {
   }
 
   public boolean isAtPosition() {
-    return false; // TODO
+    return Math.abs(targetRotations - tiltAbsoluteEncoder.getAbsolutePosition())
+        < TiltConstants.kPositionTolerance;
   }
 
   public void configureTalonFx() {
