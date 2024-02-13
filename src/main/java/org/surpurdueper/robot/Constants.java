@@ -46,7 +46,6 @@ public final class Constants {
     public static final double kSupplyTimeThreshold = 0;
     public static final double kLoadVoltage = 0;
     public static final double kScoreVoltage = 0;
-
   }
 
   public static class ElevatorConstants {

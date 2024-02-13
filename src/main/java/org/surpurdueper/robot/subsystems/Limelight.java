@@ -4,9 +4,9 @@
 
 package org.surpurdueper.robot.subsystems;
 
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import org.littletonrobotics.util.VirtualSubsystem;
 
-public class Limelight extends SubsystemBase {
+public class Limelight extends VirtualSubsystem {
   /** Creates a new Limelight. */
   public Limelight() {}
 
