@@ -4,6 +4,7 @@
 
 package org.surpurdueper.robot;
 
+import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.util.Units;
 
 /**
@@ -55,6 +56,11 @@ public final class Constants {
     public static final double kMetersPerRotation = kGearRatio * kSprocketPitchDiameter * Math.PI;
     public static final float kForwardSoftLimit = (float) Units.inchesToMeters(21);
     public static final float kReverseSoftLimit = 0;
+
+    // Feedforward gains estimated from recalc
+    public static final double kg = 0.25; // volts
+    public static final double kv = 7.63; // V*s/m
+    public static final double ka = 0.03; // V*s^2/m
   }
 
   public static class ClimberConstants {
@@ -69,8 +75,8 @@ public final class Constants {
     public static final double kPlanetaryGearRatio = (9.0 / 1.0);
     public static final double kSectorGearRatio = (240.0 / 10.0);
     public static final double kGearRatio = kPlanetaryGearRatio * kSectorGearRatio;
-    public static final int kForwardSoftLimit = 0;
-    public static final int kReverseSoftLimit = 0;
+    public static final int kForwardSoftLimit = 0; // 79 degrees
+    public static final int kReverseSoftLimit = 0; // 22 degrees
     public static final double kAbsoluteEncoderOffset = 0;
     public static final double kEncoderPositionConversion = 0;
     public static final boolean kAbsoluteEncoderInverted = true;
@@ -101,5 +107,28 @@ public final class Constants {
     public static final double ka = 0; // Amps required to accelerate arm 1 rot/s^2
     public static final double kg = 0; // Amps required to hold arm level at 0 degrees
     public static final double kShooterRpsTolerance = 0;
+  }
+
+  public static class LookupTables {
+    // Key is shooter angle (in degrees). Value is minimum elevator height such that the shot clears the shooter
+    // (in inches from bottom hardstop)
+    public static final InterpolatingDoubleTreeMap elevatorShooterClearance = new InterpolatingDoubleTreeMap();
+    static {
+      elevatorShooterClearance.put(34.821, 0.000);  // Max angle with elevator all the way down
+      elevatorShooterClearance.put(36.000, 1.037);
+      elevatorShooterClearance.put(38.000, 2.835);
+      elevatorShooterClearance.put(40.000, 3.984);
+      elevatorShooterClearance.put(42.000, 5.451);
+      elevatorShooterClearance.put(44.000, 7.324);
+      elevatorShooterClearance.put(46.000, 9.640);
+      elevatorShooterClearance.put(48.000, 12.291);
+      elevatorShooterClearance.put(50.000, 15.186);
+      elevatorShooterClearance.put(51.690, 17.725); // Max angle we can shoot at before jumping to 60 degree shot
+    }
+
+    public static final InterpolatingDoubleTreeMap distanceToShooterAngle = new InterpolatingDoubleTreeMap();
+    static {
+      
+    }
   }
 }
