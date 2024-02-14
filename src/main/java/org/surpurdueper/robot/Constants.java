@@ -110,11 +110,14 @@ public final class Constants {
   }
 
   public static class LookupTables {
-    // Key is shooter angle (in degrees). Value is minimum elevator height such that the shot clears the shooter
+    // Key is shooter angle (in degrees). Value is minimum elevator height such that the shot clears
+    // the shooter
     // (in inches from bottom hardstop)
-    public static final InterpolatingDoubleTreeMap elevatorShooterClearance = new InterpolatingDoubleTreeMap();
+    public static final InterpolatingDoubleTreeMap elevatorShooterClearance =
+        new InterpolatingDoubleTreeMap();
+
     static {
-      elevatorShooterClearance.put(34.821, 0.000);  // Max angle with elevator all the way down
+      elevatorShooterClearance.put(34.821, 0.000); // Max angle with elevator all the way down
       elevatorShooterClearance.put(36.000, 1.037);
       elevatorShooterClearance.put(38.000, 2.835);
       elevatorShooterClearance.put(40.000, 3.984);
@@ -123,12 +126,14 @@ public final class Constants {
       elevatorShooterClearance.put(46.000, 9.640);
       elevatorShooterClearance.put(48.000, 12.291);
       elevatorShooterClearance.put(50.000, 15.186);
-      elevatorShooterClearance.put(51.690, 17.725); // Max angle we can shoot at before jumping to 60 degree shot
+      elevatorShooterClearance.put(
+          51.69, 17.725); // Max angle we can shoot at before jumping to 60 degree shot
     }
 
-    public static final InterpolatingDoubleTreeMap distanceToShooterAngle = new InterpolatingDoubleTreeMap();
+    public static final InterpolatingDoubleTreeMap distanceToShooterAngle =
+        new InterpolatingDoubleTreeMap();
+
     static {
-      
     }
   }
 }

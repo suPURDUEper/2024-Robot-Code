@@ -20,6 +20,7 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.util.ArrayList;
 import java.util.List;
@@ -103,6 +104,17 @@ public class ShooterTilt extends SubsystemBase {
         break;
       }
     }
+
+    // Log out to Glass for debugging
+    double armPositionAbs = tiltAbsoluteEncoder.getAbsolutePosition();
+    double armPositionMotor = tiltMotor.getPosition().getValueAsDouble();
+    double armPositionSetpoint = tiltMotor.getClosedLoopReference().getValueAsDouble();
+    SmartDashboard.putNumber(
+        "ShooterTilt/Position (Abs)", Units.rotationsToDegrees(armPositionAbs));
+    SmartDashboard.putNumber(
+        "ShooterTilt/Position (Motor)", Units.rotationsToDegrees(armPositionMotor));
+    SmartDashboard.putNumber(
+        "ShooterTilt/Target Position", Units.rotationsToDegrees(armPositionSetpoint));
   }
 
   public void setVoltage(double volts) {

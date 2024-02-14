@@ -20,6 +20,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.Voltage;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -39,12 +40,12 @@ public class Shooter extends SubsystemBase {
   private double shooterRightTargetRps = 0;
 
   // Tunable numbers
-  private static final LoggedTunableNumber kp = new LoggedTunableNumber("ShooterTilt/Kp");
-  private static final LoggedTunableNumber ki = new LoggedTunableNumber("ShooterTilt/Ki");
-  private static final LoggedTunableNumber kd = new LoggedTunableNumber("ShooterTilt/Kd");
-  private static final LoggedTunableNumber ks = new LoggedTunableNumber("ShooterTilt/Ks");
-  private static final LoggedTunableNumber kv = new LoggedTunableNumber("ShooterTilt/Kv");
-  private static final LoggedTunableNumber ka = new LoggedTunableNumber("ShooterTilt/Ka");
+  private static final LoggedTunableNumber kp = new LoggedTunableNumber("Shooter/Kp");
+  private static final LoggedTunableNumber ki = new LoggedTunableNumber("Shooter/Ki");
+  private static final LoggedTunableNumber kd = new LoggedTunableNumber("Shooter/Kd");
+  private static final LoggedTunableNumber ks = new LoggedTunableNumber("Shooter/Ks");
+  private static final LoggedTunableNumber kv = new LoggedTunableNumber("Shooter/Kv");
+  private static final LoggedTunableNumber ka = new LoggedTunableNumber("Shooter/Ka");
   private static final List<LoggedTunableNumber> pidGains = new ArrayList<>();
 
   // Control requests
@@ -99,6 +100,7 @@ public class Shooter extends SubsystemBase {
 
   @Override
   public void periodic() {
+    // Update PID values if they've changed
     for (LoggedTunableNumber gain : pidGains) {
       if (gain.hasChanged(hashCode())) {
         // Send new PID gains to talon
@@ -115,6 +117,16 @@ public class Shooter extends SubsystemBase {
         break;
       }
     }
+
+    // Log out velocity and target to Glass so we can measure performance
+    double shooterLeftTarget = shooterLeft.getClosedLoopReference().getValueAsDouble();
+    double shooterLeftActual = shooterLeft.getVelocity().getValueAsDouble();
+    double shooterRightTarget = shooterRight.getClosedLoopReference().getValueAsDouble();
+    double shooterRightActual = shooterRight.getVelocity().getValueAsDouble();
+    SmartDashboard.putNumber("Shooter/Shooter Left Target (RPM)", shooterLeftTarget * 60.0);
+    SmartDashboard.putNumber("Shooter/Shooter Left (RPM)", shooterLeftActual * 60.0);
+    SmartDashboard.putNumber("Shooter/Shooter Right Target (RPM)", shooterRightTarget * 60.0);
+    SmartDashboard.putNumber("Shooter/Shooter Right (RPM)", shooterRightActual * 60.0);
   }
 
   public void setShooterRps(double shooterLeftRps, double shooterRightRps) {
