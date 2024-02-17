@@ -6,19 +6,12 @@ package org.surpurdueper.robot;
 
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import org.frc3005.lib.vendor.motorcontroller.SparkMax;
-import org.surpurdueper.robot.subsystems.Amp;
-import org.surpurdueper.robot.subsystems.Climber;
-import org.surpurdueper.robot.subsystems.Elevator;
-import org.surpurdueper.robot.subsystems.Intake;
-import org.surpurdueper.robot.subsystems.Shooter;
-import org.surpurdueper.robot.subsystems.ShooterTilt;
 import org.surpurdueper.robot.subsystems.drive.CommandSwerveDrivetrain;
 import org.surpurdueper.robot.subsystems.drive.Telemetry;
 import org.surpurdueper.robot.subsystems.drive.generated.TunerConstants;
@@ -30,12 +23,12 @@ import org.surpurdueper.robot.subsystems.drive.generated.TunerConstants;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
-  private final Intake intake = new Intake();
-  private final Amp amp = new Amp();
-  private final Climber climber = new Climber();
-  private final Elevator elevator = new Elevator();
-  private final Shooter shooter = new Shooter();
-  private final ShooterTilt shooterTilt = new ShooterTilt();
+  //   private final Intake intake = new Intake();
+  //   private final Amp amp = new Amp();
+  //   private final Climber climber = new Climber();
+  //   private final Elevator elevator = new Elevator();
+  //   private final Shooter shooter = new Shooter();
+  //   private final ShooterTilt shooterTilt = new ShooterTilt();
 
   /* Setting up bindings for necessary control of the swerve drive platform */
   private double MaxSpeed =
@@ -90,14 +83,14 @@ public class RobotContainer {
                 )
             .ignoringDisable(true));
 
-    joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
-    joystick
-        .b()
-        .whileTrue(
-            drivetrain.applyRequest(
-                () ->
-                    point.withModuleDirection(
-                        new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))));
+    // joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
+    // joystick
+    //     .b()
+    //     .whileTrue(
+    //         drivetrain.applyRequest(
+    //             () ->
+    //                 point.withModuleDirection(
+    //                     new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))));
 
     // reset the field-centric heading on left bumper press
     joystick.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldRelative()));
