@@ -12,6 +12,8 @@ import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.CoastOut;
+import com.ctre.phoenix6.controls.ControlRequest;
+import com.ctre.phoenix6.controls.NeutralOut;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -49,7 +51,7 @@ public class Shooter extends SubsystemBase {
   private static final List<LoggedTunableNumber> pidGains = new ArrayList<>();
 
   // Control requests
-  private final CoastOut stopRequest = new CoastOut();
+  private final ControlRequest stopRequest = new NeutralOut();
   private final VoltageOut voltagRequest = new VoltageOut(0);
   private final VelocityTorqueCurrentFOC velocityRequest = new VelocityTorqueCurrentFOC(0);
 
@@ -83,9 +85,9 @@ public class Shooter extends SubsystemBase {
 
   /** Creates a new shooter. */
   public Shooter() {
-    shooterRight = new TalonFX(CANIDs.kShooterRightMotor);
-    shooterLeft = new TalonFX(CANIDs.kShooterLeftMotor);
-    setupSysIdTiming(shooterRight); // Comment this out if not running sysid routines
+    shooterRight = new TalonFX(CANIDs.kShooterRightMotor, "canivore");
+    shooterLeft = new TalonFX(CANIDs.kShooterLeftMotor, "canivore");
+    // setupSysIdTiming(shooterRight); // Comment this out if not running sysid routines
     configureTalonFx();
   }
 
@@ -143,6 +145,16 @@ public class Shooter extends SubsystemBase {
             < ShooterConstants.kShooterRpsTolerance;
   }
 
+  public void setVoltage(double leftVoltage, double rightVoltage) {
+    shooterLeft.setControl(voltagRequest.withOutput(leftVoltage));
+    shooterRight.setControl(voltagRequest.withOutput(rightVoltage));
+  }
+
+  public void stop() {
+    shooterLeft.setControl(stopRequest);
+    shooterRight.setControl(stopRequest);
+  }
+
   public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
     return sysIdRoutine.quasistatic(direction);
   }
@@ -155,7 +167,7 @@ public class Shooter extends SubsystemBase {
     MotorOutputConfigs motorOutputConfigs =
         new MotorOutputConfigs()
             .withNeutralMode(NeutralModeValue.Coast)
-            .withInverted(InvertedValue.Clockwise_Positive);
+            .withInverted(InvertedValue.CounterClockwise_Positive);
     CurrentLimitsConfigs currentConfig =
         new CurrentLimitsConfigs()
             .withStatorCurrentLimit(ShooterConstants.kStatorCurrentLimit)
@@ -180,6 +192,6 @@ public class Shooter extends SubsystemBase {
         .getConfigurator()
         .apply(
             config.withMotorOutput(
-                motorOutputConfigs.withInverted(InvertedValue.CounterClockwise_Positive)));
+                motorOutputConfigs.withInverted(InvertedValue.Clockwise_Positive)));
   }
 }

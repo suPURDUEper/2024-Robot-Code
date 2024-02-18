@@ -5,7 +5,10 @@ import static org.surpurdueper.robot.Constants.DIOPorts;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxExtensions;
+import com.revrobotics.CANSparkBase.IdleMode;
+
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -26,15 +29,22 @@ public class Intake extends SubsystemBase {
     feederMotor = new SparkMax(CANIDs.kFeederMotor).withInitializer(Intake::sparkMaxInitializer);
     feederBreakBeam = new DigitalInput(DIOPorts.kFeederBreakBeam);
   }
+  
+  
+  @Override
+  public void periodic() {
+    SmartDashboard.putBoolean("ShooterTilt/BreakBeam", feederBreakBeam.get());
+  }
+
 
   public void runForward() {
-    intakeMotor.setVoltage(12);
+    intakeMotor.setVoltage(6);
     feederMotor.setVoltage(12);
   }
 
   public void runBackwards() {
-    intakeMotor.setVoltage(-12);
-    feederMotor.setVoltage(-12);
+    intakeMotor.setVoltage(-3);
+    feederMotor.setVoltage(-3);
   }
 
   public void stop() {
@@ -58,7 +68,8 @@ public class Intake extends SubsystemBase {
     int errors = 0;
     errors += SparkMaxUtils.check(SparkMaxUtils.setDefaultsForNeo(sparkMax));
     errors += SparkMaxUtils.check(CANSparkMaxExtensions.setInverted(sparkMax, false));
-    SparkMax.setFrameStrategy(sparkMax, FrameStrategy.kNoFeedback);
+    errors += SparkMaxUtils.check(sparkMax.setIdleMode(IdleMode.kBrake));
+    // SparkMax.setFrameStrategy(sparkMax, FrameStrategy.kNoFeedback);
     return errors == 0;
   }
 }

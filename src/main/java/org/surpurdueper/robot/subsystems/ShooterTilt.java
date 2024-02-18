@@ -69,7 +69,7 @@ public class ShooterTilt extends SubsystemBase {
   }
 
   public ShooterTilt() {
-    tiltMotor = new TalonFX(CANIDs.kTiltMotor);
+    tiltMotor = new TalonFX(CANIDs.kTiltMotor, "canivore");
     configureTalonFx();
     tiltAbsoluteEncoder = new DutyCycleEncoder(DIOPorts.kTiltEncoder);
     // tilt returns rotations :)

@@ -21,22 +21,22 @@ public final class Constants {
 
   // All canID constants go in here
   public static class CANIDs {
-    public static final int kIntakeMotor = 0;
-    public static final int kFeederMotor = 0;
+    public static final int kIntakeMotor = 10;
+    public static final int kFeederMotor = 11;
     public static final int kAmpMotor = 0;
     public static final int kClimberMotor = 0;
     public static final int kClimber2Motor = 0;
     public static final int kElevatorMotor = 0;
-    public static final int kTiltMotor = 0;
-    public static final int kShooterRightMotor = 0;
-    public static final int kShooterLeftMotor = 0;
+    public static final int kTiltMotor = 14;
+    public static final int kShooterRightMotor = 13;
+    public static final int kShooterLeftMotor = 12;
   }
 
   // All DIOport constants go in here
   public static class DIOPorts {
-    public static final int kFeederBreakBeam = 0;
-    public static final int kAmpBreakBeam = 0;
-    public static final int kTiltEncoder = 0;
+    public static final int kFeederBreakBeam = 8;
+    public static final int kAmpBreakBeam = 1;
+    public static final int kTiltEncoder = 9;
   }
 
   public static class AmpConstants {
@@ -97,7 +97,7 @@ public final class Constants {
 
   public static class ShooterConstants {
     public static final double kGearRatio = 1.0 / 2.0;
-    public static final int kStatorCurrentLimit = 0;
+    public static final int kStatorCurrentLimit = 60;
 
     public static final double kp = 0; // amps applied per rotation of error
     public static final double ki = 0; // leave at 0
@@ -106,7 +106,7 @@ public final class Constants {
     public static final double kv = 0; // Probably leave at 0
     public static final double ka = 0; // Amps required to accelerate arm 1 rot/s^2
     public static final double kg = 0; // Amps required to hold arm level at 0 degrees
-    public static final double kShooterRpsTolerance = 0;
+    public static final double kShooterRpsTolerance = 10;
   }
 
   public static class LookupTables {

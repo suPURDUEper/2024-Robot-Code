@@ -12,6 +12,9 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import org.frc3005.lib.vendor.motorcontroller.SparkMax;
+import org.surpurdueper.robot.subsystems.Intake;
+import org.surpurdueper.robot.subsystems.Shooter;
+import org.surpurdueper.robot.subsystems.ShooterTilt;
 import org.surpurdueper.robot.subsystems.drive.CommandSwerveDrivetrain;
 import org.surpurdueper.robot.subsystems.drive.Telemetry;
 import org.surpurdueper.robot.subsystems.drive.generated.TunerConstants;
@@ -23,12 +26,12 @@ import org.surpurdueper.robot.subsystems.drive.generated.TunerConstants;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
-  //   private final Intake intake = new Intake();
+  private final Intake intake = new Intake();
   //   private final Amp amp = new Amp();
   //   private final Climber climber = new Climber();
   //   private final Elevator elevator = new Elevator();
-  //   private final Shooter shooter = new Shooter();
-  //   private final ShooterTilt shooterTilt = new ShooterTilt();
+  private final Shooter shooter = new Shooter();
+  private final ShooterTilt shooterTilt = new ShooterTilt();
 
   /* Setting up bindings for necessary control of the swerve drive platform */
   private double MaxSpeed =
@@ -45,9 +48,6 @@ public class RobotContainer {
           .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // I want field-centric
   // driving in open loop
   private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
-  private final SwerveRequest.RobotCentric forwardStraight =
-      new SwerveRequest.RobotCentric().withDriveRequestType(DriveRequestType.OpenLoopVoltage);
-  private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
   private final Telemetry logger = new Telemetry(MaxSpeed);
 
@@ -84,35 +84,25 @@ public class RobotContainer {
             .ignoringDisable(true));
 
     // joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
-    // joystick
-    //     .b()
-    //     .whileTrue(
-    //         drivetrain.applyRequest(
-    //             () ->
-    //                 point.withModuleDirection(
-    //                     new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))));
 
     // reset the field-centric heading on left bumper press
     joystick.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldRelative()));
 
+    joystick.a().whileTrue(Commands.startEnd(intake::runForward, intake::stop, intake));
+    joystick.b().whileTrue(Commands.startEnd(intake::runBackwards, intake::stop, intake));
+    joystick.x().onTrue(Commands.run(() -> shooter.setVoltage(7.5, 3.75), shooter));
+    joystick.y().onTrue(Commands.run(shooter::stop, shooter));
+
     drivetrain.registerTelemetry(logger::telemeterize);
 
-    joystick
-        .pov(0)
-        .whileTrue(
-            drivetrain.applyRequest(() -> forwardStraight.withVelocityX(0.5).withVelocityY(0)));
-    joystick
-        .pov(180)
-        .whileTrue(
-            drivetrain.applyRequest(() -> forwardStraight.withVelocityX(-0.5).withVelocityY(0)));
-
-    /* Bindings for drivetrain characterization */
+    /* Bindings for shooter characterization */
     /* These bindings require multiple buttons pushed to swap between quastatic and dynamic */
     /* Back/Start select dynamic/quasistatic, Y/X select forward/reverse direction */
-    joystick.back().and(joystick.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
-    joystick.back().and(joystick.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
-    joystick.start().and(joystick.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
-    joystick.start().and(joystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
+    joystick.back().and(joystick.y()).whileTrue(shooter.sysIdDynamic(Direction.kForward));
+    joystick.back().and(joystick.x()).whileTrue(shooter.sysIdDynamic(Direction.kReverse));
+    joystick.start().and(joystick.y()).whileTrue(shooter.sysIdQuasistatic(Direction.kForward));
+    joystick.start().and(joystick.x()).whileTrue(shooter.sysIdQuasistatic(Direction.kReverse));
+
   }
 
   /**
