@@ -18,6 +18,9 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -70,17 +73,18 @@ public class ShooterTilt extends SubsystemBase {
 
   public ShooterTilt() {
     tiltMotor = new TalonFX(CANIDs.kTiltMotor, "canivore");
-    configureTalonFx();
     tiltAbsoluteEncoder = new DutyCycleEncoder(DIOPorts.kTiltEncoder);
-    // tilt returns rotations :)
     tiltAbsoluteEncoder.setDistancePerRotation(TiltConstants.kAbsoluteEncoderInverted ? -1 : 1);
     tiltAbsoluteEncoder.setPositionOffset(TiltConstants.kAbsoluteEncoderOffset);
-    tiltMotor.setPosition(tiltAbsoluteEncoder.getAbsolutePosition());
+    configureTalonFx();
   }
 
   @Override
   public void periodic() {
     // Update tunable numbers
+    if (Math.abs(getAbsoluteSensorAngle() - tiltMotor.getPosition().getValueAsDouble()) > 0.02) {
+      tiltMotor.setPosition(getAbsoluteSensorAngle());
+    }
     for (LoggedTunableNumber gain : pidGains) {
       if (gain.hasChanged(hashCode())) {
         // Send new PID gains to talon
@@ -106,15 +110,20 @@ public class ShooterTilt extends SubsystemBase {
     }
 
     // Log out to Glass for debugging
-    double armPositionAbs = tiltAbsoluteEncoder.getAbsolutePosition();
-    double armPositionMotor = tiltMotor.getPosition().getValueAsDouble();
+    double armPositionAbs = Units.rotationsToDegrees(getAbsoluteSensorAngle());
+    double armPositionMotor = Units.rotationsToDegrees(tiltMotor.getPosition().getValueAsDouble());
     double armPositionSetpoint = tiltMotor.getClosedLoopReference().getValueAsDouble();
     SmartDashboard.putNumber(
-        "ShooterTilt/Position (Abs)", Units.rotationsToDegrees(armPositionAbs));
+        "ShooterTilt/Position (Abs)", armPositionAbs);
     SmartDashboard.putNumber(
-        "ShooterTilt/Position (Motor)", Units.rotationsToDegrees(armPositionMotor));
+        "ShooterTilt/Position (Motor)", armPositionMotor);
     SmartDashboard.putNumber(
-        "ShooterTilt/Target Position", Units.rotationsToDegrees(armPositionSetpoint));
+        "ShooterTilt/Target Position", armPositionSetpoint);
+  }
+
+  public double getAbsoluteSensorAngle() {
+    double wrappedAngle = MathUtil.angleModulus(Units.rotationsToRadians(tiltAbsoluteEncoder.getDistance()));
+    return Units.radiansToRotations(wrappedAngle);
   }
 
   public void setVoltage(double volts) {
@@ -147,13 +156,15 @@ public class ShooterTilt extends SubsystemBase {
     MotorOutputConfigs motorOutputConfigs =
         new MotorOutputConfigs()
             .withNeutralMode(NeutralModeValue.Brake)
-            .withInverted(InvertedValue.Clockwise_Positive);
+            .withInverted(InvertedValue.CounterClockwise_Positive);
     CurrentLimitsConfigs currentConfig =
         new CurrentLimitsConfigs()
             .withStatorCurrentLimit(TiltConstants.kStatorCurrentLimit)
             .withStatorCurrentLimitEnable(true);
     FeedbackConfigs feedbackConfig =
-        new FeedbackConfigs().withSensorToMechanismRatio(TiltConstants.kGearRatio);
+        new FeedbackConfigs().withSensorToMechanismRatio(TiltConstants.kGearRatio)
+        .withFeedbackRotorOffset(getAbsoluteSensorAngle());
+
     Slot0Configs slot0config =
         new Slot0Configs()
             .withGravityType(GravityTypeValue.Arm_Cosine)
@@ -171,9 +182,9 @@ public class ShooterTilt extends SubsystemBase {
     SoftwareLimitSwitchConfigs softlimitConfig =
         new SoftwareLimitSwitchConfigs()
             .withForwardSoftLimitThreshold(TiltConstants.kForwardSoftLimit)
-            .withForwardSoftLimitEnable(false)
+            .withForwardSoftLimitEnable(true)
             .withReverseSoftLimitThreshold(TiltConstants.kReverseSoftLimit)
-            .withReverseSoftLimitEnable(false);
+            .withReverseSoftLimitEnable(true);
     tiltConfig =
         new TalonFXConfiguration()
             .withMotorOutput(motorOutputConfigs)

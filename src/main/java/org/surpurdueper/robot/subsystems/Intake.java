@@ -33,13 +33,17 @@ public class Intake extends SubsystemBase {
   
   @Override
   public void periodic() {
-    SmartDashboard.putBoolean("ShooterTilt/BreakBeam", feederBreakBeam.get());
+    SmartDashboard.putBoolean("Intake/BreakBeam", feederBreakBeam.get());
+  }
+
+  public boolean isFeederBreakBeamTriggered() {
+    return !feederBreakBeam.get();
   }
 
 
   public void runForward() {
     intakeMotor.setVoltage(6);
-    feederMotor.setVoltage(12);
+    feederMotor.setVoltage(8);
   }
 
   public void runBackwards() {
@@ -53,7 +57,7 @@ public class Intake extends SubsystemBase {
   }
 
   public Command load() {
-    return Commands.startEnd(this::runForward, this::stop, this).until(feederBreakBeam::get);
+    return Commands.startEnd(this::runForward, this::stop, this).until(this::isFeederBreakBeamTriggered);
   }
 
   public Command fire() {

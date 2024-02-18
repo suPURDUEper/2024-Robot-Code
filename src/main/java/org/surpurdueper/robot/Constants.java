@@ -72,15 +72,15 @@ public final class Constants {
   }
 
   public static class TiltConstants {
-    public static final double kPlanetaryGearRatio = (9.0 / 1.0);
+    public static final double kPlanetaryGearRatio = (25.0 / 1.0);
     public static final double kSectorGearRatio = (240.0 / 10.0);
     public static final double kGearRatio = kPlanetaryGearRatio * kSectorGearRatio;
-    public static final int kForwardSoftLimit = 0; // 79 degrees
-    public static final int kReverseSoftLimit = 0; // 22 degrees
-    public static final double kAbsoluteEncoderOffset = 0;
+    public static final double kForwardSoftLimit = Units.degreesToRotations(60); 
+    public static final double kReverseSoftLimit = Units.degreesToRotations(30);
+    public static final double kAbsoluteEncoderOffset = (0.072202 - 0.25) + 1;
     public static final double kEncoderPositionConversion = 0;
-    public static final boolean kAbsoluteEncoderInverted = true;
-    public static final int kStatorCurrentLimit = 0;
+    public static final boolean kAbsoluteEncoderInverted = false;
+    public static final int kStatorCurrentLimit = 10;
 
     public static final double kp = 0; // amps applied per rotation of error
     public static final double ki = 0; // leave at 0

@@ -6,6 +6,8 @@ package org.surpurdueper.robot;
 
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
+
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -34,11 +36,12 @@ public class RobotContainer {
   private final ShooterTilt shooterTilt = new ShooterTilt();
 
   /* Setting up bindings for necessary control of the swerve drive platform */
-  private double MaxSpeed =
-      TunerConstants.kSpeedAt12VoltsMps; // kSpeedAt12VoltsMps desired top speed
+  private double MaxSpeed = Units.feetToMeters(10); // kSpeedAt12VoltsMps desired top speed
   private double MaxAngularRate =
       1.5 * Math.PI; // 3/4 of a rotation per second max angular velocity
   private final CommandXboxController joystick = new CommandXboxController(0); // My joystick
+  private final CommandXboxController joystick2 = new CommandXboxController(1); // My joystick
+
   public final CommandSwerveDrivetrain drivetrain = TunerConstants.DriveTrain; // My drivetrain
 
   private final SwerveRequest.FieldCentric drive =
@@ -88,10 +91,24 @@ public class RobotContainer {
     // reset the field-centric heading on left bumper press
     joystick.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldRelative()));
 
-    joystick.a().whileTrue(Commands.startEnd(intake::runForward, intake::stop, intake));
+    joystick.a().whileTrue(intake.load());
     joystick.b().whileTrue(Commands.startEnd(intake::runBackwards, intake::stop, intake));
+    joystick.rightBumper().whileTrue(intake.fire());
+
+
     joystick.x().onTrue(Commands.run(() -> shooter.setVoltage(7.5, 3.75), shooter));
     joystick.y().onTrue(Commands.run(shooter::stop, shooter));
+
+    shooterTilt.setDefaultCommand(Commands.run(() -> {
+      if (joystick.povUp().getAsBoolean()) {
+        shooterTilt.setVoltage(8);
+      } else if (joystick.povDown().getAsBoolean()) {
+        shooterTilt.setVoltage(-8);
+      } else {
+        shooterTilt.stop();
+      }
+    }, shooterTilt));
+    
 
     drivetrain.registerTelemetry(logger::telemeterize);
 
