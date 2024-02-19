@@ -1,8 +1,5 @@
 package org.surpurdueper.robot.subsystems;
 
-import static org.surpurdueper.robot.Constants.CANIDs;
-import static org.surpurdueper.robot.Constants.DIOPorts;
-
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxExtensions;

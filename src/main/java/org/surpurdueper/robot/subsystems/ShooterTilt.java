@@ -4,6 +4,7 @@
 
 package org.surpurdueper.robot.subsystems;
 
+import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
@@ -20,9 +21,13 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.Voltage;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import java.util.ArrayList;
 import java.util.List;
 import org.littletonrobotics.util.LoggedTunableNumber;
@@ -52,9 +57,28 @@ public class ShooterTilt extends SubsystemBase {
 
   // Control requests
   private final StaticBrake stopRequest = new StaticBrake();
-  private final VoltageOut voltagRequest = new VoltageOut(0);
+  private final VoltageOut voltageRequest = new VoltageOut(0);
   private final MotionMagicExpoTorqueCurrentFOC torqueRequest =
       new MotionMagicExpoTorqueCurrentFOC(0, 0, 0, false, false, false);
+
+  // SysID Setup
+  private final SysIdRoutine sysIdRoutine =
+      new SysIdRoutine(
+          // Empty config defaults to 1 volt/second ramp rate and 7 volt step voltage.
+          new SysIdRoutine.Config(
+              null, null, null, state -> SignalLogger.writeString("state", state.toString())),
+          new SysIdRoutine.Mechanism(
+              // Tell SysId how to plumb the driving voltage to the motor(s).
+              (Measure<Voltage> volts) -> {
+                tiltMotor.setControl(
+                    voltageRequest.withOutput(volts.in(edu.wpi.first.units.Units.Volts)));
+              },
+              // Tell SysId how to record a frame of data for each motor on the mechanism being
+              // characterized.
+              null, // Using the CTRE SignalLogger API instead
+              // Tell SysId to make generated commands require this subsystem, suffix test state in
+              // WPILog with this subsystem's name ("shooter")
+              this));
 
   static {
     kp.initDefault(TiltConstants.kp);
@@ -80,9 +104,11 @@ public class ShooterTilt extends SubsystemBase {
   @Override
   public void periodic() {
     // Update tunable numbers
-    if (Math.abs(getAbsoluteSensorAngle() - tiltMotor.getPosition().getValueAsDouble()) > 0.02) {
+    if (Math.abs(getAbsoluteSensorAngle() - tiltMotor.getPosition().getValueAsDouble())
+        > Units.degreesToRotations(2)) {
       tiltMotor.setPosition(getAbsoluteSensorAngle());
     }
+
     for (LoggedTunableNumber gain : pidGains) {
       if (gain.hasChanged(hashCode())) {
         // Send new PID gains to talon
@@ -123,7 +149,7 @@ public class ShooterTilt extends SubsystemBase {
   }
 
   public void setVoltage(double volts) {
-    tiltMotor.setControl(voltagRequest.withOutput(volts));
+    tiltMotor.setControl(voltageRequest.withOutput(volts));
   }
 
   public void setPositionRads(double position) {
@@ -148,6 +174,14 @@ public class ShooterTilt extends SubsystemBase {
         < TiltConstants.kPositionTolerance;
   }
 
+  public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
+    return sysIdRoutine.quasistatic(direction);
+  }
+
+  public Command sysIdDynamic(SysIdRoutine.Direction direction) {
+    return sysIdRoutine.dynamic(direction);
+  }
+
   public void configureTalonFx() {
     MotorOutputConfigs motorOutputConfigs =
         new MotorOutputConfigs()
@@ -158,10 +192,7 @@ public class ShooterTilt extends SubsystemBase {
             .withStatorCurrentLimit(TiltConstants.kStatorCurrentLimit)
             .withStatorCurrentLimitEnable(true);
     FeedbackConfigs feedbackConfig =
-        new FeedbackConfigs()
-            .withSensorToMechanismRatio(TiltConstants.kGearRatio)
-            .withFeedbackRotorOffset(getAbsoluteSensorAngle());
-
+        new FeedbackConfigs().withSensorToMechanismRatio(TiltConstants.kGearRatio);
     Slot0Configs slot0config =
         new Slot0Configs()
             .withGravityType(GravityTypeValue.Arm_Cosine)
