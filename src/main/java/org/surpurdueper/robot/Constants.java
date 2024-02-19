@@ -34,7 +34,8 @@ public final class Constants {
 
   // All DIOport constants go in here
   public static class DIOPorts {
-    public static final int kFeederBreakBeam = 8;
+    public static final int kFeederBreakBeam1 = 8;
+    public static final int kFeederBreakBeam2 = 7;
     public static final int kAmpBreakBeam = 1;
     public static final int kTiltEncoder = 9;
   }
@@ -75,7 +76,7 @@ public final class Constants {
     public static final double kPlanetaryGearRatio = (25.0 / 1.0);
     public static final double kSectorGearRatio = (240.0 / 10.0);
     public static final double kGearRatio = kPlanetaryGearRatio * kSectorGearRatio;
-    public static final double kForwardSoftLimit = Units.degreesToRotations(60); 
+    public static final double kForwardSoftLimit = Units.degreesToRotations(60);
     public static final double kReverseSoftLimit = Units.degreesToRotations(30);
     public static final double kAbsoluteEncoderOffset = (0.072202 - 0.25) + 1;
     public static final double kEncoderPositionConversion = 0;

@@ -3,17 +3,15 @@ package org.surpurdueper.robot.subsystems;
 import static org.surpurdueper.robot.Constants.CANIDs;
 import static org.surpurdueper.robot.Constants.DIOPorts;
 
+import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxExtensions;
-import com.revrobotics.CANSparkBase.IdleMode;
-
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.frc3005.lib.vendor.motorcontroller.SparkMax;
-import org.frc3005.lib.vendor.motorcontroller.SparkMax.FrameStrategy;
 import org.frc3005.lib.vendor.motorcontroller.SparkMaxUtils;
 import org.surpurdueper.robot.Constants.CANIDs;
 import org.surpurdueper.robot.Constants.DIOPorts;
@@ -22,24 +20,25 @@ public class Intake extends SubsystemBase {
 
   CANSparkMax intakeMotor;
   CANSparkMax feederMotor;
-  DigitalInput feederBreakBeam;
+  DigitalInput feederBreakBeam1;
+  DigitalInput feederBreakBeam2;
 
   public Intake() {
     intakeMotor = new SparkMax(CANIDs.kIntakeMotor).withInitializer(Intake::sparkMaxInitializer);
     feederMotor = new SparkMax(CANIDs.kFeederMotor).withInitializer(Intake::sparkMaxInitializer);
-    feederBreakBeam = new DigitalInput(DIOPorts.kFeederBreakBeam);
+    feederBreakBeam1 = new DigitalInput(DIOPorts.kFeederBreakBeam1);
+    feederBreakBeam2 = new DigitalInput(DIOPorts.kFeederBreakBeam2);
   }
-  
-  
+
   @Override
   public void periodic() {
-    SmartDashboard.putBoolean("Intake/BreakBeam", feederBreakBeam.get());
+    SmartDashboard.putBoolean("Intake/BreakBeam", feederBreakBeam1.get());
+    SmartDashboard.putBoolean("Intake/BreakBeam", feederBreakBeam2.get());
   }
 
   public boolean isFeederBreakBeamTriggered() {
-    return !feederBreakBeam.get();
+    return !feederBreakBeam1.get() || !feederBreakBeam2.get();
   }
-
 
   public void runForward() {
     intakeMotor.setVoltage(6);
@@ -57,7 +56,8 @@ public class Intake extends SubsystemBase {
   }
 
   public Command load() {
-    return Commands.startEnd(this::runForward, this::stop, this).until(this::isFeederBreakBeamTriggered);
+    return Commands.startEnd(this::runForward, this::stop, this)
+        .until(this::isFeederBreakBeamTriggered);
   }
 
   public Command fire() {

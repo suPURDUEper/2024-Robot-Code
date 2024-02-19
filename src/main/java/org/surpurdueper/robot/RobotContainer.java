@@ -6,7 +6,6 @@ package org.surpurdueper.robot;
 
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
-
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -95,20 +94,21 @@ public class RobotContainer {
     joystick.b().whileTrue(Commands.startEnd(intake::runBackwards, intake::stop, intake));
     joystick.rightBumper().whileTrue(intake.fire());
 
-
     joystick.x().onTrue(Commands.run(() -> shooter.setVoltage(7.5, 3.75), shooter));
     joystick.y().onTrue(Commands.run(shooter::stop, shooter));
 
-    shooterTilt.setDefaultCommand(Commands.run(() -> {
-      if (joystick.povUp().getAsBoolean()) {
-        shooterTilt.setVoltage(8);
-      } else if (joystick.povDown().getAsBoolean()) {
-        shooterTilt.setVoltage(-8);
-      } else {
-        shooterTilt.stop();
-      }
-    }, shooterTilt));
-    
+    shooterTilt.setDefaultCommand(
+        Commands.run(
+            () -> {
+              if (joystick.povUp().getAsBoolean()) {
+                shooterTilt.setVoltage(8);
+              } else if (joystick.povDown().getAsBoolean()) {
+                shooterTilt.setVoltage(-8);
+              } else {
+                shooterTilt.stop();
+              }
+            },
+            shooterTilt));
 
     drivetrain.registerTelemetry(logger::telemeterize);
 
@@ -119,7 +119,6 @@ public class RobotContainer {
     joystick.back().and(joystick.x()).whileTrue(shooter.sysIdDynamic(Direction.kReverse));
     joystick.start().and(joystick.y()).whileTrue(shooter.sysIdQuasistatic(Direction.kForward));
     joystick.start().and(joystick.x()).whileTrue(shooter.sysIdQuasistatic(Direction.kReverse));
-
   }
 
   /**

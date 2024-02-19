@@ -18,9 +18,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -113,16 +111,14 @@ public class ShooterTilt extends SubsystemBase {
     double armPositionAbs = Units.rotationsToDegrees(getAbsoluteSensorAngle());
     double armPositionMotor = Units.rotationsToDegrees(tiltMotor.getPosition().getValueAsDouble());
     double armPositionSetpoint = tiltMotor.getClosedLoopReference().getValueAsDouble();
-    SmartDashboard.putNumber(
-        "ShooterTilt/Position (Abs)", armPositionAbs);
-    SmartDashboard.putNumber(
-        "ShooterTilt/Position (Motor)", armPositionMotor);
-    SmartDashboard.putNumber(
-        "ShooterTilt/Target Position", armPositionSetpoint);
+    SmartDashboard.putNumber("ShooterTilt/Position (Abs)", armPositionAbs);
+    SmartDashboard.putNumber("ShooterTilt/Position (Motor)", armPositionMotor);
+    SmartDashboard.putNumber("ShooterTilt/Target Position", armPositionSetpoint);
   }
 
   public double getAbsoluteSensorAngle() {
-    double wrappedAngle = MathUtil.angleModulus(Units.rotationsToRadians(tiltAbsoluteEncoder.getDistance()));
+    double wrappedAngle =
+        MathUtil.angleModulus(Units.rotationsToRadians(tiltAbsoluteEncoder.getDistance()));
     return Units.radiansToRotations(wrappedAngle);
   }
 
@@ -162,8 +158,9 @@ public class ShooterTilt extends SubsystemBase {
             .withStatorCurrentLimit(TiltConstants.kStatorCurrentLimit)
             .withStatorCurrentLimitEnable(true);
     FeedbackConfigs feedbackConfig =
-        new FeedbackConfigs().withSensorToMechanismRatio(TiltConstants.kGearRatio)
-        .withFeedbackRotorOffset(getAbsoluteSensorAngle());
+        new FeedbackConfigs()
+            .withSensorToMechanismRatio(TiltConstants.kGearRatio)
+            .withFeedbackRotorOffset(getAbsoluteSensorAngle());
 
     Slot0Configs slot0config =
         new Slot0Configs()
