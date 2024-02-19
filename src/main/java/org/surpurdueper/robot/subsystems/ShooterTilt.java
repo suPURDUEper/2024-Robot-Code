@@ -4,6 +4,9 @@
 
 package org.surpurdueper.robot.subsystems;
 
+import static edu.wpi.first.units.Units.Seconds;
+
+import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
@@ -13,7 +16,10 @@ import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.SoftwareLimitSwitchConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicExpoTorqueCurrentFOC;
+import com.ctre.phoenix6.controls.MotionMagicExpoVoltage;
+import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.StaticBrake;
+import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
@@ -22,6 +28,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.Velocity;
 import edu.wpi.first.units.Voltage;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -51,22 +58,28 @@ public class ShooterTilt extends SubsystemBase {
   private static final LoggedTunableNumber kv = new LoggedTunableNumber("ShooterTilt/Kv");
   private static final LoggedTunableNumber ka = new LoggedTunableNumber("ShooterTilt/Ka");
   private static final LoggedTunableNumber kg = new LoggedTunableNumber("ShooterTilt/Kg");
-  private static final LoggedTunableNumber profileKv = new LoggedTunableNumber("ShooterTilt/Kv");
-  private static final LoggedTunableNumber profileKa = new LoggedTunableNumber("ShooterTilt/Ka");
+  private static final LoggedTunableNumber profileKv = new LoggedTunableNumber("ShooterTilt/profileKv");
+  private static final LoggedTunableNumber profileKa = new LoggedTunableNumber("ShooterTilt/profileKa");
   private static final List<LoggedTunableNumber> pidGains = new ArrayList<>();
 
   // Control requests
   private final StaticBrake stopRequest = new StaticBrake();
   private final VoltageOut voltageRequest = new VoltageOut(0);
-  private final MotionMagicExpoTorqueCurrentFOC torqueRequest =
-      new MotionMagicExpoTorqueCurrentFOC(0, 0, 0, false, false, false);
+  private final MotionMagicExpoVoltage positionRequest =
+      new MotionMagicExpoVoltage(0);
 
+  private static final Measure<Velocity<Voltage>> sysIdRampRate =
+      edu.wpi.first.units.Units.Volts.of(1).per(Seconds.of(1));
+  private static final Measure<Voltage> sysIdStepAmps = edu.wpi.first.units.Units.Volts.of(7);
   // SysID Setup
   private final SysIdRoutine sysIdRoutine =
       new SysIdRoutine(
           // Empty config defaults to 1 volt/second ramp rate and 7 volt step voltage.
           new SysIdRoutine.Config(
-              null, null, null, state -> SignalLogger.writeString("state", state.toString())),
+              sysIdRampRate,
+              sysIdStepAmps,
+              null,
+              state -> SignalLogger.writeString("state", state.toString())),
           new SysIdRoutine.Mechanism(
               // Tell SysId how to plumb the driving voltage to the motor(s).
               (Measure<Voltage> volts) -> {
@@ -99,6 +112,7 @@ public class ShooterTilt extends SubsystemBase {
     tiltAbsoluteEncoder.setDistancePerRotation(TiltConstants.kAbsoluteEncoderInverted ? -1 : 1);
     tiltAbsoluteEncoder.setPositionOffset(TiltConstants.kAbsoluteEncoderOffset);
     configureTalonFx();
+    // setupSysIdTiming(tiltMotor);
   }
 
   @Override
@@ -136,10 +150,19 @@ public class ShooterTilt extends SubsystemBase {
     // Log out to Glass for debugging
     double armPositionAbs = Units.rotationsToDegrees(getAbsoluteSensorAngle());
     double armPositionMotor = Units.rotationsToDegrees(tiltMotor.getPosition().getValueAsDouble());
-    double armPositionSetpoint = tiltMotor.getClosedLoopReference().getValueAsDouble();
+    double armPositionSetpoint = Units.rotationsToDegrees(tiltMotor.getClosedLoopReference().getValueAsDouble());
     SmartDashboard.putNumber("ShooterTilt/Position (Abs)", armPositionAbs);
     SmartDashboard.putNumber("ShooterTilt/Position (Motor)", armPositionMotor);
     SmartDashboard.putNumber("ShooterTilt/Target Position", armPositionSetpoint);
+  }
+
+  private void setupSysIdTiming(TalonFX motorToTest) {
+    /* Speed up signals for better charaterization data */
+    BaseStatusSignal.setUpdateFrequencyForAll(
+        250, motorToTest.getPosition(), motorToTest.getVelocity(), motorToTest.getMotorVoltage());
+
+    /* Optimize out the other signals, since they're not particularly helpful for us */
+    motorToTest.optimizeBusUtilization();
   }
 
   public double getAbsoluteSensorAngle() {
@@ -162,7 +185,7 @@ public class ShooterTilt extends SubsystemBase {
 
   public void setPositionRotations(double position) {
     targetRotations = position;
-    tiltMotor.setControl(torqueRequest.withPosition(targetRotations));
+    tiltMotor.setControl(positionRequest.withPosition(targetRotations));
   }
 
   public void stop() {

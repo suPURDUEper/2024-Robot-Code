@@ -13,7 +13,7 @@ import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.ControlRequest;
 import com.ctre.phoenix6.controls.NeutralOut;
-import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
+import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -52,7 +52,7 @@ public class Shooter extends SubsystemBase {
   // Control requests
   private final ControlRequest stopRequest = new NeutralOut();
   private final VoltageOut voltagRequest = new VoltageOut(0);
-  private final VelocityTorqueCurrentFOC velocityRequest = new VelocityTorqueCurrentFOC(0);
+  private final VelocityVoltage velocityRequest = new VelocityVoltage(0);
 
   // SysID Setup
   private final SysIdRoutine sysIdRoutine =
@@ -86,7 +86,6 @@ public class Shooter extends SubsystemBase {
   public Shooter() {
     shooterRight = new TalonFX(CANIDs.kShooterRightMotor, "canivore");
     shooterLeft = new TalonFX(CANIDs.kShooterLeftMotor, "canivore");
-    // setupSysIdTiming(shooterRight); // Comment this out if not running sysid routines
     configureTalonFx();
   }
 

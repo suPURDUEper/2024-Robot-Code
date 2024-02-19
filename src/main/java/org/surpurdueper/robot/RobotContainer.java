@@ -90,35 +90,40 @@ public class RobotContainer {
     // reset the field-centric heading on left bumper press
     joystick.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldRelative()));
 
-    joystick.a().whileTrue(intake.load());
-    joystick.b().whileTrue(Commands.startEnd(intake::runBackwards, intake::stop, intake));
+    // joystick.a().whileTrue(intake.load());
+    // joystick.b().whileTrue(Commands.startEnd(intake::runBackwards, intake::stop, intake));
     joystick.rightBumper().whileTrue(intake.fire());
 
-    joystick.x().onTrue(Commands.run(() -> shooter.setVoltage(7.5, 3.75), shooter));
-    joystick.y().onTrue(Commands.run(shooter::stop, shooter));
+    // joystick.x().onTrue(Commands.run(() -> shooter.setShooterRps(6000.0/60.0, 3000.0/60.0),
+    // shooter));
+    // joystick.y().onTrue(Commands.run(shooter::stop, shooter));
 
-    shooterTilt.setDefaultCommand(
-        Commands.run(
-            () -> {
-              if (joystick.povUp().getAsBoolean()) {
-                shooterTilt.setVoltage(8);
-              } else if (joystick.povDown().getAsBoolean()) {
-                shooterTilt.setVoltage(-8);
-              } else {
-                shooterTilt.stop();
-              }
-            },
-            shooterTilt));
+    joystick.a().onTrue(Commands.run(() -> shooterTilt.setPositionDegrees(30), shooterTilt));
+    joystick.b().onTrue(Commands.run(() -> shooterTilt.setPositionDegrees(45), shooterTilt));
+    joystick.y().onTrue(Commands.run(() -> shooterTilt.setPositionDegrees(60), shooterTilt));
+
+    // shooterTilt.setDefaultCommand(
+    //     Commands.run(
+    //         () -> {
+    //           if (joystick.povUp().getAsBoolean()) {
+    //             shooterTilt.setVoltage(10);
+    //           } else if (joystick.povDown().getAsBoolean()) {
+    //             shooterTilt.setVoltage(-10);
+    //           } else {
+    //             shooterTilt.stop();
+    //           }
+    //         },
+    //         shooterTilt));
 
     drivetrain.registerTelemetry(logger::telemeterize);
 
-    /* Bindings for shooter characterization */
+    /* Bindings for characterization */
     /* These bindings require multiple buttons pushed to swap between quastatic and dynamic */
     /* Back/Start select dynamic/quasistatic, Y/X select forward/reverse direction */
-    joystick.back().and(joystick.y()).whileTrue(shooter.sysIdDynamic(Direction.kForward));
-    joystick.back().and(joystick.x()).whileTrue(shooter.sysIdDynamic(Direction.kReverse));
-    joystick.start().and(joystick.y()).whileTrue(shooter.sysIdQuasistatic(Direction.kForward));
-    joystick.start().and(joystick.x()).whileTrue(shooter.sysIdQuasistatic(Direction.kReverse));
+    joystick.back().and(joystick.y()).whileTrue(shooterTilt.sysIdDynamic(Direction.kForward));
+    joystick.back().and(joystick.x()).whileTrue(shooterTilt.sysIdDynamic(Direction.kReverse));
+    joystick.start().and(joystick.y()).whileTrue(shooterTilt.sysIdQuasistatic(Direction.kForward));
+    joystick.start().and(joystick.x()).whileTrue(shooterTilt.sysIdQuasistatic(Direction.kReverse));
   }
 
   /**

@@ -76,37 +76,36 @@ public final class Constants {
     public static final double kPlanetaryGearRatio = (25.0 / 1.0);
     public static final double kSectorGearRatio = (240.0 / 10.0);
     public static final double kGearRatio = kPlanetaryGearRatio * kSectorGearRatio;
-    public static final double kForwardSoftLimit = Units.degreesToRotations(60);
-    public static final double kReverseSoftLimit = Units.degreesToRotations(30);
+    public static final double kForwardSoftLimit = Units.degreesToRotations(78.5);
+    public static final double kReverseSoftLimit = Units.degreesToRotations(26.2);
     public static final double kAbsoluteEncoderOffset = (0.072202 - 0.25) + 1;
     public static final double kEncoderPositionConversion = 0;
     public static final boolean kAbsoluteEncoderInverted = false;
-    public static final int kStatorCurrentLimit = 10;
+    public static final int kStatorCurrentLimit = 60;
 
-    public static final double kp = 0; // amps applied per rotation of error
+    public static final double kp = 720.0; // amps applied per rotation of error
     public static final double ki = 0; // leave at 0
-    public static final double kd = 0; // amps applied per rps of error
-    public static final double ks = 0; // minimum amount of amps to move arm
-    public static final double kv = 0; // Probably leave at 0
-    public static final double ka = 0; // Amps required to accelerate arm 1 rot/s^2
-    public static final double kg = 0; // Amps required to hold arm level at 0 degrees
-    public static final double profileKv = 0; // Kv of arm brushed motor model in volts/rps
-    public static final double profileKa = 0; // Ka of arm brushed motor model in volts/(rps/s)
+    public static final double kd = 92.668; // amps applied per rps of error
+    public static final double ks = 0.29174; // minimum amount of amps to move arm
+    public static final double kv = 65.615; // Probably leave at 0
+    public static final double ka = 0.70719; // Amps required to accelerate arm 1 rot/s^2
+    public static final double kg = 0.33643; // Amps required to hold arm level at 0 degrees
+    public static final double profileKv = 80; // Kv of arm brushed motor model in volts/rps
+    public static final double profileKa = 0.70719; // Ka of arm brushed motor model in volts/(rps/s)
 
     public static final double kPositionTolerance = 0;
   }
 
   public static class ShooterConstants {
     public static final double kGearRatio = 1.0 / 2.0;
-    public static final int kStatorCurrentLimit = 60;
+    public static final int kStatorCurrentLimit = 80;
 
-    public static final double kp = 0; // amps applied per rotation of error
+    public static final double kp = 0.35; // 0.00015287; // amps applied per rotation of error
     public static final double ki = 0; // leave at 0
     public static final double kd = 0; // amps applied per rps of error
-    public static final double ks = 0; // minimum amount of amps to move arm
-    public static final double kv = 0; // Probably leave at 0
-    public static final double ka = 0; // Amps required to accelerate arm 1 rot/s^2
-    public static final double kg = 0; // Amps required to hold arm level at 0 degrees
+    public static final double ks = 0.25724; // minimum amount of amps to move arm
+    public static final double kv = 0.067409; // Probably leave at 0
+    public static final double ka = 0.022749; // Amps required to accelerate arm 1 rot/s^2
     public static final double kShooterRpsTolerance = 10;
   }
 

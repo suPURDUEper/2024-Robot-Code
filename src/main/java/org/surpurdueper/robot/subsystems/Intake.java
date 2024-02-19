@@ -29,8 +29,8 @@ public class Intake extends SubsystemBase {
 
   @Override
   public void periodic() {
-    SmartDashboard.putBoolean("Intake/BreakBeam", feederBreakBeam1.get());
-    SmartDashboard.putBoolean("Intake/BreakBeam", feederBreakBeam2.get());
+    SmartDashboard.putBoolean("Intake/BreakBeam1", feederBreakBeam1.get());
+    SmartDashboard.putBoolean("Intake/BreakBeam2", feederBreakBeam2.get());
   }
 
   public boolean isFeederBreakBeamTriggered() {

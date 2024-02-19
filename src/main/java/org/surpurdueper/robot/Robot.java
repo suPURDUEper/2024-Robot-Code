@@ -29,8 +29,7 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     // Start logging
-    SignalLogger.setPath("/media/sda1/ctre-logs/");
-    SignalLogger.start();
+    SignalLogger.enableAutoLogging(true);
 
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
@@ -57,7 +56,9 @@ public class Robot extends TimedRobot {
 
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
-  public void disabledInit() {}
+  public void disabledInit() {
+    SignalLogger.stop();
+  }
 
   @Override
   public void disabledPeriodic() {}
@@ -86,6 +87,7 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
+    SignalLogger.start();
   }
 
   /** This function is called periodically during operator control. */
