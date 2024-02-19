@@ -75,7 +75,7 @@ public final class Constants {
     public static final double kPlanetaryGearRatio = (25.0 / 1.0);
     public static final double kSectorGearRatio = (240.0 / 10.0);
     public static final double kGearRatio = kPlanetaryGearRatio * kSectorGearRatio;
-    public static final double kForwardSoftLimit = Units.degreesToRotations(60); 
+    public static final double kForwardSoftLimit = Units.degreesToRotations(60);
     public static final double kReverseSoftLimit = Units.degreesToRotations(30);
     public static final double kAbsoluteEncoderOffset = (0.072202 - 0.25) + 1;
     public static final double kEncoderPositionConversion = 0;

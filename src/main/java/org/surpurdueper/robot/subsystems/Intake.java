@@ -1,19 +1,14 @@
 package org.surpurdueper.robot.subsystems;
 
-import static org.surpurdueper.robot.Constants.CANIDs;
-import static org.surpurdueper.robot.Constants.DIOPorts;
-
+import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxExtensions;
-import com.revrobotics.CANSparkBase.IdleMode;
-
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.frc3005.lib.vendor.motorcontroller.SparkMax;
-import org.frc3005.lib.vendor.motorcontroller.SparkMax.FrameStrategy;
 import org.frc3005.lib.vendor.motorcontroller.SparkMaxUtils;
 import org.surpurdueper.robot.Constants.CANIDs;
 import org.surpurdueper.robot.Constants.DIOPorts;
@@ -29,8 +24,7 @@ public class Intake extends SubsystemBase {
     feederMotor = new SparkMax(CANIDs.kFeederMotor).withInitializer(Intake::sparkMaxInitializer);
     feederBreakBeam = new DigitalInput(DIOPorts.kFeederBreakBeam);
   }
-  
-  
+
   @Override
   public void periodic() {
     SmartDashboard.putBoolean("Intake/BreakBeam", feederBreakBeam.get());
@@ -39,7 +33,6 @@ public class Intake extends SubsystemBase {
   public boolean isFeederBreakBeamTriggered() {
     return !feederBreakBeam.get();
   }
-
 
   public void runForward() {
     intakeMotor.setVoltage(6);
@@ -57,7 +50,8 @@ public class Intake extends SubsystemBase {
   }
 
   public Command load() {
-    return Commands.startEnd(this::runForward, this::stop, this).until(this::isFeederBreakBeamTriggered);
+    return Commands.startEnd(this::runForward, this::stop, this)
+        .until(this::isFeederBreakBeamTriggered);
   }
 
   public Command fire() {
