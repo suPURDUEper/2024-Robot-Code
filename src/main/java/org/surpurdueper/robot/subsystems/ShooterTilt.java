@@ -15,11 +15,8 @@ import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.SoftwareLimitSwitchConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.MotionMagicExpoTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.MotionMagicExpoVoltage;
-import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.StaticBrake;
-import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
@@ -59,15 +56,16 @@ public class ShooterTilt extends SubsystemBase {
   private static final LoggedTunableNumber kv = new LoggedTunableNumber("ShooterTilt/Kv");
   private static final LoggedTunableNumber ka = new LoggedTunableNumber("ShooterTilt/Ka");
   private static final LoggedTunableNumber kg = new LoggedTunableNumber("ShooterTilt/Kg");
-  private static final LoggedTunableNumber profileKv = new LoggedTunableNumber("ShooterTilt/profileKv");
-  private static final LoggedTunableNumber profileKa = new LoggedTunableNumber("ShooterTilt/profileKa");
+  private static final LoggedTunableNumber profileKv =
+      new LoggedTunableNumber("ShooterTilt/profileKv");
+  private static final LoggedTunableNumber profileKa =
+      new LoggedTunableNumber("ShooterTilt/profileKa");
   private static final List<LoggedTunableNumber> pidGains = new ArrayList<>();
 
   // Control requests
   private final StaticBrake stopRequest = new StaticBrake();
   private final VoltageOut voltageRequest = new VoltageOut(0);
-  private final MotionMagicExpoVoltage positionRequest =
-      new MotionMagicExpoVoltage(0);
+  private final MotionMagicExpoVoltage positionRequest = new MotionMagicExpoVoltage(0);
 
   private static final Measure<Velocity<Voltage>> sysIdRampRate =
       edu.wpi.first.units.Units.Volts.of(1).per(Seconds.of(1));
@@ -151,7 +149,8 @@ public class ShooterTilt extends SubsystemBase {
     // Log out to Glass for debugging
     double armPositionAbs = Units.rotationsToDegrees(getAbsoluteSensorAngle());
     double armPositionMotor = Units.rotationsToDegrees(tiltMotor.getPosition().getValueAsDouble());
-    double armPositionSetpoint = Units.rotationsToDegrees(tiltMotor.getClosedLoopReference().getValueAsDouble());
+    double armPositionSetpoint =
+        Units.rotationsToDegrees(tiltMotor.getClosedLoopReference().getValueAsDouble());
     SmartDashboard.putNumber("ShooterTilt/Position (Abs)", armPositionAbs);
     SmartDashboard.putNumber("ShooterTilt/Position (Motor)", armPositionMotor);
     SmartDashboard.putNumber("ShooterTilt/Target Position", armPositionSetpoint);
@@ -200,7 +199,6 @@ public class ShooterTilt extends SubsystemBase {
 
   public Command goToPosition(double degrees) {
     return Commands.run(() -> goToPosition(degrees)).until(this::isAtPosition);
-
   }
 
   public boolean isNotAtIntakeHeight() {

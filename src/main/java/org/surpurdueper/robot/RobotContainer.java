@@ -14,7 +14,9 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import org.frc3005.lib.vendor.motorcontroller.SparkMax;
 import org.surpurdueper.robot.Constants.TiltConstants;
+import org.surpurdueper.robot.commands.AutoAim;
 import org.surpurdueper.robot.subsystems.Amp;
+import org.surpurdueper.robot.subsystems.Elevator;
 import org.surpurdueper.robot.subsystems.Intake;
 import org.surpurdueper.robot.subsystems.Shooter;
 import org.surpurdueper.robot.subsystems.ShooterTilt;
@@ -32,7 +34,7 @@ public class RobotContainer {
   private final Intake intake = new Intake();
   private final Amp amp = new Amp();
   //   private final Climber climber = new Climber();
-  //   private final Elevator elevator = new Elevator();
+  private final Elevator elevator = new Elevator();
   private final Shooter shooter = new Shooter();
   private final ShooterTilt shooterTilt = new ShooterTilt();
 
@@ -91,6 +93,16 @@ public class RobotContainer {
     // joystick.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldRelative()));
     drivetrain.registerTelemetry(logger::telemeterize);
 
+    joystick
+        .a()
+        .whileTrue(
+            new AutoAim(
+                drivetrain,
+                shooterTilt,
+                elevator,
+                () -> -joystick.getLeftY() * MaxSpeed,
+                () -> -joystick.getLeftX() * MaxSpeed));
+
     // Intake
     joystick
         .leftBumper()
@@ -110,9 +122,6 @@ public class RobotContainer {
             shooterTilt
                 .goToPosition(TiltConstants.kAmpHandOff)
                 .andThen(Commands.deadline(amp.load(), intake.feedAmp(), shooter.feedAmp())));
-    
-
-
 
     /* Bindings for characterization */
     /* These bindings require multiple buttons pushed to swap between quastatic and dynamic */

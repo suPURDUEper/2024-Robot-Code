@@ -155,7 +155,7 @@ public class Shooter extends SubsystemBase {
   }
 
   public Command feedAmp() {
-    return Commands.startEnd(() -> setVoltage(4,4), () -> stop(), this);
+    return Commands.startEnd(() -> setVoltage(4, 4), () -> stop(), this);
   }
 
   public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {

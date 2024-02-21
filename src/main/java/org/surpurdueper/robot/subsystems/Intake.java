@@ -69,7 +69,6 @@ public class Intake extends SubsystemBase {
     return Commands.startEnd(this::runBackwards, this::stop, this);
   }
 
-
   private static Boolean sparkMaxInitializer(CANSparkMax sparkMax, Boolean isInit) {
     int errors = 0;
     errors += SparkMaxUtils.check(SparkMaxUtils.setDefaultsForNeo(sparkMax));

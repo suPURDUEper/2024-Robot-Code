@@ -91,7 +91,8 @@ public final class Constants {
     public static final double ka = 0.70719; // Amps required to accelerate arm 1 rot/s^2
     public static final double kg = 0.33643; // Amps required to hold arm level at 0 degrees
     public static final double profileKv = 80; // Kv of arm brushed motor model in volts/rps
-    public static final double profileKa = 0.70719; // Ka of arm brushed motor model in volts/(rps/s)
+    public static final double profileKa =
+        0.70719; // Ka of arm brushed motor model in volts/(rps/s)
 
     public static final double kPositionTolerance = 0;
     public static final double kPodiumShot = 0.0;
