@@ -23,6 +23,7 @@ import edu.wpi.first.units.Units;
 import edu.wpi.first.units.Voltage;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import java.util.ArrayList;
@@ -151,6 +152,10 @@ public class Shooter extends SubsystemBase {
   public void stop() {
     shooterLeft.setControl(stopRequest);
     shooterRight.setControl(stopRequest);
+  }
+
+  public Command feedAmp() {
+    return Commands.startEnd(() -> setVoltage(4,4), () -> stop(), this);
   }
 
   public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {

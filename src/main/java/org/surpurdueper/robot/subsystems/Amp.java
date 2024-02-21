@@ -39,7 +39,7 @@ public class Amp extends SubsystemBase {
             () -> ampMotor.setControl(voltageRequest.withOutput(AmpConstants.kLoadVoltage)),
             () -> ampMotor.setControl(stopRequest),
             this)
-        .until(ampBreakBeam::get);
+        .until(this::isAmpLoaded);
   }
 
   public Command score() {
@@ -48,6 +48,10 @@ public class Amp extends SubsystemBase {
             () -> ampMotor.setControl(coastRequest),
             this)
         .withTimeout(0);
+  }
+
+  public boolean isAmpLoaded() {
+    return !ampBreakBeam.get();
   }
 
   public void configureTalonFx(TalonFX motor) {

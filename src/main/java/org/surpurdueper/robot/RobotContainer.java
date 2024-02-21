@@ -13,6 +13,8 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import org.frc3005.lib.vendor.motorcontroller.SparkMax;
+import org.surpurdueper.robot.Constants.TiltConstants;
+import org.surpurdueper.robot.subsystems.Amp;
 import org.surpurdueper.robot.subsystems.Intake;
 import org.surpurdueper.robot.subsystems.Shooter;
 import org.surpurdueper.robot.subsystems.ShooterTilt;
@@ -28,7 +30,7 @@ import org.surpurdueper.robot.subsystems.drive.generated.TunerConstants;
  */
 public class RobotContainer {
   private final Intake intake = new Intake();
-  //   private final Amp amp = new Amp();
+  private final Amp amp = new Amp();
   //   private final Climber climber = new Climber();
   //   private final Elevator elevator = new Elevator();
   private final Shooter shooter = new Shooter();
@@ -70,6 +72,8 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
+
+    // Drive
     drivetrain.setDefaultCommand( // Drivetrain will execute this command periodically
         drivetrain
             .applyRequest(
@@ -84,38 +88,31 @@ public class RobotContainer {
                                 * MaxAngularRate) // Drive counterclockwise with negative X (left)
                 )
             .ignoringDisable(true));
-
-    // joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
-
-    // reset the field-centric heading on left bumper press
-    joystick.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldRelative()));
-
-    // joystick.a().whileTrue(intake.load());
-    // joystick.b().whileTrue(Commands.startEnd(intake::runBackwards, intake::stop, intake));
-    joystick.rightBumper().whileTrue(intake.fire());
-
-    // joystick.x().onTrue(Commands.run(() -> shooter.setShooterRps(6000.0/60.0, 3000.0/60.0),
-    // shooter));
-    // joystick.y().onTrue(Commands.run(shooter::stop, shooter));
-
-    joystick.a().onTrue(Commands.run(() -> shooterTilt.setPositionDegrees(30), shooterTilt));
-    joystick.b().onTrue(Commands.run(() -> shooterTilt.setPositionDegrees(45), shooterTilt));
-    joystick.y().onTrue(Commands.run(() -> shooterTilt.setPositionDegrees(60), shooterTilt));
-
-    // shooterTilt.setDefaultCommand(
-    //     Commands.run(
-    //         () -> {
-    //           if (joystick.povUp().getAsBoolean()) {
-    //             shooterTilt.setVoltage(10);
-    //           } else if (joystick.povDown().getAsBoolean()) {
-    //             shooterTilt.setVoltage(-10);
-    //           } else {
-    //             shooterTilt.stop();
-    //           }
-    //         },
-    //         shooterTilt));
-
+    // joystick.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldRelative()));
     drivetrain.registerTelemetry(logger::telemeterize);
+
+    // Intake
+    joystick
+        .leftBumper()
+        .onTrue(
+            shooterTilt
+                .goToPosition(TiltConstants.kIntakeAngle)
+                .onlyIf(shooterTilt::isNotAtIntakeHeight)
+                .andThen(intake.load()));
+
+    // Score
+    joystick.rightBumper().onTrue(Commands.either(amp.score(), intake.fire(), amp::isAmpLoaded));
+
+    // Load Amp
+    joystick
+        .rightTrigger()
+        .onTrue(
+            shooterTilt
+                .goToPosition(TiltConstants.kAmpHandOff)
+                .andThen(Commands.deadline(amp.load(), intake.feedAmp(), shooter.feedAmp())));
+    
+
+
 
     /* Bindings for characterization */
     /* These bindings require multiple buttons pushed to swap between quastatic and dynamic */

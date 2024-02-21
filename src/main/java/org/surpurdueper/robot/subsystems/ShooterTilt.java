@@ -33,6 +33,7 @@ import edu.wpi.first.units.Voltage;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import java.util.ArrayList;
@@ -195,6 +196,15 @@ public class ShooterTilt extends SubsystemBase {
   public boolean isAtPosition() {
     return Math.abs(targetRotations - tiltAbsoluteEncoder.getAbsolutePosition())
         < TiltConstants.kPositionTolerance;
+  }
+
+  public Command goToPosition(double degrees) {
+    return Commands.run(() -> goToPosition(degrees)).until(this::isAtPosition);
+
+  }
+
+  public boolean isNotAtIntakeHeight() {
+    return TiltConstants.kIntakeAngle < tiltMotor.getPosition().getValueAsDouble();
   }
 
   public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {

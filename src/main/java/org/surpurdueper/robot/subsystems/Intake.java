@@ -61,9 +61,14 @@ public class Intake extends SubsystemBase {
     return Commands.startEnd(() -> feederMotor.setVoltage(12), feederMotor::stopMotor, this);
   }
 
+  public Command feedAmp() {
+    return Commands.startEnd(() -> feederMotor.setVoltage(4), feederMotor::stopMotor, this);
+  }
+
   public Command purge() {
     return Commands.startEnd(this::runBackwards, this::stop, this);
   }
+
 
   private static Boolean sparkMaxInitializer(CANSparkMax sparkMax, Boolean isInit) {
     int errors = 0;
