@@ -14,6 +14,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -23,15 +24,21 @@ import org.surpurdueper.robot.Constants.DIOPorts;
 
 public class Amp extends SubsystemBase {
 
-  private TalonFX ampMotor = new TalonFX(CANIDs.kIntakeMotor);
-  private DigitalInput ampBreakBeam = new DigitalInput(DIOPorts.kAmpBreakBeam);
+  private TalonFX ampMotor;
+  private DigitalInput ampBreakBeam;
   private VoltageOut voltageRequest = new VoltageOut(0);
   private StaticBrake stopRequest = new StaticBrake();
   private CoastOut coastRequest = new CoastOut();
 
   public Amp() {
-    ampMotor = new TalonFX(CANIDs.kIntakeMotor);
+    ampMotor = new TalonFX(CANIDs.kAmpMotor);
     ampBreakBeam = new DigitalInput(DIOPorts.kAmpBreakBeam);
+  }
+
+  @Override
+  public void periodic() {
+    // This method will be called once per scheduler run
+    SmartDashboard.putBoolean("Intake/BreakBeam", ampBreakBeam.get());
   }
 
   public Command load() {

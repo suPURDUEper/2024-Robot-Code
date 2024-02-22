@@ -23,10 +23,10 @@ public final class Constants {
   public static class CANIDs {
     public static final int kIntakeMotor = 10;
     public static final int kFeederMotor = 11;
-    public static final int kAmpMotor = 0;
-    public static final int kClimberMotor = 0;
-    public static final int kClimber2Motor = 0;
-    public static final int kElevatorMotor = 0;
+    public static final int kAmpMotor = 15;
+    public static final int kClimberMotor = 17;
+    public static final int kClimber2Motor = 18;
+    public static final int kElevatorMotor = 16;
     public static final int kTiltMotor = 14;
     public static final int kShooterRightMotor = 13;
     public static final int kShooterLeftMotor = 12;
@@ -36,7 +36,7 @@ public final class Constants {
   public static class DIOPorts {
     public static final int kFeederBreakBeam1 = 8;
     public static final int kFeederBreakBeam2 = 7;
-    public static final int kAmpBreakBeam = 1;
+    public static final int kAmpBreakBeam = 6;
     public static final int kTiltEncoder = 9;
   }
 
@@ -54,14 +54,21 @@ public final class Constants {
     public static final double kMaxTravelMeters = Units.inchesToMeters(21);
     public static final double kGearRatio = 9.0 / 1.0;
     public static final double kSprocketPitchDiameter = Units.inchesToMeters(1.751);
-    public static final double kMetersPerRotation = kGearRatio * kSprocketPitchDiameter * Math.PI;
-    public static final float kForwardSoftLimit = (float) Units.inchesToMeters(21);
+    public static final double kMetersPerRotation = kGearRatio / (kSprocketPitchDiameter * Math.PI);
+    public static final float kForwardSoftLimit = (float) Units.inchesToMeters(20.75);
     public static final float kReverseSoftLimit = 0;
 
-    // Feedforward gains estimated from recalc
-    public static final double kg = 0.25; // volts
-    public static final double kv = 7.63; // V*s/m
+    // Feedforward gains from sysId
+    public static final double kg = 0.31678; // volts
+    public static final double kv = 8.0; // V*s/m
     public static final double ka = 0.03; // V*s^2/m
+    public static final double kPositionTolerance = Units.inchesToMeters(0.1);
+    public static final double kStatorCurrentLimit = 40;
+    public static final double kp = 12.762;
+    public static final double ki = 0;
+    public static final double kd = 0;
+    public static final double profileKv = 10.0;
+    public static final double profileKa = 1.0;
   }
 
   public static class ClimberConstants {

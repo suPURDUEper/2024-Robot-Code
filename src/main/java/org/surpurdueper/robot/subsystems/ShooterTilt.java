@@ -198,7 +198,7 @@ public class ShooterTilt extends SubsystemBase {
   }
 
   public Command goToPosition(double degrees) {
-    return Commands.run(() -> goToPosition(degrees)).until(this::isAtPosition);
+    return Commands.run(() -> setPositionDegrees(degrees)).until(this::isAtPosition);
   }
 
   public boolean isNotAtIntakeHeight() {

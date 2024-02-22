@@ -1,21 +1,22 @@
 {
   "NetworkTables": {
     "transitory": {
-      "SmartDashboard": {
-        "Intake": {
+      "LiveWindow": {
+        ".status": {
           "open": true
-        },
-        "ShooterTilt": {
+        }
+      },
+      "SmartDashboard": {
+        "Elevator": {
           "open": true
         },
         "TunableNumbers": {
           "Shooter": {
-            "open": true
+            "open": false
           },
           "ShooterTilt": {
-            "open": true
-          },
-          "open": true
+            "open": false
+          }
         },
         "open": true
       }
@@ -30,14 +31,14 @@
     }
   },
   "NetworkTables Info": {
-    "Clients": {
+    "Connections": {
       "open": true
     },
     "visible": true
   },
   "NetworkTables Settings": {
     "mode": "Client (NT4)",
-    "serverTeam": "10.74.57.2"
+    "serverTeam": "7457"
   },
   "Plots": {
     "Plot <0>": {
@@ -58,7 +59,7 @@
                 0.6901960968971252,
                 1.0
               ],
-              "id": "NT:/SmartDashboard/ShooterTilt/Position (Abs)"
+              "id": "NT:/SmartDashboard/Elevator/Position (Motor)"
             },
             {
               "color": [
@@ -67,124 +68,7 @@
                 0.32156863808631897,
                 1.0
               ],
-              "id": "NT:/SmartDashboard/ShooterTilt/Position (Motor)"
-            }
-          ]
-        }
-      ],
-      "window": {
-        "visible": false
-      }
-    },
-    "Plot <1>": {
-      "plots": [
-        {
-          "backgroundColor": [
-            0.0,
-            0.0,
-            0.0,
-            0.8500000238418579
-          ],
-          "height": 389,
-          "series": [
-            {
-              "color": [
-                0.2980392277240753,
-                0.44705885648727417,
-                0.6901960968971252,
-                1.0
-              ],
-              "id": "NT:/SmartDashboard/Shooter/Shooter Left (RPM)"
-            },
-            {
-              "color": [
-                0.8666667342185974,
-                0.5176470875740051,
-                0.32156863808631897,
-                1.0
-              ],
-              "id": "NT:/SmartDashboard/Shooter/Shooter Left Target (RPM)"
-            },
-            {
-              "color": [
-                0.3333333432674408,
-                0.658823549747467,
-                0.4078431725502014,
-                1.0
-              ],
-              "id": "NT:/SmartDashboard/ShooterTilt/Position (Abs)"
-            }
-          ]
-        }
-      ],
-      "window": {
-        "visible": false
-      }
-    },
-    "Plot <2>": {
-      "plots": [
-        {
-          "backgroundColor": [
-            0.0,
-            0.0,
-            0.0,
-            0.8500000238418579
-          ],
-          "height": 338,
-          "series": [
-            {
-              "color": [
-                0.2980392277240753,
-                0.44705885648727417,
-                0.6901960968971252,
-                1.0
-              ],
-              "id": "NT:/SmartDashboard/ShooterTilt/Target Position"
-            },
-            {
-              "color": [
-                0.8666667342185974,
-                0.5176470875740051,
-                0.32156863808631897,
-                1.0
-              ],
-              "id": "NT:/SmartDashboard/ShooterTilt/Position (Motor)"
-            }
-          ]
-        }
-      ],
-      "window": {
-        "visible": false
-      }
-    },
-    "Plot <3>": {
-      "plots": [
-        {
-          "backgroundColor": [
-            0.0,
-            0.0,
-            0.0,
-            0.8500000238418579
-          ],
-          "height": 338,
-          "series": [
-            {
-              "color": [
-                0.2980392277240753,
-                0.44705885648727417,
-                0.6901960968971252,
-                1.0
-              ],
-              "id": "NT:/SmartDashboard/ShooterTilt/Position (Motor)"
-            },
-            {
-              "color": [
-                0.8666667342185974,
-                0.5176470875740051,
-                0.32156863808631897,
-                1.0
-              ],
-              "id": "NT:/SmartDashboard/ShooterTilt/Target Position"
+              "id": "NT:/SmartDashboard/Elevator/Target Position"
             }
           ]
         }

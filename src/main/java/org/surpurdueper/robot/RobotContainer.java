@@ -123,13 +123,20 @@ public class RobotContainer {
                 .goToPosition(TiltConstants.kAmpHandOff)
                 .andThen(Commands.deadline(amp.load(), intake.feedAmp(), shooter.feedAmp())));
 
+    elevator.setDefaultCommand(
+        Commands.run(() -> elevator.setVoltage(8 * applyDeadband(joystick2.getRightY())), elevator));
+
+    joystick2.a().whileTrue(elevator.goToPosition(Units.inchesToMeters(0)));
+    joystick2.b().whileTrue(elevator.goToPosition(Units.inchesToMeters(7)));
+    joystick2.x().whileTrue(elevator.goToPosition(Units.inchesToMeters(14)));
+    joystick2.y().whileTrue(elevator.goToPosition(Units.inchesToMeters(20)));
     /* Bindings for characterization */
     /* These bindings require multiple buttons pushed to swap between quastatic and dynamic */
     /* Back/Start select dynamic/quasistatic, Y/X select forward/reverse direction */
-    joystick.back().and(joystick.y()).whileTrue(shooterTilt.sysIdDynamic(Direction.kForward));
-    joystick.back().and(joystick.x()).whileTrue(shooterTilt.sysIdDynamic(Direction.kReverse));
-    joystick.start().and(joystick.y()).whileTrue(shooterTilt.sysIdQuasistatic(Direction.kForward));
-    joystick.start().and(joystick.x()).whileTrue(shooterTilt.sysIdQuasistatic(Direction.kReverse));
+    joystick2.back().and(joystick2.y()).whileTrue(elevator.sysIdDynamic(Direction.kForward));
+    joystick2.back().and(joystick2.x()).whileTrue(elevator.sysIdDynamic(Direction.kReverse));
+    joystick2.start().and(joystick2.y()).whileTrue(elevator.sysIdQuasistatic(Direction.kForward));
+    joystick2.start().and(joystick2.x()).whileTrue(elevator.sysIdQuasistatic(Direction.kReverse));
   }
 
   /**
@@ -139,5 +146,13 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     return Commands.none();
+  }
+
+  public double applyDeadband(double value) {
+    double deadband = 0.1;
+    if (Math.abs(value) < deadband) {
+      return 0.0;
+    }
+    return value;
   }
 }
