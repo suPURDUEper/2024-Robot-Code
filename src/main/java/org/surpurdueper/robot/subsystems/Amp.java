@@ -53,8 +53,7 @@ public class Amp extends SubsystemBase {
     return Commands.startEnd(
             () -> ampMotor.setControl(voltageRequest.withOutput(AmpConstants.kScoreVoltage)),
             () -> ampMotor.setControl(coastRequest),
-            this)
-        .withTimeout(1);
+            this);
   }
 
   public boolean isAmpLoaded() {

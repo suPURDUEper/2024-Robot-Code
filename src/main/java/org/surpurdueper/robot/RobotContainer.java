@@ -113,7 +113,7 @@ public class RobotContainer {
                 .andThen(intake.load()));
 
     // Score
-    joystick.rightBumper().onTrue(Commands.either(amp.score(), intake.fire(), amp::isAmpLoaded));
+    joystick.rightBumper().whileTrue(Commands.either(amp.score(), intake.fire(), amp::isAmpLoaded));
 
     // Load Amp
     joystick
