@@ -31,14 +31,14 @@ public class Amp extends SubsystemBase {
   private CoastOut coastRequest = new CoastOut();
 
   public Amp() {
-    ampMotor = new TalonFX(CANIDs.kAmpMotor);
+    ampMotor = new TalonFX(CANIDs.kAmpMotor, "canivore");
     ampBreakBeam = new DigitalInput(DIOPorts.kAmpBreakBeam);
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putBoolean("Intake/BreakBeam", ampBreakBeam.get());
+    SmartDashboard.putBoolean("Amp/BreakBeam", ampBreakBeam.get());
   }
 
   public Command load() {
@@ -54,7 +54,7 @@ public class Amp extends SubsystemBase {
             () -> ampMotor.setControl(voltageRequest.withOutput(AmpConstants.kScoreVoltage)),
             () -> ampMotor.setControl(coastRequest),
             this)
-        .withTimeout(0);
+        .withTimeout(1);
   }
 
   public boolean isAmpLoaded() {
@@ -69,11 +69,11 @@ public class Amp extends SubsystemBase {
     CurrentLimitsConfigs currentConfig =
         new CurrentLimitsConfigs()
             .withStatorCurrentLimit(AmpConstants.kStatorCurrentLimit)
-            .withStatorCurrentLimitEnable(true)
+            .withStatorCurrentLimitEnable(false)
             .withSupplyCurrentLimit(AmpConstants.kSupplyCurrentLimit)
             .withSupplyCurrentThreshold(AmpConstants.kSupplyCurrentLimitThreshold)
             .withSupplyTimeThreshold(AmpConstants.kSupplyTimeThreshold)
-            .withSupplyCurrentLimitEnable(true);
+            .withSupplyCurrentLimitEnable(false);
     motor
         .getConfigurator()
         .apply(

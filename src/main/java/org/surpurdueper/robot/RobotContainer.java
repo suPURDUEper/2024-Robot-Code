@@ -123,13 +123,12 @@ public class RobotContainer {
                 .goToPosition(TiltConstants.kAmpHandOff)
                 .andThen(Commands.deadline(amp.load(), intake.feedAmp(), shooter.feedAmp())));
 
-    elevator.setDefaultCommand(
-        Commands.run(() -> elevator.setVoltage(8 * applyDeadband(joystick2.getRightY())), elevator));
+    shooterTilt.setDefaultCommand(
+        Commands.run(() -> shooterTilt.setVoltage(8 * applyDeadband(joystick2.getRightY())), shooterTilt));
 
-    joystick2.a().whileTrue(elevator.goToPosition(Units.inchesToMeters(0)));
-    joystick2.b().whileTrue(elevator.goToPosition(Units.inchesToMeters(7)));
-    joystick2.x().whileTrue(elevator.goToPosition(Units.inchesToMeters(14)));
-    joystick2.y().whileTrue(elevator.goToPosition(Units.inchesToMeters(20)));
+    joystick2.a().onTrue(intake.load());
+    joystick2.b().whileTrue(intake.purge());
+    
     /* Bindings for characterization */
     /* These bindings require multiple buttons pushed to swap between quastatic and dynamic */
     /* Back/Start select dynamic/quasistatic, Y/X select forward/reverse direction */

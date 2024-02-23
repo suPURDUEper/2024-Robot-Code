@@ -42,12 +42,12 @@ public final class Constants {
 
   public static class AmpConstants {
 
-    public static final double kStatorCurrentLimit = 0;
-    public static final double kSupplyCurrentLimit = 0;
-    public static final double kSupplyCurrentLimitThreshold = 0;
-    public static final double kSupplyTimeThreshold = 0;
-    public static final double kLoadVoltage = 0;
-    public static final double kScoreVoltage = 0;
+    public static final double kStatorCurrentLimit = 40;
+    public static final double kSupplyCurrentLimit = 40;
+    public static final double kSupplyCurrentLimitThreshold = 60;
+    public static final double kSupplyTimeThreshold = 0.5;
+    public static final double kLoadVoltage = 12;
+    public static final double kScoreVoltage = 12;
   }
 
   public static class ElevatorConstants {
@@ -85,7 +85,7 @@ public final class Constants {
     public static final double kGearRatio = kPlanetaryGearRatio * kSectorGearRatio;
     public static final double kForwardSoftLimit = Units.degreesToRotations(78.5);
     public static final double kReverseSoftLimit = Units.degreesToRotations(26.2);
-    public static final double kAbsoluteEncoderOffset = (0.072202 - 0.25) + 1;
+    public static final double kAbsoluteEncoderOffset = (Units.degreesToRotations(8.079120) - 0.25) + 1;
     public static final double kEncoderPositionConversion = 0;
     public static final boolean kAbsoluteEncoderInverted = false;
     public static final int kStatorCurrentLimit = 60;
@@ -101,11 +101,11 @@ public final class Constants {
     public static final double profileKa =
         0.70719; // Ka of arm brushed motor model in volts/(rps/s)
 
-    public static final double kPositionTolerance = 0;
+    public static final double kPositionTolerance = Units.degreesToRotations(0.5);
     public static final double kPodiumShot = 0.0;
     public static final double kMaxAutoAim = 0.0;
-    public static final double kIntakeAngle = 0.0;
-    public static final double kAmpHandOff = 0.0;
+    public static final double kIntakeAngle = Units.degreesToRotations(42.5);
+    public static final double kAmpHandOff = Units.degreesToRotations(48.0);
   }
 
   public static class ShooterConstants {

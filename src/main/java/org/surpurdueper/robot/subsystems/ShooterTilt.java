@@ -193,12 +193,12 @@ public class ShooterTilt extends SubsystemBase {
   }
 
   public boolean isAtPosition() {
-    return Math.abs(targetRotations - tiltAbsoluteEncoder.getAbsolutePosition())
+    return Math.abs(targetRotations - tiltMotor.getPosition().getValueAsDouble())
         < TiltConstants.kPositionTolerance;
   }
 
   public Command goToPosition(double degrees) {
-    return Commands.run(() -> setPositionDegrees(degrees)).until(this::isAtPosition);
+    return Commands.run(() -> setPositionRotations(degrees)).until(this::isAtPosition);
   }
 
   public boolean isNotAtIntakeHeight() {

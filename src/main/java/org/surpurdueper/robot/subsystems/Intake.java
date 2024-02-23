@@ -21,8 +21,8 @@ public class Intake extends SubsystemBase {
   DigitalInput feederBreakBeam2;
 
   public Intake() {
-    intakeMotor = new SparkMax(CANIDs.kIntakeMotor).withInitializer(Intake::sparkMaxInitializer);
-    feederMotor = new SparkMax(CANIDs.kFeederMotor).withInitializer(Intake::sparkMaxInitializer);
+    intakeMotor = new SparkMax(CANIDs.kIntakeMotor).withInitializer(Intake::sparkMaxIntakeInitializer);
+    feederMotor = new SparkMax(CANIDs.kFeederMotor).withInitializer(Intake::sparkMaxFeederInitializer);
     feederBreakBeam1 = new DigitalInput(DIOPorts.kFeederBreakBeam1);
     feederBreakBeam2 = new DigitalInput(DIOPorts.kFeederBreakBeam2);
   }
@@ -69,11 +69,20 @@ public class Intake extends SubsystemBase {
     return Commands.startEnd(this::runBackwards, this::stop, this);
   }
 
-  private static Boolean sparkMaxInitializer(CANSparkMax sparkMax, Boolean isInit) {
+  private static Boolean sparkMaxFeederInitializer(CANSparkMax sparkMax, Boolean isInit) {
     int errors = 0;
     errors += SparkMaxUtils.check(SparkMaxUtils.setDefaultsForNeo(sparkMax));
     errors += SparkMaxUtils.check(CANSparkMaxExtensions.setInverted(sparkMax, false));
     errors += SparkMaxUtils.check(sparkMax.setIdleMode(IdleMode.kBrake));
+    // SparkMax.setFrameStrategy(sparkMax, FrameStrategy.kNoFeedback);
+    return errors == 0;
+  }
+
+  private static Boolean sparkMaxIntakeInitializer(CANSparkMax sparkMax, Boolean isInit) {
+    int errors = 0;
+    errors += SparkMaxUtils.check(SparkMaxUtils.setDefaultsForNeo(sparkMax));
+    errors += SparkMaxUtils.check(CANSparkMaxExtensions.setInverted(sparkMax, false));
+    errors += SparkMaxUtils.check(sparkMax.setIdleMode(IdleMode.kCoast));
     // SparkMax.setFrameStrategy(sparkMax, FrameStrategy.kNoFeedback);
     return errors == 0;
   }
