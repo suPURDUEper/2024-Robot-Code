@@ -135,7 +135,8 @@ public class Elevator extends SubsystemBase {
 
     // Log out to Glass for debugging
     double armPositionMotor = Units.metersToInches(elevatorMotor.getPosition().getValueAsDouble());
-    double armPositionSetpoint = Units.metersToInches(elevatorMotor.getClosedLoopReference().getValueAsDouble());
+    double armPositionSetpoint =
+        Units.metersToInches(elevatorMotor.getClosedLoopReference().getValueAsDouble());
     SmartDashboard.putNumber("Elevator/Position (Motor)", armPositionMotor);
     SmartDashboard.putNumber("Elevator/Target Position", armPositionSetpoint);
   }
@@ -168,7 +169,11 @@ public class Elevator extends SubsystemBase {
   }
 
   public Command goToPosition(double meters) {
-    return Commands.run(() -> setPositionMeters(meters));
+    return Commands.runOnce(() -> setPositionMeters(meters));
+  }
+
+  public Command goToPositionBlocking(double meters) {
+    return goToPosition(meters).andThen(Commands.waitUntil(this::isAtPosition));
   }
 
   public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {

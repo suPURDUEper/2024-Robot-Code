@@ -108,7 +108,7 @@ public class RobotContainer {
         .leftBumper()
         .onTrue(
             shooterTilt
-                .goToPosition(TiltConstants.kIntakeAngle)
+                .goToPositionBlocking(TiltConstants.kIntakeAngle)
                 .onlyIf(shooterTilt::isNotAtIntakeHeight)
                 .andThen(intake.load()));
 
@@ -120,15 +120,16 @@ public class RobotContainer {
         .rightTrigger()
         .onTrue(
             shooterTilt
-                .goToPosition(TiltConstants.kAmpHandOff)
+                .goToPositionBlocking(TiltConstants.kAmpHandOff)
                 .andThen(Commands.deadline(amp.load(), intake.feedAmp(), shooter.feedAmp())));
 
     shooterTilt.setDefaultCommand(
-        Commands.run(() -> shooterTilt.setVoltage(8 * applyDeadband(joystick2.getRightY())), shooterTilt));
+        Commands.run(
+            () -> shooterTilt.setVoltage(8 * applyDeadband(joystick2.getRightY())), shooterTilt));
 
     joystick2.a().onTrue(intake.load());
     joystick2.b().whileTrue(intake.purge());
-    
+
     /* Bindings for characterization */
     /* These bindings require multiple buttons pushed to swap between quastatic and dynamic */
     /* Back/Start select dynamic/quasistatic, Y/X select forward/reverse direction */

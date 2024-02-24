@@ -21,8 +21,10 @@ public class Intake extends SubsystemBase {
   DigitalInput feederBreakBeam2;
 
   public Intake() {
-    intakeMotor = new SparkMax(CANIDs.kIntakeMotor).withInitializer(Intake::sparkMaxIntakeInitializer);
-    feederMotor = new SparkMax(CANIDs.kFeederMotor).withInitializer(Intake::sparkMaxFeederInitializer);
+    intakeMotor =
+        new SparkMax(CANIDs.kIntakeMotor).withInitializer(Intake::sparkMaxIntakeInitializer);
+    feederMotor =
+        new SparkMax(CANIDs.kFeederMotor).withInitializer(Intake::sparkMaxFeederInitializer);
     feederBreakBeam1 = new DigitalInput(DIOPorts.kFeederBreakBeam1);
     feederBreakBeam2 = new DigitalInput(DIOPorts.kFeederBreakBeam2);
   }

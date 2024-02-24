@@ -153,7 +153,10 @@ public class ShooterTilt extends SubsystemBase {
         Units.rotationsToDegrees(tiltMotor.getClosedLoopReference().getValueAsDouble());
     SmartDashboard.putNumber("ShooterTilt/Position (Abs)", armPositionAbs);
     SmartDashboard.putNumber("ShooterTilt/Position (Motor)", armPositionMotor);
-    SmartDashboard.putNumber("ShooterTilt/Target Position", armPositionSetpoint);
+    SmartDashboard.putNumber("ShooterTilt/Setpoint", targetRotations);
+    SmartDashboard.putNumber("ShooterTilt/Profile Target", armPositionSetpoint);
+    SmartDashboard.putBoolean("ShooterTilt/AtIntakeAngle", !isNotAtIntakeHeight());
+    SmartDashboard.putBoolean("ShooterTilt/AtPosition", isAtPosition());
   }
 
   private void setupSysIdTiming(TalonFX motorToTest) {
@@ -197,8 +200,12 @@ public class ShooterTilt extends SubsystemBase {
         < TiltConstants.kPositionTolerance;
   }
 
-  public Command goToPosition(double degrees) {
-    return Commands.run(() -> setPositionRotations(degrees)).until(this::isAtPosition);
+  public Command goToPosition(double rotations) {
+    return Commands.runOnce(() -> setPositionRotations(rotations), this);
+  }
+
+  public Command goToPositionBlocking(double rotations) {
+    return Commands.runOnce(() -> setPositionRotations(rotations), this).andThen(Commands.waitUntil(this::isAtPosition));
   }
 
   public boolean isNotAtIntakeHeight() {
