@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import org.frc3005.lib.vendor.motorcontroller.SparkMax;
+import org.surpurdueper.robot.Constants.ElevatorConstants;
 import org.surpurdueper.robot.Constants.TiltConstants;
 import org.surpurdueper.robot.commands.AutoAim;
 import org.surpurdueper.robot.subsystems.Amp;
@@ -39,7 +40,7 @@ public class RobotContainer {
   private final ShooterTilt shooterTilt = new ShooterTilt();
 
   /* Setting up bindings for necessary control of the swerve drive platform */
-  private double MaxSpeed = Units.feetToMeters(10); // kSpeedAt12VoltsMps desired top speed
+  private double MaxSpeed = Units.feetToMeters(12); // kSpeedAt12VoltsMps desired top speed
   private double MaxAngularRate =
       1.5 * Math.PI; // 3/4 of a rotation per second max angular velocity
   private final CommandXboxController joystick = new CommandXboxController(0); // My joystick
@@ -81,16 +82,18 @@ public class RobotContainer {
             .applyRequest(
                 () ->
                     drive
-                        .withVelocityX(-joystick.getLeftY() * MaxSpeed) // Drive forward with
+                        .withVelocityX(
+                            squareJoystick(-joystick.getLeftY()) * MaxSpeed) // Drive forward with
                         // negative Y (forward)
                         .withVelocityY(
-                            -joystick.getLeftX() * MaxSpeed) // Drive left with negative X (left)
+                            squareJoystick(-joystick.getLeftX())
+                                * MaxSpeed) // Drive left with negative X (left)
                         .withRotationalRate(
-                            -joystick.getRightX()
+                            squareJoystick(joystick.getRightX())
                                 * MaxAngularRate) // Drive counterclockwise with negative X (left)
                 )
             .ignoringDisable(true));
-    // joystick.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldRelative()));
+    joystick.leftTrigger().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldRelative()));
     drivetrain.registerTelemetry(logger::telemeterize);
 
     joystick
@@ -100,8 +103,13 @@ public class RobotContainer {
                 drivetrain,
                 shooterTilt,
                 elevator,
-                () -> -joystick.getLeftY() * MaxSpeed,
-                () -> -joystick.getLeftX() * MaxSpeed));
+                () -> squareJoystick(-joystick.getLeftY()) * MaxSpeed,
+                () -> squareJoystick(-joystick.getLeftX()) * MaxSpeed));
+
+    joystick.y().onTrue(shooterTilt.goToPosition(TiltConstants.kPodiumShot).andThen(shooter.on()));
+    joystick
+        .x()
+        .onTrue(shooterTilt.goToPosition(TiltConstants.kSubwooferShot).andThen(shooter.on()));
 
     // Intake
     joystick
@@ -112,31 +120,45 @@ public class RobotContainer {
                 .onlyIf(shooterTilt::isNotAtIntakeHeight)
                 .andThen(intake.load()));
 
+    joystick.b().whileTrue(Commands.parallel(
+        intake.purge(), 
+        shooter.purge(), 
+        elevator.goToPositionBlocking(0).andThen(amp.purge())));
+
     // Score
-    joystick.rightBumper().whileTrue(Commands.either(amp.score(), intake.fire(), amp::isAmpLoaded));
+    joystick
+        .rightBumper()
+        .onTrue(
+            Commands.either(
+                amp.score().until(amp::isAmpNotLoaded).andThen(elevator.goToPosition(0)),
+                intake.fire().withTimeout(1.0).andThen(shooter.off()),
+                amp::isAmpLoaded));
 
     // Load Amp
     joystick
         .rightTrigger()
         .onTrue(
-            shooterTilt
-                .goToPositionBlocking(TiltConstants.kAmpHandOff)
-                .andThen(Commands.deadline(amp.load(), intake.feedAmp(), shooter.feedAmp())));
+            elevator.goToPosition(0)
+            .andThen(shooterTilt.goToPositionBlocking(TiltConstants.kAmpHandOff))
+            .andThen(Commands.deadline(amp.load(), intake.feedAmp(), shooter.feedAmp()))
+            .andThen(shooterTilt.goToPositionBlocking(TiltConstants.kSafeElevator))
+            .andThen(elevator.goToPosition(ElevatorConstants.kAmpScoreHeight)));
 
-    shooterTilt.setDefaultCommand(
-        Commands.run(
-            () -> shooterTilt.setVoltage(8 * applyDeadband(joystick2.getRightY())), shooterTilt));
+    joystick.start().onTrue(Commands.runOnce(() -> {}, intake, shooter, shooterTilt, elevator, amp));
 
-    joystick2.a().onTrue(intake.load());
-    joystick2.b().whileTrue(intake.purge());
+    // shooterTilt.setDefaultCommand(
+    //     Commands.run(
+    //         () -> shooterTilt.setVoltage(8 * applyDeadband(joystick2.getRightY())), shooterTilt));
+    // joystick2.a().onTrue(intake.load());
+    // joystick2.b().whileTrue(intake.purge());
 
     /* Bindings for characterization */
     /* These bindings require multiple buttons pushed to swap between quastatic and dynamic */
     /* Back/Start select dynamic/quasistatic, Y/X select forward/reverse direction */
-    joystick2.back().and(joystick2.y()).whileTrue(elevator.sysIdDynamic(Direction.kForward));
-    joystick2.back().and(joystick2.x()).whileTrue(elevator.sysIdDynamic(Direction.kReverse));
-    joystick2.start().and(joystick2.y()).whileTrue(elevator.sysIdQuasistatic(Direction.kForward));
-    joystick2.start().and(joystick2.x()).whileTrue(elevator.sysIdQuasistatic(Direction.kReverse));
+    // joystick2.back().and(joystick2.y()).whileTrue(elevator.sysIdDynamic(Direction.kForward));
+    // joystick2.back().and(joystick2.x()).whileTrue(elevator.sysIdDynamic(Direction.kReverse));
+    // joystick2.start().and(joystick2.y()).whileTrue(elevator.sysIdQuasistatic(Direction.kForward));
+    // joystick2.start().and(joystick2.x()).whileTrue(elevator.sysIdQuasistatic(Direction.kReverse));
   }
 
   /**
@@ -154,5 +176,10 @@ public class RobotContainer {
       return 0.0;
     }
     return value;
+  }
+
+  public double squareJoystick(double value) {
+    double sign = Math.signum(value);
+    return value * value * sign;
   }
 }

@@ -29,6 +29,8 @@ public class AutoAim extends Command {
     this.drivetrain = drivetrain;
     this.shooterTilt = shooterTilt;
     this.elevator = elevator;
+    this.xVelocitySupplier = xVelocitySupplier;
+    this.yVelocitySupplier = yVelocitySupplier;
     addRequirements(drivetrain, shooterTilt, elevator);
     speakerCenter = FieldConstants.Speaker.centerSpeakerOpening.toTranslation2d();
   }

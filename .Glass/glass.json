@@ -16,6 +16,9 @@
         "Amp": {
           "open": true
         },
+        "Elevator": {
+          "open": true
+        },
         "Intake": {
           "open": true
         },

@@ -205,7 +205,8 @@ public class ShooterTilt extends SubsystemBase {
   }
 
   public Command goToPositionBlocking(double rotations) {
-    return Commands.runOnce(() -> setPositionRotations(rotations), this).andThen(Commands.waitUntil(this::isAtPosition));
+    return Commands.runOnce(() -> setPositionRotations(rotations), this)
+        .andThen(Commands.waitUntil(this::isAtPosition));
   }
 
   public boolean isNotAtIntakeHeight() {

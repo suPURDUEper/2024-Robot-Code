@@ -57,6 +57,7 @@ public final class Constants {
     public static final double kMetersPerRotation = kGearRatio / (kSprocketPitchDiameter * Math.PI);
     public static final float kForwardSoftLimit = (float) Units.inchesToMeters(20.75);
     public static final float kReverseSoftLimit = 0;
+    public static final double kAmpScoreHeight = Units.inchesToMeters(18.0);
 
     // Feedforward gains from sysId
     public static final double kg = 0.31678; // volts
@@ -103,10 +104,12 @@ public final class Constants {
         0.70719; // Ka of arm brushed motor model in volts/(rps/s)
 
     public static final double kPositionTolerance = Units.degreesToRotations(0.5);
-    public static final double kPodiumShot = 0.0;
+    public static final double kPodiumShot = Units.degreesToRotations(30.0);
+    public static final double kSubwooferShot = Units.degreesToRotations(61.0);
     public static final double kMaxAutoAim = 0.0;
     public static final double kIntakeAngle = Units.degreesToRotations(42.5);
     public static final double kAmpHandOff = Units.degreesToRotations(48.0);
+    public static final double kSafeElevator = Units.degreesToRotations(54);
   }
 
   public static class ShooterConstants {
@@ -120,6 +123,9 @@ public final class Constants {
     public static final double kv = 0.067409; // Probably leave at 0
     public static final double ka = 0.022749; // Amps required to accelerate arm 1 rot/s^2
     public static final double kShooterRpsTolerance = 10;
+
+    public static final double kLeftShooterSpeedRps = 6000 / 60.0;
+    public static final double kRightShooterSpeedRps = 3000 / 60.0;
   }
 
   public static class LookupTables {

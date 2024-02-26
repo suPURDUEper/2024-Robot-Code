@@ -187,7 +187,7 @@ public class Elevator extends SubsystemBase {
   public void configureTalonFx() {
     MotorOutputConfigs motorOutputConfigs =
         new MotorOutputConfigs()
-            .withNeutralMode(NeutralModeValue.Brake)
+            .withNeutralMode(NeutralModeValue.Coast)
             .withInverted(InvertedValue.Clockwise_Positive);
     CurrentLimitsConfigs currentConfig =
         new CurrentLimitsConfigs()
