@@ -737,6 +737,10 @@ public class LimelightHelpers {
     return false;
   }
 
+  public static boolean tableExists(String limelightName) {
+    return getLimelightNTTableEntry(limelightName, "json").exists();
+  }
+
   /** Parses Limelight's JSON results dump into a LimelightResults Object */
   public static LimelightResults getLatestResults(String limelightName) {
 
