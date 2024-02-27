@@ -6,13 +6,16 @@ package org.surpurdueper.robot;
 
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import org.frc3005.lib.vendor.motorcontroller.SparkMax;
+import org.littletonrobotics.util.AllianceFlipUtil;
+import org.littletonrobotics.util.FieldConstants;
 import org.surpurdueper.robot.Constants.ElevatorConstants;
 import org.surpurdueper.robot.Constants.TiltConstants;
 import org.surpurdueper.robot.commands.AutoAim;
@@ -93,7 +96,19 @@ public class RobotContainer {
                                 * MaxAngularRate) // Drive counterclockwise with negative X (left)
                 )
             .ignoringDisable(true));
-    joystick.leftTrigger().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldRelative()));
+    joystick
+        .leftTrigger()
+        .onTrue(
+            drivetrain.runOnce(
+                () -> {
+                  Pose2d resetPose =
+                      new Pose2d(
+                          FieldConstants.Subwoofer.centerFace.getX()
+                              + Constants.kBumperToRobotCenter,
+                          FieldConstants.Subwoofer.centerFace.getY(),
+                          Rotation2d.fromDegrees(180));
+                  drivetrain.seedFieldRelative(AllianceFlipUtil.apply(resetPose));
+                }));
     drivetrain.registerTelemetry(logger::telemeterize);
 
     joystick
@@ -120,10 +135,13 @@ public class RobotContainer {
                 .onlyIf(shooterTilt::isNotAtIntakeHeight)
                 .andThen(intake.load()));
 
-    joystick.b().whileTrue(Commands.parallel(
-        intake.purge(), 
-        shooter.purge(), 
-        elevator.goToPositionBlocking(0).andThen(amp.purge())));
+    joystick
+        .b()
+        .whileTrue(
+            Commands.parallel(
+                intake.purge(),
+                shooter.purge(),
+                elevator.goToPositionBlocking(0).andThen(amp.purge())));
 
     // Score
     joystick
@@ -138,17 +156,21 @@ public class RobotContainer {
     joystick
         .rightTrigger()
         .onTrue(
-            elevator.goToPosition(0)
-            .andThen(shooterTilt.goToPositionBlocking(TiltConstants.kAmpHandOff))
-            .andThen(Commands.deadline(amp.load(), intake.feedAmp(), shooter.feedAmp()))
-            .andThen(shooterTilt.goToPositionBlocking(TiltConstants.kSafeElevator))
-            .andThen(elevator.goToPosition(ElevatorConstants.kAmpScoreHeight)));
+            elevator
+                .goToPosition(0)
+                .andThen(shooterTilt.goToPositionBlocking(TiltConstants.kAmpHandOff))
+                .andThen(Commands.deadline(amp.load(), intake.feedAmp(), shooter.feedAmp()))
+                .andThen(shooterTilt.goToPositionBlocking(TiltConstants.kSafeElevator))
+                .andThen(elevator.goToPosition(ElevatorConstants.kAmpScoreHeight)));
 
-    joystick.start().onTrue(Commands.runOnce(() -> {}, intake, shooter, shooterTilt, elevator, amp));
+    joystick
+        .start()
+        .onTrue(Commands.runOnce(() -> {}, intake, shooter, shooterTilt, elevator, amp));
 
     // shooterTilt.setDefaultCommand(
     //     Commands.run(
-    //         () -> shooterTilt.setVoltage(8 * applyDeadband(joystick2.getRightY())), shooterTilt));
+    //         () -> shooterTilt.setVoltage(8 * applyDeadband(joystick2.getRightY())),
+    // shooterTilt));
     // joystick2.a().onTrue(intake.load());
     // joystick2.b().whileTrue(intake.purge());
 

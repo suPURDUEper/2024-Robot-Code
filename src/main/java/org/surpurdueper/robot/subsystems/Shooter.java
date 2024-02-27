@@ -156,7 +156,6 @@ public class Shooter extends SubsystemBase {
     shooterRight.setControl(voltagRequest.withOutput(rightVoltage));
   }
 
-  
   public Command on() {
     return Commands.runOnce(
         () ->

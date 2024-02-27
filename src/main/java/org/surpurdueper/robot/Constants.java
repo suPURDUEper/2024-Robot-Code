@@ -19,6 +19,12 @@ public final class Constants {
 
   public static boolean tuningMode = true;
 
+  public static final double kRobotLengthInches = 30.5;
+  public static final double kRobotWidthInches = 29.5;
+  public static final double kBumperWidthInches = 3.375;
+  public static final double kBumperToRobotCenter =
+      Units.inchesToMeters(kRobotLengthInches / 2.0) + Units.inchesToMeters(kBumperWidthInches);
+
   // All canID constants go in here
   public static class CANIDs {
     public static final int kIntakeMotor = 10;
