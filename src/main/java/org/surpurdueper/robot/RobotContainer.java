@@ -130,11 +130,13 @@ public class RobotContainer {
     joystick
         .leftBumper()
         .onTrue(
-            elevator.goToPosition(0).alongWith(
-            shooterTilt
-                .goToPositionBlocking(TiltConstants.kIntakeAngle)
-                .onlyIf(shooterTilt::isNotAtIntakeHeight)
-                .andThen(intake.load())));
+            elevator
+                .goToPosition(0)
+                .alongWith(
+                    shooterTilt
+                        .goToPositionBlocking(TiltConstants.kIntakeAngle)
+                        .onlyIf(shooterTilt::isNotAtIntakeHeight)
+                        .andThen(intake.load())));
 
     joystick
         .b()
@@ -167,10 +169,17 @@ public class RobotContainer {
     joystick
         .start()
         .onTrue(Commands.runOnce(() -> {}, intake, shooter, shooterTilt, elevator, amp));
-    
-    joystick.povUp().whileTrue(Commands.startEnd(() -> shooterTilt.setVoltage(4), () -> shooterTilt.stop(), shooterTilt));
-    joystick.povDown().whileTrue(Commands.startEnd(() -> shooterTilt.setVoltage(-4), () -> shooterTilt.stop(), shooterTilt));
 
+    joystick
+        .povUp()
+        .whileTrue(
+            Commands.startEnd(
+                () -> shooterTilt.setVoltage(4), () -> shooterTilt.stop(), shooterTilt));
+    joystick
+        .povDown()
+        .whileTrue(
+            Commands.startEnd(
+                () -> shooterTilt.setVoltage(-4), () -> shooterTilt.stop(), shooterTilt));
 
     // shooterTilt.setDefaultCommand(
     //     Commands.run(

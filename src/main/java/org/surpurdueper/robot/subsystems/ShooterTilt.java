@@ -8,6 +8,7 @@ import static edu.wpi.first.units.Units.Seconds;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.SignalLogger;
+import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
@@ -112,6 +113,11 @@ public class ShooterTilt extends SubsystemBase {
     tiltAbsoluteEncoder.setPositionOffset(TiltConstants.kAbsoluteEncoderOffset);
     configureTalonFx();
     // setupSysIdTiming(tiltMotor);
+
+    // Elevator reacts to the shooter angle during auto aim. Increase the frequency at which this is
+    // updated
+    BaseStatusSignal.setUpdateFrequencyForAll(
+        250, tiltMotor.getPosition(), tiltMotor.getVelocity());
   }
 
   @Override
@@ -193,6 +199,14 @@ public class ShooterTilt extends SubsystemBase {
 
   public double getPositionRotations() {
     return tiltMotor.getPosition().getValueAsDouble();
+  }
+
+  public StatusSignal<Double> getPositionSignal() {
+    return tiltMotor.getPosition();
+  }
+
+  public StatusSignal<Double> getVelocitySignal() {
+    return tiltMotor.getVelocity();
   }
 
   public void stop() {

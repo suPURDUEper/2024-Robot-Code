@@ -135,23 +135,23 @@ public final class Constants {
   }
 
   public static class LookupTables {
-    // Key is shooter angle (in degrees). Value is minimum elevator height such that the shot clears
-    // the shooter
-    // (in inches from bottom hardstop)
+    // Key is shooter angle (in rotations). Value is minimum elevator height such that the shot
+    // clears
+    // the shooter (in meters from bottom hardstop)
     public static final InterpolatingDoubleTreeMap elevatorShooterClearance =
         new InterpolatingDoubleTreeMap();
 
     static {
-      elevatorShooterClearance.put(34.821, 0.000); // Max angle with elevator all the way down
-      elevatorShooterClearance.put(36.000, 1.037);
-      elevatorShooterClearance.put(38.000, 2.835);
-      elevatorShooterClearance.put(40.000, 3.984);
-      elevatorShooterClearance.put(42.000, 5.451);
-      elevatorShooterClearance.put(44.000, 7.324);
-      elevatorShooterClearance.put(46.000, 9.640);
-      elevatorShooterClearance.put(48.000, 12.291);
-      elevatorShooterClearance.put(52.0, 14.5);
-      elevatorShooterClearance.put(53.4, 16.0);
+      elevatorShooterClearance.put(Units.degreesToRotations(34.821), Units.metersToInches(0.000));
+      elevatorShooterClearance.put(Units.degreesToRotations(36.000), Units.metersToInches(1.037));
+      elevatorShooterClearance.put(Units.degreesToRotations(38.000), Units.metersToInches(2.835));
+      elevatorShooterClearance.put(Units.degreesToRotations(40.000), Units.metersToInches(3.984));
+      elevatorShooterClearance.put(Units.degreesToRotations(42.000), Units.metersToInches(5.451));
+      elevatorShooterClearance.put(Units.degreesToRotations(44.000), Units.metersToInches(7.324));
+      elevatorShooterClearance.put(Units.degreesToRotations(46.000), Units.metersToInches(9.640));
+      elevatorShooterClearance.put(Units.degreesToRotations(48.000), Units.metersToInches(12.291));
+      elevatorShooterClearance.put(Units.degreesToRotations(52.000), Units.metersToInches(14.5));
+      elevatorShooterClearance.put(Units.degreesToRotations(53.400), Units.metersToInches(16.0));
       // 53.8 degrees hit crossbeam
     }
 
