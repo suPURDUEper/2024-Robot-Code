@@ -85,16 +85,9 @@ public class RobotContainer {
             .applyRequest(
                 () ->
                     drive
-                        .withVelocityX(
-                            squareJoystick(-joystick.getLeftY()) * MaxSpeed) // Drive forward with
-                        // negative Y (forward)
-                        .withVelocityY(
-                            squareJoystick(-joystick.getLeftX())
-                                * MaxSpeed) // Drive left with negative X (left)
-                        .withRotationalRate(
-                            squareJoystick(joystick.getRightX())
-                                * MaxAngularRate) // Drive counterclockwise with negative X (left)
-                )
+                        .withVelocityX(squareJoystick(-joystick.getLeftY()) * MaxSpeed)
+                        .withVelocityY(squareJoystick(-joystick.getLeftX()) * MaxSpeed)
+                        .withRotationalRate(squareJoystick(joystick.getRightX()) * MaxAngularRate))
             .ignoringDisable(true));
     joystick
         .leftTrigger()
