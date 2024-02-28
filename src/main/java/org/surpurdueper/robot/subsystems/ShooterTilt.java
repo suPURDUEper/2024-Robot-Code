@@ -118,7 +118,7 @@ public class ShooterTilt extends SubsystemBase {
   public void periodic() {
     // Update tunable numbers
     if (Math.abs(getAbsoluteSensorAngle() - tiltMotor.getPosition().getValueAsDouble())
-        > Units.degreesToRotations(2)) {
+        > Units.degreesToRotations(1.0)) {
       tiltMotor.setPosition(getAbsoluteSensorAngle());
     }
 
@@ -189,6 +189,10 @@ public class ShooterTilt extends SubsystemBase {
   public void setPositionRotations(double position) {
     targetRotations = position;
     tiltMotor.setControl(positionRequest.withPosition(targetRotations));
+  }
+
+  public double getPositionRotations() {
+    return tiltMotor.getPosition().getValueAsDouble();
   }
 
   public void stop() {

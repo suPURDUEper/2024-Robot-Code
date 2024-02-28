@@ -150,9 +150,9 @@ public final class Constants {
       elevatorShooterClearance.put(44.000, 7.324);
       elevatorShooterClearance.put(46.000, 9.640);
       elevatorShooterClearance.put(48.000, 12.291);
-      elevatorShooterClearance.put(50.000, 15.186);
-      elevatorShooterClearance.put(
-          51.69, 17.725); // Max angle we can shoot at before jumping to 60 degree shot
+      elevatorShooterClearance.put(52.0, 14.5);
+      elevatorShooterClearance.put(53.4, 16.0);
+      // 53.8 degrees hit crossbeam
     }
 
     public static final InterpolatingDoubleTreeMap distanceToShooterAngle =
