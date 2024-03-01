@@ -84,6 +84,19 @@ public final class Constants {
     public static final double kAbsoluteEncoderOffset = 0;
     public static final float kForwardSoftLimit = 0;
     public static final float kReverseSoftLimit = 0;
+    public static final double kp = 0;
+    public static final double ki = 0;
+    public static final double kd = 0;
+    public static final double ks = 0;
+    public static final double kv = 0;
+    public static final double ka = 0;
+    public static final double kg = 0;
+    public static final double profileKv = 0;
+    public static final double profileKa = 0;
+    public static final boolean kAbsoluteEncoderInverted = false;
+    public static final double kStatorCurrentLimit = 0;
+    public static final double kGearRatio = 0;
+    public static final double kPositionTolerance = 0;
   }
 
   public static class TiltConstants {
@@ -172,5 +185,6 @@ public final class Constants {
         new InterpolatingDoubleTreeMap();
     static {
     }
+    
   }
 }
