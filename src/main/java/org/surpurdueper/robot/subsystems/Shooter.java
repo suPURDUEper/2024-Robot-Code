@@ -156,12 +156,20 @@ public class Shooter extends SubsystemBase {
     shooterRight.setControl(voltagRequest.withOutput(rightVoltage));
   }
 
+  public void turnOn() {
+    setShooterRps(ShooterConstants.kLeftShooterSpeedRps, ShooterConstants.kRightShooterSpeedRps);
+  }
+
+  public void turnOnIdle() {
+    setShooterRps(ShooterConstants.kLeftShooterIdleRps, ShooterConstants.kRightShooterIdleRps);
+  }
+
   public Command on() {
-    return Commands.runOnce(
-        () ->
-            setShooterRps(
-                ShooterConstants.kLeftShooterSpeedRps, ShooterConstants.kRightShooterSpeedRps),
-        this);
+    return Commands.runOnce(this::turnOn, this);
+  }
+
+  public Command idle() {
+    return Commands.runOnce(this::turnOnIdle, this);
   }
 
   public Command off() {

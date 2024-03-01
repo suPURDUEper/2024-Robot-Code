@@ -4,14 +4,17 @@ import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.StatusSignal;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Threads;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import java.util.function.DoubleSupplier;
 import org.littletonrobotics.util.AllianceFlipUtil;
 import org.littletonrobotics.util.FieldConstants;
+import org.littletonrobotics.util.LoggedTunableNumber;
 import org.surpurdueper.robot.Constants.LookupTables;
 import org.surpurdueper.robot.subsystems.Elevator;
+import org.surpurdueper.robot.subsystems.Shooter;
 import org.surpurdueper.robot.subsystems.ShooterTilt;
 import org.surpurdueper.robot.subsystems.drive.CommandSwerveDrivetrain;
 
@@ -19,10 +22,13 @@ public class AutoAim extends Command {
   CommandSwerveDrivetrain drivetrain;
   ShooterTilt shooterTilt;
   Elevator elevator;
+  private Shooter shooter;
   DoubleSupplier xVelocitySupplier;
   DoubleSupplier yVelocitySupplier;
   Translation2d speakerCenter;
   FieldCentricFacingPoint swerveRequest;
+
+  LoggedTunableNumber shooterAngle = new LoggedTunableNumber("ShooterTilt/AutoAim Angle", 30);
 
   protected ElevatorSyncThread elevatorSyncThread;
 
@@ -30,14 +36,16 @@ public class AutoAim extends Command {
       CommandSwerveDrivetrain drivetrain,
       ShooterTilt shooterTilt,
       Elevator elevator,
+      Shooter shooter,
       DoubleSupplier xVelocitySupplier,
       DoubleSupplier yVelocitySupplier) {
     this.drivetrain = drivetrain;
     this.shooterTilt = shooterTilt;
     this.elevator = elevator;
+    this.shooter = shooter;
     this.xVelocitySupplier = xVelocitySupplier;
     this.yVelocitySupplier = yVelocitySupplier;
-    addRequirements(drivetrain, elevator); // TODO: Add shooterTilt back to this
+    addRequirements(drivetrain, elevator, shooter); // TODO: Add shooterTilt back to this
 
     // Setup request to control drive always facing the speaker
     swerveRequest = new FieldCentricFacingPoint();
@@ -52,7 +60,8 @@ public class AutoAim extends Command {
     speakerCenter =
         AllianceFlipUtil.apply(FieldConstants.Speaker.centerSpeakerOpening.toTranslation2d());
     swerveRequest.setPointToFace(speakerCenter);
-    elevatorSyncThread.start();
+    // elevatorSyncThread.start();
+    shooter.turnOn();
   }
 
   @Override
@@ -68,15 +77,20 @@ public class AutoAim extends Command {
     // Update shooter angle from current pose
     double distanceToSpeakerMeters =
         drivetrain.getState().Pose.getTranslation().getDistance(speakerCenter);
-    shooterTilt.setPositionRotations(
-        LookupTables.distanceToShooterAngle.get(distanceToSpeakerMeters));
-    shooterTilt.setPositionDegrees(53.0); // TODO: Remove
+    shooterTilt.setPositionRotations(Units.degreesToRotations(shooterAngle.getAsDouble()));
+    // shooterTilt.setPositionRotations(
+    //     LookupTables.distanceToShooterAngle.get(distanceToSpeakerMeters));
+    // shooterTilt.setPositionDegrees(53.0); // TODO: Remove
+    double elevatorHeight =
+        LookupTables.elevatorShooterClearance.get(shooterTilt.getPositionRotations());
+    elevator.setPositionMeters(elevatorHeight);
   }
 
   @Override
   public void end(boolean interrupted) {
     elevatorSyncThread.stop();
     elevator.setPositionMeters(0);
+    shooter.turnOnIdle();
   }
 
   public class ElevatorSyncThread {

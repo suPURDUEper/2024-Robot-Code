@@ -89,7 +89,7 @@ public final class Constants {
   public static class TiltConstants {
     public static final double kPlanetaryGearRatio = (25.0 / 1.0);
     public static final double kSectorGearRatio = (240.0 / 10.0);
-    public static final double kGearRatio = kPlanetaryGearRatio * kSectorGearRatio;
+    public static final double kGearRatio = kPlanetaryGearRatio * kSectorGearRatio / 1.07015;
     public static final double kForwardSoftLimit = Units.degreesToRotations(78.5);
     public static final double kReverseSoftLimit = Units.degreesToRotations(26.2);
     public static final double kAbsoluteEncoderOffset =
@@ -113,7 +113,7 @@ public final class Constants {
     public static final double kPodiumShot = Units.degreesToRotations(30.0);
     public static final double kSubwooferShot = Units.degreesToRotations(61.0);
     public static final double kMaxAutoAim = 0.0;
-    public static final double kIntakeAngle = Units.degreesToRotations(42.5);
+    public static final double kIntakeAngle = Units.degreesToRotations(40.0);
     public static final double kAmpHandOff = Units.degreesToRotations(48.0);
     public static final double kSafeElevator = Units.degreesToRotations(54);
   }
@@ -132,6 +132,8 @@ public final class Constants {
 
     public static final double kLeftShooterSpeedRps = 6000 / 60.0;
     public static final double kRightShooterSpeedRps = 3000 / 60.0;
+    public static final double kLeftShooterIdleRps = 1500 / 60.0;
+    public static final double kRightShooterIdleRps = 1500 / 60.0;
   }
 
   public static class LookupTables {
@@ -142,22 +144,32 @@ public final class Constants {
         new InterpolatingDoubleTreeMap();
 
     static {
-      elevatorShooterClearance.put(Units.degreesToRotations(34.821), Units.metersToInches(0.000));
-      elevatorShooterClearance.put(Units.degreesToRotations(36.000), Units.metersToInches(1.037));
-      elevatorShooterClearance.put(Units.degreesToRotations(38.000), Units.metersToInches(2.835));
-      elevatorShooterClearance.put(Units.degreesToRotations(40.000), Units.metersToInches(3.984));
-      elevatorShooterClearance.put(Units.degreesToRotations(42.000), Units.metersToInches(5.451));
-      elevatorShooterClearance.put(Units.degreesToRotations(44.000), Units.metersToInches(7.324));
-      elevatorShooterClearance.put(Units.degreesToRotations(46.000), Units.metersToInches(9.640));
-      elevatorShooterClearance.put(Units.degreesToRotations(48.000), Units.metersToInches(12.291));
-      elevatorShooterClearance.put(Units.degreesToRotations(52.000), Units.metersToInches(14.5));
-      elevatorShooterClearance.put(Units.degreesToRotations(53.400), Units.metersToInches(16.0));
-      // 53.8 degrees hit crossbeam
+      elevatorShooterClearance.put(Units.degreesToRotations(34.821), Units.inchesToMeters(0.000));
+      elevatorShooterClearance.put(Units.degreesToRotations(36.000), Units.inchesToMeters(2.037));
+      elevatorShooterClearance.put(Units.degreesToRotations(38.000), Units.inchesToMeters(3.835));
+      elevatorShooterClearance.put(Units.degreesToRotations(40.000), Units.inchesToMeters(4.984));
+      elevatorShooterClearance.put(Units.degreesToRotations(42.000), Units.inchesToMeters(6.451));
+      elevatorShooterClearance.put(Units.degreesToRotations(44.000), Units.inchesToMeters(8.324));
+      elevatorShooterClearance.put(Units.degreesToRotations(46.000), Units.inchesToMeters(10.640));
+      elevatorShooterClearance.put(Units.degreesToRotations(48.000), Units.inchesToMeters(13.291));
+      elevatorShooterClearance.put(Units.degreesToRotations(52.000), Units.inchesToMeters(15.5));
+      elevatorShooterClearance.put(Units.degreesToRotations(53.400), Units.inchesToMeters(18.5));
+      elevatorShooterClearance.put(Units.degreesToRotations(54.500), Units.inchesToMeters(19.5));
+
+      // 54.5 degrees, 0 feet
+      // 53 degrees, 1 feet
+      // 46.5 degrees, 2 feet
+      // 42.5 degrees, 3 feet
+      // 39.5, 4 feet
+      // 37.0, 5 feet
+      // 34.5, 6 feet
+      // 31.75, 7 feet
+      // 29.25, 8 feet
+    
     }
 
     public static final InterpolatingDoubleTreeMap distanceToShooterAngle =
         new InterpolatingDoubleTreeMap();
-
     static {
     }
   }

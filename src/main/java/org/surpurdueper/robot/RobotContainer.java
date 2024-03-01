@@ -40,7 +40,7 @@ public class RobotContainer {
   //   private final Climber climber = new Climber();
   private final Elevator elevator = new Elevator();
   private final Shooter shooter = new Shooter();
-  private final ShooterTilt shooterTilt = new ShooterTilt();
+  private final ShooterTilt shooterTilt = new ShooterTilt(intake);
 
   /* Setting up bindings for necessary control of the swerve drive platform */
   private double MaxSpeed = Units.feetToMeters(12); // kSpeedAt12VoltsMps desired top speed
@@ -111,6 +111,7 @@ public class RobotContainer {
                 drivetrain,
                 shooterTilt,
                 elevator,
+                shooter,
                 () -> squareJoystick(-joystick.getLeftY()) * MaxSpeed,
                 () -> squareJoystick(-joystick.getLeftX()) * MaxSpeed));
 
@@ -144,9 +145,11 @@ public class RobotContainer {
         .rightBumper()
         .onTrue(
             Commands.either(
-                amp.score().until(amp::isAmpNotLoaded).andThen(elevator.goToPosition(0)),
-                intake.fire().withTimeout(1.0).andThen(shooter.off()),
+                amp.score().until(amp::isAmpNotLoaded),
+                intake.fire(),
                 amp::isAmpLoaded));
+
+    joystick.rightBumper().onFalse(elevator.goToPosition(0));
 
     // Load Amp
     joystick
