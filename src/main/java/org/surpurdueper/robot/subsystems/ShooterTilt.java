@@ -24,15 +24,12 @@ import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.revrobotics.SparkAbsoluteEncoder;
-
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.Velocity;
 import edu.wpi.first.units.Voltage;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DutyCycleEncoder;
-import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -41,9 +38,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import java.util.ArrayList;
 import java.util.List;
 import org.littletonrobotics.util.LoggedTunableNumber;
-import org.surpurdueper.robot.Robot;
 import org.surpurdueper.robot.Constants.CANIDs;
-import org.surpurdueper.robot.Constants.DIOPorts;
 import org.surpurdueper.robot.Constants.TiltConstants;
 
 public class ShooterTilt extends SubsystemBase {
@@ -115,7 +110,8 @@ public class ShooterTilt extends SubsystemBase {
     tiltMotor = new TalonFX(CANIDs.kTiltMotor, "canivore");
 
     tiltAbsoluteEncoder = intake.intakeMotor.getAbsoluteEncoder();
-    tiltAbsoluteEncoder.setPositionConversionFactor(TiltConstants.kAbsoluteEncoderInverted ? -1 : 1);
+    tiltAbsoluteEncoder.setPositionConversionFactor(
+        TiltConstants.kAbsoluteEncoderInverted ? -1 : 1);
     tiltAbsoluteEncoder.setZeroOffset(TiltConstants.kAbsoluteEncoderOffset);
 
     configureTalonFx();
@@ -160,7 +156,8 @@ public class ShooterTilt extends SubsystemBase {
     // Log out to Glass for debugging
     double armPositionAbs = Units.rotationsToDegrees(getAbsoluteSensorAngle());
     double armPositionMotor = Units.rotationsToDegrees(tiltMotor.getPosition().getValueAsDouble());
-    double armPositionSetpoint = Units.rotationsToDegrees(tiltMotor.getClosedLoopReference().getValueAsDouble());
+    double armPositionSetpoint =
+        Units.rotationsToDegrees(tiltMotor.getClosedLoopReference().getValueAsDouble());
     SmartDashboard.putNumber("ShooterTilt/Position (Abs)", armPositionAbs);
     SmartDashboard.putNumber("ShooterTilt/Position (Motor)", armPositionMotor);
     SmartDashboard.putNumber("ShooterTilt/Setpoint", targetRotations);

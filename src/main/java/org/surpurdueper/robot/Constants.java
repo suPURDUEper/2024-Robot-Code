@@ -168,23 +168,30 @@ public final class Constants {
       elevatorShooterClearance.put(Units.degreesToRotations(52.000), Units.inchesToMeters(15.5));
       elevatorShooterClearance.put(Units.degreesToRotations(53.400), Units.inchesToMeters(18.5));
       elevatorShooterClearance.put(Units.degreesToRotations(54.500), Units.inchesToMeters(19.5));
-
-      // 54.5 degrees, 0 feet
-      // 53 degrees, 1 feet
-      // 46.5 degrees, 2 feet
-      // 42.5 degrees, 3 feet
-      // 39.5, 4 feet
-      // 37.0, 5 feet
-      // 34.5, 6 feet
-      // 31.75, 7 feet
-      // 29.25, 8 feet
-    
     }
 
     public static final InterpolatingDoubleTreeMap distanceToShooterAngle =
         new InterpolatingDoubleTreeMap();
+
     static {
+      distanceToShooterAngle.put(
+          Units.inchesToMeters(00 + kBumperToRobotCenter), Units.degreesToRotations(54.5));
+      distanceToShooterAngle.put(
+          Units.inchesToMeters(12 + kBumperToRobotCenter), Units.degreesToRotations(53.0));
+      distanceToShooterAngle.put(
+          Units.inchesToMeters(24 + kBumperToRobotCenter), Units.degreesToRotations(46.5));
+      distanceToShooterAngle.put(
+          Units.inchesToMeters(36 + kBumperToRobotCenter), Units.degreesToRotations(42.5));
+      distanceToShooterAngle.put(
+          Units.inchesToMeters(48 + kBumperToRobotCenter), Units.degreesToRotations(39.5));
+      distanceToShooterAngle.put(
+          Units.inchesToMeters(60 + kBumperToRobotCenter), Units.degreesToRotations(37.0));
+      distanceToShooterAngle.put(
+          Units.inchesToMeters(72 + kBumperToRobotCenter), Units.degreesToRotations(34.5));
+      distanceToShooterAngle.put(
+          Units.inchesToMeters(84 + kBumperToRobotCenter), Units.degreesToRotations(31.75));
+      distanceToShooterAngle.put(
+          Units.inchesToMeters(96 + kBumperToRobotCenter), Units.degreesToRotations(29.25));
     }
-    
   }
 }

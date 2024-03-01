@@ -10,6 +10,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -115,10 +116,10 @@ public class RobotContainer {
                 () -> squareJoystick(-joystick.getLeftY()) * MaxSpeed,
                 () -> squareJoystick(-joystick.getLeftX()) * MaxSpeed));
 
-    joystick.y().onTrue(shooterTilt.goToPosition(TiltConstants.kPodiumShot).andThen(shooter.on()));
-    joystick
-        .x()
-        .onTrue(shooterTilt.goToPosition(TiltConstants.kSubwooferShot).andThen(shooter.on()));
+    // joystick.y().onTrue(shooterTilt.goToPosition(TiltConstants.kPodiumShot).andThen(shooter.on()));
+    // joystick
+    //     .x()
+    //     .onTrue(shooterTilt.goToPosition(TiltConstants.kSubwooferShot).andThen(shooter.on()));
 
     // Intake
     joystick
@@ -144,10 +145,13 @@ public class RobotContainer {
     joystick
         .rightBumper()
         .onTrue(
-            Commands.either(
-                amp.score().until(amp::isAmpNotLoaded),
-                intake.fire(),
-                amp::isAmpLoaded));
+            Commands.run(
+                () ->
+                    CommandScheduler.getInstance()
+                        .schedule(
+                            amp.isAmpLoaded()
+                                ? amp.score().andThen(elevator.goToPosition(0))
+                                : intake.fire().withTimeout(1))));
 
     joystick.rightBumper().onFalse(elevator.goToPosition(0));
 
