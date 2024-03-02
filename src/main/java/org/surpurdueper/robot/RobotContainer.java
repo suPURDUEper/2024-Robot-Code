@@ -25,6 +25,7 @@ import org.surpurdueper.robot.Constants.LookupTables;
 import org.surpurdueper.robot.Constants.TiltConstants;
 import org.surpurdueper.robot.commands.AutoAim;
 import org.surpurdueper.robot.subsystems.Amp;
+import org.surpurdueper.robot.subsystems.Blinkin;
 import org.surpurdueper.robot.subsystems.Climber;
 import org.surpurdueper.robot.subsystems.Elevator;
 import org.surpurdueper.robot.subsystems.Intake;
@@ -33,7 +34,6 @@ import org.surpurdueper.robot.subsystems.ShooterTilt;
 import org.surpurdueper.robot.subsystems.drive.CommandSwerveDrivetrain;
 import org.surpurdueper.robot.subsystems.drive.Telemetry;
 import org.surpurdueper.robot.subsystems.drive.generated.TunerConstants;
-import org.surpurdueper.robot.subsystems.Blinkin;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -80,7 +80,6 @@ public class RobotContainer {
     shooter = new Shooter();
     shooterTilt = new ShooterTilt(intake);
     blinkin = new Blinkin();
-
 
     NamedCommands.registerCommands(
         Map.of(
@@ -158,13 +157,15 @@ public class RobotContainer {
     // Score
     joystick
         .rightBumper()
-        .onTrue(amp.score().andThen(elevator.goToPosition(0)).onlyIf(amp::isAmpLoaded).andThen(blinkin.setLightsOff()));
-    
+        .onTrue(
+            amp.score()
+                .andThen(elevator.goToPosition(0))
+                .onlyIf(amp::isAmpLoaded)
+                .andThen(blinkin.setLightsOff()));
+
     joystick
         .rightBumper()
         .onTrue(intake.fire().onlyIf(amp::isAmpNotLoaded).andThen(blinkin.setLightsOff()));
-
-
 
     // Load Amp
     joystick

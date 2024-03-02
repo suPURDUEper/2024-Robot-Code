@@ -4,11 +4,10 @@
 
 package org.surpurdueper.robot.subsystems;
 
-import org.littletonrobotics.util.VirtualSubsystem;
-
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import org.littletonrobotics.util.VirtualSubsystem;
 
 public class Blinkin extends VirtualSubsystem {
 
@@ -28,14 +27,13 @@ public class Blinkin extends VirtualSubsystem {
     return Commands.runOnce(() -> lights.set(orange));
   }
 
- public Command setLightsOff() {
+  public Command setLightsOff() {
     return Commands.runOnce(() -> lights.set(orange));
- }
+  }
 
   public Command setLightsRainbow() {
     return Commands.runOnce(() -> lights.set(rainbow));
   }
- 
 
   public Blinkin() {}
 
