@@ -1,5 +1,7 @@
 package org.surpurdueper.robot.commands;
 
+import com.ctre.phoenix6.StatusCode;
+import com.ctre.phoenix6.mechanisms.swerve.SwerveModule;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -41,7 +43,7 @@ public class AutoAim extends Command {
     addRequirements(drivetrain, elevator, shooter); // TODO: Add shooterTilt back to this
 
     // Setup request to control drive always facing the speaker
-    swerveRequest = new FieldCentricFacingPoint();
+    swerveRequest = new FieldCentricAutoAim();
     swerveRequest.HeadingController.setPID(10, 0, 0);
     swerveRequest.HeadingController.enableContinuousInput(-180.0, 180.0);
   }
@@ -65,13 +67,7 @@ public class AutoAim extends Command {
     drivetrain.setControl(
         swerveRequest.withVelocityX(velocityX).withVelocityY(velocityY).withDeadband(0.1));
 
-    // Update shooter angle from current pose
-    double distanceToSpeakerMeters =
-        drivetrain.getState().Pose.getTranslation().getDistance(speakerCenter);
     shooterTilt.setPositionRotations(Units.degreesToRotations(shooterAngle.getAsDouble()));
-    // shooterTilt.setPositionRotations(
-    //     LookupTables.distanceToShooterAngle.get(distanceToSpeakerMeters));
-    // shooterTilt.setPositionDegrees(53.0); // TODO: Remove
     double elevatorHeight =
         LookupTables.elevatorShooterClearance.get(shooterTilt.getPositionRotations());
     elevator.setPositionMeters(elevatorHeight);
@@ -81,5 +77,20 @@ public class AutoAim extends Command {
   public void end(boolean interrupted) {
     elevator.setPositionMeters(0);
     shooter.turnOnIdle();
+  }
+
+  public class FieldCentricAutoAim extends FieldCentricFacingPoint {
+
+    @Override
+    public StatusCode apply(
+        SwerveControlRequestParameters parameters, SwerveModule... modulesToApply) {
+      StatusCode status = super.apply(parameters, modulesToApply);
+
+      // Use new pose estimation to set shooter angle
+      // shooterTilt.setPositionRotations(
+      //     LookupTables.distanceToShooterAngle.get(distanceToSpeakerMeters));
+
+      return status;
+    }
   }
 }

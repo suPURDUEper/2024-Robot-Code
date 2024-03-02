@@ -91,7 +91,7 @@ public class RobotContainer {
                         .withRotationalRate(squareJoystick(joystick.getRightX()) * MaxAngularRate))
             .ignoringDisable(true));
     joystick
-        .leftTrigger()
+        .back()
         .onTrue(
             drivetrain.runOnce(
                 () -> {
@@ -149,11 +149,8 @@ public class RobotContainer {
                 () ->
                     CommandScheduler.getInstance()
                         .schedule(
-                            amp.isAmpLoaded()
-                                ? amp.score().andThen(elevator.goToPosition(0))
-                                : intake.fire().withTimeout(1))));
-
-    joystick.rightBumper().onFalse(elevator.goToPosition(0));
+                            (amp.isAmpLoaded() ? amp.score() : intake.fire().withTimeout(1))
+                                .andThen(elevator.goToPosition(0)))));
 
     // Load Amp
     joystick
@@ -168,7 +165,7 @@ public class RobotContainer {
 
     joystick
         .start()
-        .onTrue(Commands.runOnce(() -> {}, intake, shooter, shooterTilt, elevator, amp));
+        .onTrue(Commands.run(() -> CommandScheduler.getInstance().cancelAll()));
 
     joystick
         .povUp()

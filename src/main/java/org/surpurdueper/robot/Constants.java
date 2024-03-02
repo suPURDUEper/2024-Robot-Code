@@ -122,7 +122,7 @@ public final class Constants {
     public static final double profileKa =
         0.70719; // Ka of arm brushed motor model in volts/(rps/s)
 
-    public static final double kPositionTolerance = Units.degreesToRotations(0.5);
+    public static final double kPositionTolerance = Units.degreesToRotations(0.25);
     public static final double kPodiumShot = Units.degreesToRotations(30.0);
     public static final double kSubwooferShot = Units.degreesToRotations(61.0);
     public static final double kMaxAutoAim = 0.0;
