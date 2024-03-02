@@ -44,7 +44,7 @@ public final class Constants {
     public static final int kFeederBreakBeam1 = 8;
     public static final int kFeederBreakBeam2 = 7;
     public static final int kAmpBreakBeam = 6;
-    public static final int kTiltEncoder = 9;
+    public static final int kClimberEncoder = 9;
   }
 
   public static class AmpConstants {
@@ -80,11 +80,11 @@ public final class Constants {
   }
 
   public static class ClimberConstants {
-    public static final double kPlanetaryGearRatio = (25.0 / 1.0);
-    public static final double kSprocketGearRatio = (48.0 / 16.0);
-    public static final double kAbsoluteEncoderOffset = 0;
-    public static final float kForwardSoftLimit = 0;
-    public static final float kReverseSoftLimit = 0;
+    public static final double kPlanetaryGearRatio = (125.0 / 1.0);
+    public static final double kSprocketGearRatio = (34.0 / 10.0);
+    public static final double kAbsoluteEncoderOffset = Units.degreesToRotations(-87.473675);
+    public static final double kForwardSoftLimit = Units.degreesToRotations(70);
+    public static final double kReverseSoftLimit = Units.degreesToRotations(-7.5);
     public static final double kp = 0;
     public static final double ki = 0;
     public static final double kd = 0;
@@ -94,9 +94,9 @@ public final class Constants {
     public static final double kg = 0;
     public static final double profileKv = 0;
     public static final double profileKa = 0;
-    public static final boolean kAbsoluteEncoderInverted = false;
-    public static final double kStatorCurrentLimit = 0;
-    public static final double kGearRatio = 0;
+    public static final boolean kAbsoluteEncoderInverted = true;
+    public static final double kStatorCurrentLimit = 80;
+    public static final double kGearRatio = kPlanetaryGearRatio * kSprocketGearRatio;
     public static final double kPositionTolerance = 0;
   }
 
@@ -123,7 +123,7 @@ public final class Constants {
     public static final double profileKa =
         0.70719; // Ka of arm brushed motor model in volts/(rps/s)
 
-    public static final double kPositionTolerance = Units.degreesToRotations(0.25);
+    public static final double kPositionTolerance = Units.degreesToRotations(0.5);
     public static final double kPodiumShot = Units.degreesToRotations(30.0);
     public static final double kSubwooferShot = Units.degreesToRotations(61.0);
     public static final double kMaxAutoAim = 0.0;

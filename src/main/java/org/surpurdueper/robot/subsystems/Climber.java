@@ -1,14 +1,6 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package org.surpurdueper.robot.subsystems;
 
-import static edu.wpi.first.units.Units.Seconds;
-
 import com.ctre.phoenix6.BaseStatusSignal;
-import com.ctre.phoenix6.SignalLogger;
-import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
@@ -16,8 +8,8 @@ import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.SoftwareLimitSwitchConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.ControlRequest;
 import com.ctre.phoenix6.controls.Follower;
-import com.ctre.phoenix6.controls.MotionMagicExpoVoltage;
 import com.ctre.phoenix6.controls.StaticBrake;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -25,31 +17,29 @@ import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.units.Measure;
-import edu.wpi.first.units.Velocity;
-import edu.wpi.first.units.Voltage;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import java.util.ArrayList;
 import java.util.List;
 import org.littletonrobotics.util.LoggedTunableNumber;
+import org.surpurdueper.robot.Constants;
 import org.surpurdueper.robot.Constants.CANIDs;
 import org.surpurdueper.robot.Constants.ClimberConstants;
-import org.surpurdueper.robot.Constants.DIOPorts;
 
 public class Climber extends SubsystemBase {
 
-  // Class variables
-  private TalonFX climberMotor;
-  private TalonFX climberFollower;
-  private DutyCycleEncoder tiltAbsoluteEncoder;
+  private final TalonFX climberMotor;
+  private final TalonFX climberFollower;
+
+  private final DutyCycleEncoder absoluteEncoder;
+
+  private VoltageOut voltageRequest = new VoltageOut(0);
+  private ControlRequest stopRequest = new StaticBrake();
   private TalonFXConfiguration climberConfig;
-  private double targetRotations = -1;
 
   // Tunable numbers
   private static final LoggedTunableNumber kp = new LoggedTunableNumber("Climber/Kp");
@@ -62,36 +52,6 @@ public class Climber extends SubsystemBase {
   private static final LoggedTunableNumber profileKv = new LoggedTunableNumber("Climber/profileKv");
   private static final LoggedTunableNumber profileKa = new LoggedTunableNumber("Climber/profileKa");
   private static final List<LoggedTunableNumber> pidGains = new ArrayList<>();
-
-  // Control requests
-  private final StaticBrake stopRequest = new StaticBrake();
-  private final VoltageOut voltageRequest = new VoltageOut(0);
-  private final MotionMagicExpoVoltage positionRequest = new MotionMagicExpoVoltage(0);
-
-  private static final Measure<Velocity<Voltage>> sysIdRampRate =
-      edu.wpi.first.units.Units.Volts.of(1).per(Seconds.of(1));
-  private static final Measure<Voltage> sysIdStepAmps = edu.wpi.first.units.Units.Volts.of(7);
-  // SysID Setup
-  private final SysIdRoutine sysIdRoutine =
-      new SysIdRoutine(
-          // Empty config defaults to 1 volt/second ramp rate and 7 volt step voltage.
-          new SysIdRoutine.Config(
-              sysIdRampRate,
-              sysIdStepAmps,
-              null,
-              state -> SignalLogger.writeString("state", state.toString())),
-          new SysIdRoutine.Mechanism(
-              // Tell SysId how to plumb the driving voltage to the motor(s).
-              (Measure<Voltage> volts) -> {
-                climberMotor.setControl(
-                    voltageRequest.withOutput(volts.in(edu.wpi.first.units.Units.Volts)));
-              },
-              // Tell SysId how to record a frame of data for each motor on the mechanism being
-              // characterized.
-              null, // Using the CTRE SignalLogger API instead
-              // Tell SysId to make generated commands require this subsystem, suffix test state in
-              // WPILog with this subsystem's name ("shooter")
-              this));
 
   static {
     kp.initDefault(ClimberConstants.kp);
@@ -107,23 +67,19 @@ public class Climber extends SubsystemBase {
   }
 
   public Climber() {
-    climberMotor = new TalonFX(CANIDs.kClimberMotor, "canivore");
-    climberFollower = new TalonFX(CANIDs.kClimber2Motor, "canivore");
-    tiltAbsoluteEncoder = new DutyCycleEncoder(DIOPorts.kTiltEncoder);
-    tiltAbsoluteEncoder.setDistancePerRotation(ClimberConstants.kAbsoluteEncoderInverted ? -1 : 1);
-    tiltAbsoluteEncoder.setPositionOffset(ClimberConstants.kAbsoluteEncoderOffset);
-    configureTalonFx();
-    // setupSysIdTiming(climberMotor);
+    this.climberMotor = new TalonFX(CANIDs.kClimberMotor, "canivore");
+    this.climberFollower = new TalonFX(CANIDs.kClimber2Motor, "canivore");
+    configureTalonFX();
+
+    absoluteEncoder = new DutyCycleEncoder(Constants.DIOPorts.kClimberEncoder);
   }
 
   @Override
   public void periodic() {
-    // Update tunable numbers
-    if (Math.abs(getAbsoluteSensorAngle() - climberMotor.getPosition().getValueAsDouble())
-        > Units.degreesToRotations(1.0)) {
-      climberMotor.setPosition(getAbsoluteSensorAngle());
+    if (DriverStation.isDisabled()) {
+      syncMotorAndAbsEncoder();
     }
-
+    // Update tunable numbers
     for (LoggedTunableNumber gain : pidGains) {
       if (gain.hasChanged(hashCode())) {
         // Send new PID gains to talon
@@ -149,6 +105,7 @@ public class Climber extends SubsystemBase {
     }
 
     // Log out to Glass for debugging
+    double rawAbsSensor = Units.rotationsToDegrees(rawAbsSensorAngle());
     double armPositionAbs = Units.rotationsToDegrees(getAbsoluteSensorAngle());
     double armPositionMotor =
         Units.rotationsToDegrees(climberMotor.getPosition().getValueAsDouble());
@@ -156,9 +113,8 @@ public class Climber extends SubsystemBase {
         Units.rotationsToDegrees(climberMotor.getClosedLoopReference().getValueAsDouble());
     SmartDashboard.putNumber("Climber/Position (Abs)", armPositionAbs);
     SmartDashboard.putNumber("Climber/Position (Motor)", armPositionMotor);
-    SmartDashboard.putNumber("Climber/Setpoint", targetRotations);
     SmartDashboard.putNumber("Climber/Profile Target", armPositionSetpoint);
-    SmartDashboard.putBoolean("Climber/AtPosition", isAtPosition());
+    SmartDashboard.putNumber("Climber/Raw Abs Sensor", rawAbsSensor);
   }
 
   private void setupSysIdTiming(TalonFX motorToTest) {
@@ -170,68 +126,40 @@ public class Climber extends SubsystemBase {
     motorToTest.optimizeBusUtilization();
   }
 
+  public double rawAbsSensorAngle() {
+    return Units.radiansToRotations(
+        MathUtil.angleModulus(Units.rotationsToRadians(absoluteEncoder.getDistance())));
+  }
+
   public double getAbsoluteSensorAngle() {
-    double wrappedAngle =
-        MathUtil.angleModulus(Units.rotationsToRadians(tiltAbsoluteEncoder.getDistance()));
-    return Units.radiansToRotations(wrappedAngle);
+    double zeroedSensorAngle =
+        Rotation2d.fromRotations(rawAbsSensorAngle())
+            .rotateBy(Rotation2d.fromRotations(ClimberConstants.kAbsoluteEncoderOffset))
+            .getRotations();
+
+    if (zeroedSensorAngle > Units.degreesToRotations(40)) {
+      zeroedSensorAngle--;
+    }
+    double armAngle = zeroedSensorAngle * -1 / ClimberConstants.kSprocketGearRatio;
+    return armAngle;
+  }
+
+  public void syncMotorAndAbsEncoder() {
+    climberMotor.setPosition(getAbsoluteSensorAngle());
   }
 
   public void setVoltage(double volts) {
     climberMotor.setControl(voltageRequest.withOutput(volts));
-  }
-
-  public void setPositionRads(double position) {
-    setPositionRotations(Units.radiansToRotations(position));
-  }
-
-  public void setPositionDegrees(double position) {
-    setPositionRotations(Units.degreesToRotations(position));
-  }
-
-  public void setPositionRotations(double position) {
-    targetRotations = position;
-    climberMotor.setControl(positionRequest.withPosition(targetRotations));
-  }
-
-  public double getPositionRotations() {
-    return climberMotor.getPosition().getValueAsDouble();
-  }
-
-  public StatusSignal<Double> getPositionSignal() {
-    return climberMotor.getPosition();
-  }
-
-  public StatusSignal<Double> getVelocitySignal() {
-    return climberMotor.getVelocity();
+    climberFollower.setControl(
+        new Follower(climberMotor.getDeviceID(), true).withUpdateFreqHz(250));
   }
 
   public void stop() {
     climberMotor.setControl(stopRequest);
+    climberFollower.setControl(stopRequest);
   }
 
-  public boolean isAtPosition() {
-    return Math.abs(targetRotations - climberMotor.getPosition().getValueAsDouble())
-        < ClimberConstants.kPositionTolerance;
-  }
-
-  public Command goToPosition(double rotations) {
-    return Commands.runOnce(() -> setPositionRotations(rotations), this);
-  }
-
-  public Command goToPositionBlocking(double rotations) {
-    return Commands.runOnce(() -> setPositionRotations(rotations), this)
-        .andThen(Commands.waitUntil(this::isAtPosition));
-  }
-
-  public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
-    return sysIdRoutine.quasistatic(direction);
-  }
-
-  public Command sysIdDynamic(SysIdRoutine.Direction direction) {
-    return sysIdRoutine.dynamic(direction);
-  }
-
-  public void configureTalonFx() {
+  private void configureTalonFX() {
     MotorOutputConfigs motorOutputConfigs =
         new MotorOutputConfigs()
             .withNeutralMode(NeutralModeValue.Brake)
@@ -266,13 +194,11 @@ public class Climber extends SubsystemBase {
         new TalonFXConfiguration()
             .withMotorOutput(motorOutputConfigs)
             .withSoftwareLimitSwitch(softlimitConfig)
-            .withSlot0(slot0config)
             .withCurrentLimits(currentConfig)
             .withFeedback(feedbackConfig)
+            .withSlot0(slot0config)
             .withMotionMagic(motionMagicConfigs);
     climberMotor.getConfigurator().apply(climberConfig);
     climberFollower.getConfigurator().apply(new TalonFXConfiguration());
-    climberFollower.setControl(
-        new Follower(climberMotor.getDeviceID(), true).withUpdateFreqHz(250));
   }
 }

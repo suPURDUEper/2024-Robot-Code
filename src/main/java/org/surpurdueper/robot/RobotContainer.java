@@ -6,21 +6,26 @@ package org.surpurdueper.robot;
 
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
+import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import java.util.Map;
 import org.frc3005.lib.vendor.motorcontroller.SparkMax;
 import org.littletonrobotics.util.AllianceFlipUtil;
 import org.littletonrobotics.util.FieldConstants;
 import org.surpurdueper.robot.Constants.ElevatorConstants;
+import org.surpurdueper.robot.Constants.LookupTables;
 import org.surpurdueper.robot.Constants.TiltConstants;
 import org.surpurdueper.robot.commands.AutoAim;
 import org.surpurdueper.robot.subsystems.Amp;
+import org.surpurdueper.robot.subsystems.Climber;
 import org.surpurdueper.robot.subsystems.Elevator;
 import org.surpurdueper.robot.subsystems.Intake;
 import org.surpurdueper.robot.subsystems.Shooter;
@@ -36,12 +41,12 @@ import org.surpurdueper.robot.subsystems.drive.generated.TunerConstants;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
-  private final Intake intake = new Intake();
-  private final Amp amp = new Amp();
-  //   private final Climber climber = new Climber();
-  private final Elevator elevator = new Elevator();
-  private final Shooter shooter = new Shooter();
-  private final ShooterTilt shooterTilt = new ShooterTilt(intake);
+  private final Intake intake;
+  private final Amp amp;
+  private final Climber climber;
+  private final Elevator elevator;
+  private final Shooter shooter;
+  private final ShooterTilt shooterTilt;
 
   /* Setting up bindings for necessary control of the swerve drive platform */
   private double MaxSpeed = Units.feetToMeters(12); // kSpeedAt12VoltsMps desired top speed
@@ -65,7 +70,21 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     SparkMax.burnFlashInSync();
-    // Configure the trigger bindings
+
+    intake = new Intake();
+    amp = new Amp();
+    climber = new Climber();
+    elevator = new Elevator();
+    shooter = new Shooter();
+    shooterTilt = new ShooterTilt(intake);
+
+    NamedCommands.registerCommands(
+        Map.of(
+            "Shooter On", shooter.on(),
+            "Intake", intake.load(),
+            "Fire", intake.fire(),
+            "Aim", aimShooterAndElevator()));
+
     configureBindings();
   }
 
@@ -116,22 +135,13 @@ public class RobotContainer {
                 () -> squareJoystick(-joystick.getLeftY()) * MaxSpeed,
                 () -> squareJoystick(-joystick.getLeftX()) * MaxSpeed));
 
-    // joystick.y().onTrue(shooterTilt.goToPosition(TiltConstants.kPodiumShot).andThen(shooter.on()));
+    // joystick.y().onTrue(elevator.goToPosition(Units.inchesToMeters(21)));
     // joystick
     //     .x()
     //     .onTrue(shooterTilt.goToPosition(TiltConstants.kSubwooferShot).andThen(shooter.on()));
 
     // Intake
-    joystick
-        .leftBumper()
-        .onTrue(
-            elevator
-                .goToPosition(0)
-                .alongWith(
-                    shooterTilt
-                        .goToPositionBlocking(TiltConstants.kIntakeAngle)
-                        .onlyIf(shooterTilt::isNotAtIntakeHeight)
-                        .andThen(intake.load())));
+    joystick.leftBumper().onTrue(intake());
 
     joystick
         .b()
@@ -145,12 +155,8 @@ public class RobotContainer {
     joystick
         .rightBumper()
         .onTrue(amp.score().andThen(elevator.goToPosition(0)).onlyIf(amp::isAmpLoaded));
-    
-    joystick
-        .rightBumper()
-        .onTrue(intake.fire().onlyIf(amp::isAmpNotLoaded));
 
-
+    joystick.rightBumper().onTrue(intake.fire().onlyIf(amp::isAmpNotLoaded));
 
     // Load Amp
     joystick
@@ -176,6 +182,17 @@ public class RobotContainer {
             Commands.startEnd(
                 () -> shooterTilt.setVoltage(-4), () -> shooterTilt.stop(), shooterTilt));
 
+    joystick
+        .x()
+        .whileTrue(Commands.startEnd(() -> climber.setVoltage(-12), () -> climber.stop(), climber));
+
+    joystick
+        .y()
+        .whileTrue(Commands.startEnd(() -> climber.setVoltage(12), () -> climber.stop(), climber));
+
+    joystick.povRight().onTrue(elevator.goToPosition(Units.inchesToMeters(20)));
+    joystick.povLeft().onTrue(elevator.goToPosition(Units.inchesToMeters(0)));
+
     // shooterTilt.setDefaultCommand(
     //     Commands.run(
     //         () -> shooterTilt.setVoltage(8 * applyDeadband(joystick2.getRightY())),
@@ -190,6 +207,38 @@ public class RobotContainer {
     // joystick2.back().and(joystick2.x()).whileTrue(elevator.sysIdDynamic(Direction.kReverse));
     // joystick2.start().and(joystick2.y()).whileTrue(elevator.sysIdQuasistatic(Direction.kForward));
     // joystick2.start().and(joystick2.x()).whileTrue(elevator.sysIdQuasistatic(Direction.kReverse));
+  }
+
+  public Command intake() {
+    return elevator
+        .goToPosition(0)
+        .alongWith(
+            shooterTilt
+                .goToPositionBlocking(TiltConstants.kIntakeAngle)
+                .onlyIf(shooterTilt::isNotAtIntakeHeight)
+                .andThen(intake.load()));
+  }
+
+  public Command aimShooterAndElevator() {
+    return new FunctionalCommand(
+        () -> {},
+        () -> {
+          double distanceToSpeakerMeters =
+              drivetrain
+                  .getState()
+                  .Pose
+                  .getTranslation()
+                  .getDistance(FieldConstants.Speaker.centerSpeakerOpening.toTranslation2d());
+          double shooterAngle = LookupTables.distanceToShooterAngle.get(distanceToSpeakerMeters);
+          shooterTilt.setPositionRotations(shooterAngle);
+          elevator.setPositionMeters(LookupTables.elevatorShooterClearance.get(shooterAngle));
+        },
+        (onEnd) -> {},
+        () -> {
+          return false;
+        },
+        shooterTilt,
+        elevator);
   }
 
   /**
