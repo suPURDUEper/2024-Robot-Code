@@ -23,6 +23,7 @@ import org.surpurdueper.robot.subsystems.ShooterTilt;
 import org.surpurdueper.robot.subsystems.drive.CommandSwerveDrivetrain;
 import org.surpurdueper.robot.subsystems.drive.Telemetry;
 import org.surpurdueper.robot.subsystems.drive.generated.TunerConstants;
+import org.surpurdueper.robot.subsystems.Blinkin;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -37,6 +38,7 @@ public class RobotContainer {
   private final Elevator elevator = new Elevator();
   private final Shooter shooter = new Shooter();
   private final ShooterTilt shooterTilt = new ShooterTilt();
+  private final Blinkin blinkin = new Blinkin();
 
   /* Setting up bindings for necessary control of the swerve drive platform */
   private double MaxSpeed = Units.feetToMeters(10); // kSpeedAt12VoltsMps desired top speed
@@ -113,7 +115,7 @@ public class RobotContainer {
                 .andThen(intake.load()));
 
     // Score
-    joystick.rightBumper().whileTrue(Commands.either(amp.score(), intake.fire(), amp::isAmpLoaded));
+    joystick.rightBumper().whileTrue(Commands.either(amp.score(), intake.fire(), amp::isAmpLoaded).andThen(blinkin.setLightsOff()));
 
     // Load Amp
     joystick
@@ -124,11 +126,12 @@ public class RobotContainer {
                 .andThen(Commands.deadline(amp.load(), intake.feedAmp(), shooter.feedAmp())));
 
     shooterTilt.setDefaultCommand(
-        Commands.run(() -> shooterTilt.setVoltage(8 * applyDeadband(joystick2.getRightY())), shooterTilt));
+        Commands.run(
+            () -> shooterTilt.setVoltage(8 * applyDeadband(joystick2.getRightY())), shooterTilt));
 
-    joystick2.a().onTrue(intake.load());
-    joystick2.b().whileTrue(intake.purge());
-    
+    joystick2.a().onTrue(intake.load().andThen(blinkin.setLightsStrobeGold()).andThen(Commands.waitSeconds(1)).andThen(blinkin.setLightsOrange()));
+    joystick2.b().whileTrue(intake.purge().andThen(blinkin.setLightsOff()));
+
     /* Bindings for characterization */
     /* These bindings require multiple buttons pushed to swap between quastatic and dynamic */
     /* Back/Start select dynamic/quasistatic, Y/X select forward/reverse direction */

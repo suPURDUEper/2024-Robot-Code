@@ -135,7 +135,8 @@ public class Elevator extends SubsystemBase {
 
     // Log out to Glass for debugging
     double armPositionMotor = Units.metersToInches(elevatorMotor.getPosition().getValueAsDouble());
-    double armPositionSetpoint = Units.metersToInches(elevatorMotor.getClosedLoopReference().getValueAsDouble());
+    double armPositionSetpoint =
+        Units.metersToInches(elevatorMotor.getClosedLoopReference().getValueAsDouble());
     SmartDashboard.putNumber("Elevator/Position (Motor)", armPositionMotor);
     SmartDashboard.putNumber("Elevator/Target Position", armPositionSetpoint);
   }
