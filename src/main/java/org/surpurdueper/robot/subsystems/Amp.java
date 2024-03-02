@@ -59,11 +59,6 @@ public class Amp extends SubsystemBase {
 
   public Command score() {
     return Commands.startEnd(
-<<<<<<< HEAD
-        () -> ampMotor.setControl(voltageRequest.withOutput(AmpConstants.kScoreVoltage)),
-        () -> ampMotor.setControl(coastRequest),
-        this);
-=======
             () -> ampMotor.setControl(voltageRequest.withOutput(AmpConstants.kScoreVoltage)),
             () -> ampMotor.setControl(coastRequest),
             this)
@@ -72,7 +67,6 @@ public class Amp extends SubsystemBase {
 
   public Command purge() {
     return Commands.startEnd(() -> setVoltage(-3), this::stop, this);
->>>>>>> 199734bdb835b019c2098555986e52ef54ddf454
   }
 
   public boolean isAmpLoaded() {
