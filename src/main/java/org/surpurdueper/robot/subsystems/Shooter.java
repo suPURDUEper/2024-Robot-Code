@@ -178,10 +178,13 @@ public class Shooter extends SubsystemBase {
 
   public Command feedAmp() {
     return Commands.startEnd(() -> setShooterRps(1500 / 60.0, 1500 / 60.0), () -> stop(), this);
+<<<<<<< HEAD
+=======
   }
 
   public Command purge() {
     return Commands.startEnd(() -> setVoltage(-2, -2), this::stop, this);
+>>>>>>> 199734bdb835b019c2098555986e52ef54ddf454
   }
 
   public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {

@@ -33,6 +33,7 @@ import org.surpurdueper.robot.subsystems.ShooterTilt;
 import org.surpurdueper.robot.subsystems.drive.CommandSwerveDrivetrain;
 import org.surpurdueper.robot.subsystems.drive.Telemetry;
 import org.surpurdueper.robot.subsystems.drive.generated.TunerConstants;
+import org.surpurdueper.robot.subsystems.Blinkin;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -47,6 +48,7 @@ public class RobotContainer {
   private final Elevator elevator;
   private final Shooter shooter;
   private final ShooterTilt shooterTilt;
+  private final Blinkin blinkin;
 
   /* Setting up bindings for necessary control of the swerve drive platform */
   private double MaxSpeed = Units.feetToMeters(12); // kSpeedAt12VoltsMps desired top speed
@@ -77,6 +79,8 @@ public class RobotContainer {
     elevator = new Elevator();
     shooter = new Shooter();
     shooterTilt = new ShooterTilt(intake);
+    blinkin = new Blinkin();
+
 
     NamedCommands.registerCommands(
         Map.of(
@@ -154,9 +158,13 @@ public class RobotContainer {
     // Score
     joystick
         .rightBumper()
-        .onTrue(amp.score().andThen(elevator.goToPosition(0)).onlyIf(amp::isAmpLoaded));
+        .onTrue(amp.score().andThen(elevator.goToPosition(0)).onlyIf(amp::isAmpLoaded).andThen(blinkin.setLightsOff()));
+    
+    joystick
+        .rightBumper()
+        .onTrue(intake.fire().onlyIf(amp::isAmpNotLoaded).andThen(blinkin.setLightsOff()));
 
-    joystick.rightBumper().onTrue(intake.fire().onlyIf(amp::isAmpNotLoaded));
+
 
     // Load Amp
     joystick
@@ -216,7 +224,10 @@ public class RobotContainer {
             shooterTilt
                 .goToPositionBlocking(TiltConstants.kIntakeAngle)
                 .onlyIf(shooterTilt::isNotAtIntakeHeight)
-                .andThen(intake.load()));
+                .andThen(intake.load())
+                .andThen(blinkin.setLightsStrobeGold())
+                .andThen(Commands.waitSeconds(1))
+                .andThen(blinkin.setLightsOrange()));
   }
 
   public Command aimShooterAndElevator() {
