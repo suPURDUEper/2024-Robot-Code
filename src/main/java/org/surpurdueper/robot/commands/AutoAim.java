@@ -3,7 +3,6 @@ package org.surpurdueper.robot.commands;
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import java.util.function.DoubleSupplier;
@@ -67,7 +66,7 @@ public class AutoAim extends Command {
     drivetrain.setControl(
         swerveRequest.withVelocityX(velocityX).withVelocityY(velocityY).withDeadband(0.1));
 
-    shooterTilt.setPositionRotations(Units.degreesToRotations(shooterAngle.getAsDouble()));
+    // shooterTilt.setPositionRotations(Units.degreesToRotations(shooterAngle.getAsDouble()));
     double elevatorHeight =
         LookupTables.elevatorShooterClearance.get(shooterTilt.getPositionRotations());
     elevator.setPositionMeters(elevatorHeight);
@@ -87,8 +86,10 @@ public class AutoAim extends Command {
       StatusCode status = super.apply(parameters, modulesToApply);
 
       // Use new pose estimation to set shooter angle
-      // shooterTilt.setPositionRotations(
-      //     LookupTables.distanceToShooterAngle.get(distanceToSpeakerMeters));
+      double distanceToSpeakerMeters =
+          parameters.currentPose.getTranslation().getDistance(speakerCenter);
+      shooterTilt.setPositionRotations(
+          LookupTables.distanceToShooterAngle.get(distanceToSpeakerMeters));
 
       return status;
     }

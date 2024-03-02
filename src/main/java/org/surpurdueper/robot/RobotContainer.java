@@ -144,13 +144,13 @@ public class RobotContainer {
     // Score
     joystick
         .rightBumper()
-        .onTrue(
-            Commands.run(
-                () ->
-                    CommandScheduler.getInstance()
-                        .schedule(
-                            (amp.isAmpLoaded() ? amp.score() : intake.fire().withTimeout(1))
-                                .andThen(elevator.goToPosition(0)))));
+        .onTrue(amp.score().andThen(elevator.goToPosition(0)).onlyIf(amp::isAmpLoaded));
+    
+    joystick
+        .rightBumper()
+        .onTrue(intake.fire().onlyIf(amp::isAmpNotLoaded));
+
+
 
     // Load Amp
     joystick
@@ -163,9 +163,7 @@ public class RobotContainer {
                 .andThen(shooterTilt.goToPositionBlocking(TiltConstants.kSafeElevator))
                 .andThen(elevator.goToPosition(ElevatorConstants.kAmpScoreHeight)));
 
-    joystick
-        .start()
-        .onTrue(Commands.run(() -> CommandScheduler.getInstance().cancelAll()));
+    joystick.start().onTrue(Commands.run(() -> CommandScheduler.getInstance().cancelAll()));
 
     joystick
         .povUp()

@@ -6,6 +6,7 @@ package org.surpurdueper.robot;
 
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.util.Units;
+import org.littletonrobotics.util.FieldConstants;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -173,25 +174,25 @@ public final class Constants {
     public static final InterpolatingDoubleTreeMap distanceToShooterAngle =
         new InterpolatingDoubleTreeMap();
 
+    private static void addPointToDistanceToShooterAngle(
+        double distanceInches, double angleDegrees) {
+      distanceToShooterAngle.put(
+          Units.inchesToMeters(distanceInches)
+              + kBumperToRobotCenter
+              + FieldConstants.subwooferToSpeakerCenter,
+          Units.degreesToRotations(angleDegrees));
+    }
+
     static {
-      distanceToShooterAngle.put(
-          Units.inchesToMeters(00 + kBumperToRobotCenter), Units.degreesToRotations(54.5));
-      distanceToShooterAngle.put(
-          Units.inchesToMeters(12 + kBumperToRobotCenter), Units.degreesToRotations(53.0));
-      distanceToShooterAngle.put(
-          Units.inchesToMeters(24 + kBumperToRobotCenter), Units.degreesToRotations(46.5));
-      distanceToShooterAngle.put(
-          Units.inchesToMeters(36 + kBumperToRobotCenter), Units.degreesToRotations(42.5));
-      distanceToShooterAngle.put(
-          Units.inchesToMeters(48 + kBumperToRobotCenter), Units.degreesToRotations(39.5));
-      distanceToShooterAngle.put(
-          Units.inchesToMeters(60 + kBumperToRobotCenter), Units.degreesToRotations(37.0));
-      distanceToShooterAngle.put(
-          Units.inchesToMeters(72 + kBumperToRobotCenter), Units.degreesToRotations(34.5));
-      distanceToShooterAngle.put(
-          Units.inchesToMeters(84 + kBumperToRobotCenter), Units.degreesToRotations(31.75));
-      distanceToShooterAngle.put(
-          Units.inchesToMeters(96 + kBumperToRobotCenter), Units.degreesToRotations(29.25));
+      addPointToDistanceToShooterAngle(00, 54.5);
+      addPointToDistanceToShooterAngle(12, 53.0);
+      addPointToDistanceToShooterAngle(24, 46.5);
+      addPointToDistanceToShooterAngle(36, 42.5);
+      addPointToDistanceToShooterAngle(48, 39.5);
+      addPointToDistanceToShooterAngle(60, 37.0);
+      addPointToDistanceToShooterAngle(72, 34.5);
+      addPointToDistanceToShooterAngle(84, 31.75);
+      addPointToDistanceToShooterAngle(96, 29.25);
     }
   }
 }
