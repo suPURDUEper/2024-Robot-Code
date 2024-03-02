@@ -5,6 +5,8 @@
 package org.surpurdueper.robot.subsystems;
 
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Blinkin extends SubsystemBase {
@@ -14,19 +16,25 @@ public class Blinkin extends SubsystemBase {
   public static final double orange = 0.65;
   public static final double strobeGold = -0.07;
   public static final double black = .99;
+  public static final double rainbow = -0.99;
 
   /** Creates a new blinkin. */
-  public void setLightsOrange() {
-    lights.set(orange);
+  public Command setLightsOrange() {
+    return Commands.runOnce(() -> lights.set(orange));
   }
 
-  public void setLightsStrobeGold() {
-    lights.set(strobeGold);
+  public Command setLightsStrobeGold() {
+    return Commands.runOnce(() -> lights.set(orange));
   }
 
-  public void setLightsOff() {
-    lights.set(black);
+ public Command setLightsOff() {
+    return Commands.runOnce(() -> lights.set(orange));
+ }
+
+  public Command setLightsRainbow() {
+    return Commands.runOnce(() -> lights.set(rainbow));
   }
+ 
 
   public Blinkin() {}
 
