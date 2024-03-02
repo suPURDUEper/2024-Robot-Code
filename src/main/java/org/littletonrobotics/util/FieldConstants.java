@@ -110,6 +110,11 @@ public class FieldConstants {
             Rotation2d.fromDegrees(180));
   }
 
+  public static final double subwooferToSpeakerCenter =
+      Speaker.centerSpeakerOpening
+          .toTranslation2d()
+          .getDistance(Subwoofer.centerFace.getTranslation());
+
   public static final class Stage {
     public static Pose2d podiumLeg =
         new Pose2d(Units.inchesToMeters(126.75), Units.inchesToMeters(161.638), new Rotation2d());

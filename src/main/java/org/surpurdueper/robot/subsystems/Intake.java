@@ -15,7 +15,7 @@ import org.surpurdueper.robot.Constants.DIOPorts;
 
 public class Intake extends SubsystemBase {
 
-  CANSparkMax intakeMotor;
+  public CANSparkMax intakeMotor;
   CANSparkMax feederMotor;
   DigitalInput feederBreakBeam1;
   DigitalInput feederBreakBeam2;

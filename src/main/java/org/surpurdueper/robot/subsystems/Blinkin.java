@@ -4,6 +4,7 @@
 
 package org.surpurdueper.robot.subsystems;
 
+<<<<<<< HEAD
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -38,6 +39,16 @@ public class Blinkin extends SubsystemBase {
 
   public Blinkin() {}
 
+=======
+import org.littletonrobotics.util.VirtualSubsystem;
+
+public class Blinkin extends VirtualSubsystem {
+  /** Creates a new Blinkin. */
+  public Blinkin() {
+    super();
+  }
+
+>>>>>>> 199734bdb835b019c2098555986e52ef54ddf454
   @Override
   public void periodic() {
     // This method will be called once per scheduler run

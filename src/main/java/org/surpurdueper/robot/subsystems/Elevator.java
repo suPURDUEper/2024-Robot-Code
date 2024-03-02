@@ -169,7 +169,11 @@ public class Elevator extends SubsystemBase {
   }
 
   public Command goToPosition(double meters) {
-    return Commands.run(() -> setPositionMeters(meters));
+    return Commands.runOnce(() -> setPositionMeters(meters));
+  }
+
+  public Command goToPositionBlocking(double meters) {
+    return goToPosition(meters).andThen(Commands.waitUntil(this::isAtPosition));
   }
 
   public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
@@ -183,7 +187,7 @@ public class Elevator extends SubsystemBase {
   public void configureTalonFx() {
     MotorOutputConfigs motorOutputConfigs =
         new MotorOutputConfigs()
-            .withNeutralMode(NeutralModeValue.Brake)
+            .withNeutralMode(NeutralModeValue.Coast)
             .withInverted(InvertedValue.Clockwise_Positive);
     CurrentLimitsConfigs currentConfig =
         new CurrentLimitsConfigs()
