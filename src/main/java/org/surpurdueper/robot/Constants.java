@@ -152,8 +152,7 @@ public final class Constants {
 
   public static class LookupTables {
     // Key is shooter angle (in rotations). Value is minimum elevator height such that the shot
-    // clears
-    // the shooter (in meters from bottom hardstop)
+    // clears the shooter (in meters from bottom hardstop)
     public static final InterpolatingDoubleTreeMap elevatorShooterClearance =
         new InterpolatingDoubleTreeMap();
 
