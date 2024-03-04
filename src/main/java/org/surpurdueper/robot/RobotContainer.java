@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
+import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import java.util.Map;
@@ -86,8 +87,7 @@ public class RobotContainer {
         Map.of(
             "Shooter On", shooter.on(),
             "Intake", intake.load(),
-            "Fire", intake.fire(),
-            "Aim", aimShooterAndElevator()));
+            "Fire", intake.fire()));
 
     configureBindings();
   }
@@ -226,32 +226,13 @@ public class RobotContainer {
             shooterTilt
                 .goToPositionBlocking(TiltConstants.kIntakeAngle)
                 .onlyIf(shooterTilt::isNotAtIntakeHeight)
-                .andThen(intake.load())
-                .andThen(blinkin.setLightsStrobeGold())
-                .andThen(Commands.waitSeconds(1))
-                .andThen(blinkin.setLightsOrange()));
-  }
-
-  public Command aimShooterAndElevator() {
-    return new FunctionalCommand(
-        () -> {},
-        () -> {
-          double distanceToSpeakerMeters =
-              drivetrain
-                  .getState()
-                  .Pose
-                  .getTranslation()
-                  .getDistance(FieldConstants.Speaker.centerSpeakerOpening.toTranslation2d());
-          double shooterAngle = LookupTables.distanceToShooterAngle.get(distanceToSpeakerMeters);
-          shooterTilt.setPositionRotations(shooterAngle);
-          elevator.setPositionMeters(LookupTables.elevatorShooterClearance.get(shooterAngle));
-        },
-        (onEnd) -> {},
-        () -> {
-          return false;
-        },
-        shooterTilt,
-        elevator);
+                .andThen(
+                    intake.load(),
+                    new ScheduleCommand(
+                        Commands.sequence(
+                            blinkin.setLightsStrobeGold(),
+                            Commands.waitSeconds(1),
+                            blinkin.setLightsOrange()))));
   }
 
   /**
