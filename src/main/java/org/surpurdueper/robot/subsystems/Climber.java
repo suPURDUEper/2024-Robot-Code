@@ -76,7 +76,7 @@ public class Climber extends SubsystemBase {
 
   @Override
   public void periodic() {
-    if (DriverStation.isDisabled()) {
+    if (DriverStation.isDisabled() && Math.abs(getPositionRotations() - getAbsoluteSensorAngle()) > Units.degreesToRotations(1)) {
       syncMotorAndAbsEncoder();
     }
     // Update tunable numbers
@@ -146,6 +146,10 @@ public class Climber extends SubsystemBase {
 
   public void syncMotorAndAbsEncoder() {
     climberMotor.setPosition(getAbsoluteSensorAngle());
+  }
+
+  public double getPositionRotations() {
+    return climberMotor.getPosition().getValueAsDouble();
   }
 
   public void setVoltage(double volts) {

@@ -52,7 +52,6 @@ public class AutoAim extends Command {
     speakerCenter =
         AllianceFlipUtil.apply(FieldConstants.Speaker.centerSpeakerOpening.toTranslation2d());
     swerveRequest.setPointToFace(speakerCenter);
-    // elevatorSyncThread.start();
     shooter.turnOn();
   }
 
@@ -67,9 +66,7 @@ public class AutoAim extends Command {
         swerveRequest.withVelocityX(velocityX).withVelocityY(velocityY).withDeadband(0.1));
 
     // shooterTilt.setPositionRotations(Units.degreesToRotations(shooterAngle.getAsDouble()));
-    double elevatorHeight =
-        LookupTables.elevatorShooterClearance.get(shooterTilt.getPositionRotations());
-    elevator.setPositionMeters(elevatorHeight);
+    elevator.followShooter(shooterTilt.getPositionRotations());
   }
 
   @Override

@@ -33,9 +33,11 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.DoubleSupplier;
 import org.littletonrobotics.util.LoggedTunableNumber;
 import org.surpurdueper.robot.Constants.CANIDs;
 import org.surpurdueper.robot.Constants.ElevatorConstants;
+import org.surpurdueper.robot.Constants.LookupTables;
 
 public class Elevator extends SubsystemBase {
 
@@ -170,6 +172,15 @@ public class Elevator extends SubsystemBase {
 
   public Command goToPosition(double meters) {
     return Commands.runOnce(() -> setPositionMeters(meters));
+  }
+
+  public void followShooter(double shooterAngle) {
+    double elevatorHeight = LookupTables.elevatorShooterClearance.get(shooterAngle);
+    setPositionMeters(elevatorHeight);
+  }
+
+  public Command followShooter(DoubleSupplier shooterAngle) {
+    return Commands.run(() -> followShooter(shooterAngle.getAsDouble()), this);
   }
 
   public Command goToPositionBlocking(double meters) {
