@@ -10,6 +10,7 @@ import com.ctre.phoenix6.configs.SoftwareLimitSwitchConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.ControlRequest;
 import com.ctre.phoenix6.controls.Follower;
+import com.ctre.phoenix6.controls.MotionMagicExpoVoltage;
 import com.ctre.phoenix6.controls.StaticBrake;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -37,8 +38,10 @@ public class Climber extends SubsystemBase {
 
   private final DutyCycleEncoder absoluteEncoder;
 
+  private MotionMagicExpoVoltage positionRequest = new MotionMagicExpoVoltage(0);
   private VoltageOut voltageRequest = new VoltageOut(0);
   private ControlRequest stopRequest = new StaticBrake();
+  private Follower followRequest;
   private TalonFXConfiguration climberConfig;
 
   // Tunable numbers
@@ -70,7 +73,7 @@ public class Climber extends SubsystemBase {
     this.climberMotor = new TalonFX(CANIDs.kClimberMotor, "canivore");
     this.climberFollower = new TalonFX(CANIDs.kClimber2Motor, "canivore");
     configureTalonFX();
-
+    followRequest = new Follower(climberMotor.getDeviceID(), true).withUpdateFreqHz(250);
     absoluteEncoder = new DutyCycleEncoder(Constants.DIOPorts.kClimberEncoder);
   }
 
@@ -154,10 +157,14 @@ public class Climber extends SubsystemBase {
     return climberMotor.getPosition().getValueAsDouble();
   }
 
+  public void setPositionRotations(double rotations) {
+    climberMotor.setControl(positionRequest.withPosition(rotations));
+    climberFollower.setControl(followRequest);
+  }
+
   public void setVoltage(double volts) {
     climberMotor.setControl(voltageRequest.withOutput(volts));
-    climberFollower.setControl(
-        new Follower(climberMotor.getDeviceID(), true).withUpdateFreqHz(250));
+    climberFollower.setControl(followRequest);
   }
 
   public void stop() {

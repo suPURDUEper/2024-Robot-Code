@@ -13,7 +13,6 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -22,7 +21,6 @@ import org.frc3005.lib.vendor.motorcontroller.SparkMax;
 import org.littletonrobotics.util.AllianceFlipUtil;
 import org.littletonrobotics.util.FieldConstants;
 import org.surpurdueper.robot.Constants.ElevatorConstants;
-import org.surpurdueper.robot.Constants.LookupTables;
 import org.surpurdueper.robot.Constants.TiltConstants;
 import org.surpurdueper.robot.commands.AutoAim;
 import org.surpurdueper.robot.commands.auto.TwoDisk;
@@ -86,7 +84,9 @@ public class RobotContainer {
     NamedCommands.registerCommands(
         Map.of(
             "Shooter On", shooter.on(),
-            "Intake", intake.load(),
+            "Shooter Off", shooter.off(),
+            "Intake", intake(),
+            "Elevator Follow", elevator.followShooter(shooterTilt::getPositionRotations),
             "Fire", intake.fire()));
 
     configureBindings();
@@ -139,11 +139,6 @@ public class RobotContainer {
                 () -> squareJoystick(-joystick.getLeftY()) * MaxSpeed,
                 () -> squareJoystick(-joystick.getLeftX()) * MaxSpeed));
 
-    // joystick.y().onTrue(elevator.goToPosition(Units.inchesToMeters(21)));
-    // joystick
-    //     .x()
-    //     .onTrue(shooterTilt.goToPosition(TiltConstants.kSubwooferShot).andThen(shooter.on()));
-
     // Intake
     joystick.leftBumper().onTrue(intake());
 
@@ -158,15 +153,13 @@ public class RobotContainer {
     // Score
     joystick
         .rightBumper()
-        .onTrue(
-            amp.score()
-                .andThen(elevator.goToPosition(0))
-                .onlyIf(amp::isAmpLoaded)
-                .andThen(blinkin.setLightsOff()));
+        .and(amp::isAmpLoaded)
+        .onTrue(amp.score().andThen(elevator.goToPosition(0), blinkin.setLightsOff()));
 
     joystick
         .rightBumper()
-        .onTrue(intake.fire().onlyIf(amp::isAmpNotLoaded).andThen(blinkin.setLightsOff()));
+        .and(amp::isAmpNotLoaded)
+        .onTrue(intake.fire().andThen(blinkin.setLightsOff()));
 
     // Load Amp
     joystick
