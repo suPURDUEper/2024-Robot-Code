@@ -137,6 +137,13 @@ public class Shooter extends SubsystemBase {
     shooterRight.setControl(velocityRequest.withVelocity(shooterRightTargetRps));
   }
 
+  public void stop() {
+    shooterLeftTargetRps = 0;
+    shooterRightTargetRps = 0;
+    shooterLeft.setControl(stopRequest);
+    shooterRight.setControl(stopRequest);
+  }
+
   public boolean isShooterAtSpeed() {
     return Math.abs(shooterLeft.getVelocity().getValue() - shooterLeftTargetRps)
             < ShooterConstants.kShooterRpsTolerance
@@ -149,13 +156,32 @@ public class Shooter extends SubsystemBase {
     shooterRight.setControl(voltagRequest.withOutput(rightVoltage));
   }
 
-  public void stop() {
-    shooterLeft.setControl(stopRequest);
-    shooterRight.setControl(stopRequest);
+  public void turnOn() {
+    setShooterRps(ShooterConstants.kLeftShooterSpeedRps, ShooterConstants.kRightShooterSpeedRps);
+  }
+
+  public void turnOnIdle() {
+    setShooterRps(ShooterConstants.kLeftShooterIdleRps, ShooterConstants.kRightShooterIdleRps);
+  }
+
+  public Command on() {
+    return Commands.runOnce(this::turnOn, this);
+  }
+
+  public Command idle() {
+    return Commands.runOnce(this::turnOnIdle, this);
+  }
+
+  public Command off() {
+    return Commands.runOnce(this::stop, this);
   }
 
   public Command feedAmp() {
-    return Commands.startEnd(() -> setShooterRps(1500/60.0, 1500/60.0), () -> stop(), this);
+    return Commands.startEnd(() -> setShooterRps(1500 / 60.0, 1500 / 60.0), () -> stop(), this);
+  }
+
+  public Command purge() {
+    return Commands.startEnd(() -> setVoltage(-2, -2), this::stop, this);
   }
 
   public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {

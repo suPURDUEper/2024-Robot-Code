@@ -6,16 +6,27 @@ package org.surpurdueper.robot;
 
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
+import com.pathplanner.lib.auto.NamedCommands;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import java.util.Map;
 import org.frc3005.lib.vendor.motorcontroller.SparkMax;
+import org.littletonrobotics.util.AllianceFlipUtil;
+import org.littletonrobotics.util.FieldConstants;
+import org.surpurdueper.robot.Constants.ElevatorConstants;
 import org.surpurdueper.robot.Constants.TiltConstants;
 import org.surpurdueper.robot.commands.AutoAim;
+import org.surpurdueper.robot.commands.auto.TwoDisk;
 import org.surpurdueper.robot.subsystems.Amp;
+import org.surpurdueper.robot.subsystems.Blinkin;
+import org.surpurdueper.robot.subsystems.Climber;
 import org.surpurdueper.robot.subsystems.Elevator;
 import org.surpurdueper.robot.subsystems.Intake;
 import org.surpurdueper.robot.subsystems.Shooter;
@@ -31,15 +42,16 @@ import org.surpurdueper.robot.subsystems.drive.generated.TunerConstants;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
-  private final Intake intake = new Intake();
-  private final Amp amp = new Amp();
-  //   private final Climber climber = new Climber();
-  private final Elevator elevator = new Elevator();
-  private final Shooter shooter = new Shooter();
-  private final ShooterTilt shooterTilt = new ShooterTilt();
+  private final Intake intake;
+  private final Amp amp;
+  private final Climber climber;
+  private final Elevator elevator;
+  private final Shooter shooter;
+  private final ShooterTilt shooterTilt;
+  private final Blinkin blinkin;
 
   /* Setting up bindings for necessary control of the swerve drive platform */
-  private double MaxSpeed = Units.feetToMeters(10); // kSpeedAt12VoltsMps desired top speed
+  private double MaxSpeed = Units.feetToMeters(12); // kSpeedAt12VoltsMps desired top speed
   private double MaxAngularRate =
       1.5 * Math.PI; // 3/4 of a rotation per second max angular velocity
   private final CommandXboxController joystick = new CommandXboxController(0); // My joystick
@@ -60,7 +72,23 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     SparkMax.burnFlashInSync();
-    // Configure the trigger bindings
+
+    intake = new Intake();
+    amp = new Amp();
+    climber = new Climber();
+    elevator = new Elevator();
+    shooter = new Shooter();
+    shooterTilt = new ShooterTilt(intake);
+    blinkin = new Blinkin();
+
+    NamedCommands.registerCommands(
+        Map.of(
+            "Shooter On", shooter.on(),
+            "Shooter Off", shooter.off(),
+            "Intake", intake(),
+            "Elevator Follow", elevator.followShooter(shooterTilt::getPositionRotations),
+            "Fire", intake.fire()));
+
     configureBindings();
   }
 
@@ -81,16 +109,23 @@ public class RobotContainer {
             .applyRequest(
                 () ->
                     drive
-                        .withVelocityX(-joystick.getLeftY() * MaxSpeed) // Drive forward with
-                        // negative Y (forward)
-                        .withVelocityY(
-                            -joystick.getLeftX() * MaxSpeed) // Drive left with negative X (left)
-                        .withRotationalRate(
-                            -joystick.getRightX()
-                                * MaxAngularRate) // Drive counterclockwise with negative X (left)
-                )
+                        .withVelocityX(squareJoystick(-joystick.getLeftY()) * MaxSpeed)
+                        .withVelocityY(squareJoystick(-joystick.getLeftX()) * MaxSpeed)
+                        .withRotationalRate(squareJoystick(joystick.getRightX()) * MaxAngularRate))
             .ignoringDisable(true));
-    // joystick.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldRelative()));
+    joystick
+        .back()
+        .onTrue(
+            drivetrain.runOnce(
+                () -> {
+                  Pose2d resetPose =
+                      new Pose2d(
+                          FieldConstants.Subwoofer.centerFace.getX()
+                              + Constants.kBumperToRobotCenter,
+                          FieldConstants.Subwoofer.centerFace.getY(),
+                          Rotation2d.fromDegrees(180));
+                  drivetrain.seedFieldRelative(AllianceFlipUtil.apply(resetPose));
+                }));
     drivetrain.registerTelemetry(logger::telemeterize);
 
     joystick
@@ -100,42 +135,97 @@ public class RobotContainer {
                 drivetrain,
                 shooterTilt,
                 elevator,
-                () -> -joystick.getLeftY() * MaxSpeed,
-                () -> -joystick.getLeftX() * MaxSpeed));
+                shooter,
+                () -> squareJoystick(-joystick.getLeftY()) * MaxSpeed,
+                () -> squareJoystick(-joystick.getLeftX()) * MaxSpeed));
 
     // Intake
+    joystick.leftBumper().onTrue(intake());
+
     joystick
-        .leftBumper()
-        .onTrue(
-            shooterTilt
-                .goToPosition(TiltConstants.kIntakeAngle)
-                .onlyIf(shooterTilt::isNotAtIntakeHeight)
-                .andThen(intake.load()));
+        .b()
+        .whileTrue(
+            Commands.parallel(
+                intake.purge(),
+                shooter.purge(),
+                elevator.goToPositionBlocking(0).andThen(amp.purge())));
 
     // Score
-    joystick.rightBumper().whileTrue(Commands.either(amp.score(), intake.fire(), amp::isAmpLoaded));
+    joystick
+        .rightBumper()
+        .and(amp::isAmpLoaded)
+        .onTrue(amp.score().andThen(elevator.goToPosition(0), blinkin.setLightsOff()));
+
+    joystick
+        .rightBumper()
+        .and(amp::isAmpNotLoaded)
+        .onTrue(intake.fire().andThen(blinkin.setLightsOff()));
 
     // Load Amp
     joystick
         .rightTrigger()
         .onTrue(
-            shooterTilt
-                .goToPosition(TiltConstants.kAmpHandOff)
-                .andThen(Commands.deadline(amp.load(), intake.feedAmp(), shooter.feedAmp())));
+            elevator
+                .goToPosition(0)
+                .andThen(shooterTilt.goToPositionBlocking(TiltConstants.kAmpHandOff))
+                .andThen(Commands.deadline(amp.load(), intake.feedAmp(), shooter.feedAmp()))
+                .andThen(shooterTilt.goToPositionBlocking(TiltConstants.kSafeElevator))
+                .andThen(elevator.goToPosition(ElevatorConstants.kAmpScoreHeight)));
 
-    shooterTilt.setDefaultCommand(
-        Commands.run(() -> shooterTilt.setVoltage(8 * applyDeadband(joystick2.getRightY())), shooterTilt));
+    joystick.start().onTrue(Commands.run(() -> CommandScheduler.getInstance().cancelAll()));
 
-    joystick2.a().onTrue(intake.load());
-    joystick2.b().whileTrue(intake.purge());
-    
+    joystick
+        .povUp()
+        .whileTrue(
+            Commands.startEnd(
+                () -> shooterTilt.setVoltage(4), () -> shooterTilt.stop(), shooterTilt));
+    joystick
+        .povDown()
+        .whileTrue(
+            Commands.startEnd(
+                () -> shooterTilt.setVoltage(-4), () -> shooterTilt.stop(), shooterTilt));
+
+    joystick
+        .x()
+        .whileTrue(Commands.startEnd(() -> climber.setVoltage(-12), () -> climber.stop(), climber));
+
+    joystick
+        .y()
+        .whileTrue(Commands.startEnd(() -> climber.setVoltage(12), () -> climber.stop(), climber));
+
+    joystick.povRight().onTrue(elevator.goToPosition(Units.inchesToMeters(20)));
+    joystick.povLeft().onTrue(elevator.goToPosition(Units.inchesToMeters(0)));
+
+    // shooterTilt.setDefaultCommand(
+    //     Commands.run(
+    //         () -> shooterTilt.setVoltage(8 * applyDeadband(joystick2.getRightY())),
+    // shooterTilt));
+    // joystick2.a().onTrue(intake.load());
+    // joystick2.b().whileTrue(intake.purge());
+
     /* Bindings for characterization */
     /* These bindings require multiple buttons pushed to swap between quastatic and dynamic */
     /* Back/Start select dynamic/quasistatic, Y/X select forward/reverse direction */
-    joystick2.back().and(joystick2.y()).whileTrue(elevator.sysIdDynamic(Direction.kForward));
-    joystick2.back().and(joystick2.x()).whileTrue(elevator.sysIdDynamic(Direction.kReverse));
-    joystick2.start().and(joystick2.y()).whileTrue(elevator.sysIdQuasistatic(Direction.kForward));
-    joystick2.start().and(joystick2.x()).whileTrue(elevator.sysIdQuasistatic(Direction.kReverse));
+    // joystick2.back().and(joystick2.y()).whileTrue(elevator.sysIdDynamic(Direction.kForward));
+    // joystick2.back().and(joystick2.x()).whileTrue(elevator.sysIdDynamic(Direction.kReverse));
+    // joystick2.start().and(joystick2.y()).whileTrue(elevator.sysIdQuasistatic(Direction.kForward));
+    // joystick2.start().and(joystick2.x()).whileTrue(elevator.sysIdQuasistatic(Direction.kReverse));
+  }
+
+  public Command intake() {
+    return elevator
+        .goToPosition(0)
+        .alongWith(
+            shooterTilt
+                .goToPositionBlocking(TiltConstants.kIntakeAngle)
+                .onlyIf(shooterTilt::isNotAtIntakeHeight)
+                .andThen(
+                    intake.load(),
+                    new ScheduleCommand(
+                        Commands.sequence(
+                            blinkin.setLightsStrobeGold(),
+                            Commands.waitSeconds(1),
+                            blinkin.setLightsOrange()))));
   }
 
   /**
@@ -144,7 +234,7 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return Commands.none();
+    return new TwoDisk(drivetrain, intake, shooterTilt, shooter, elevator);
   }
 
   public double applyDeadband(double value) {
@@ -153,5 +243,10 @@ public class RobotContainer {
       return 0.0;
     }
     return value;
+  }
+
+  public double squareJoystick(double value) {
+    double sign = Math.signum(value);
+    return value * value * sign;
   }
 }

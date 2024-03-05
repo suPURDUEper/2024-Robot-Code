@@ -41,6 +41,14 @@ public class Amp extends SubsystemBase {
     SmartDashboard.putBoolean("Amp/BreakBeam", ampBreakBeam.get());
   }
 
+  public void setVoltage(double volts) {
+    ampMotor.setControl(voltageRequest.withOutput(volts));
+  }
+
+  public void stop() {
+    ampMotor.setControl(stopRequest);
+  }
+
   public Command load() {
     return Commands.startEnd(
             () -> ampMotor.setControl(voltageRequest.withOutput(AmpConstants.kLoadVoltage)),
@@ -53,11 +61,20 @@ public class Amp extends SubsystemBase {
     return Commands.startEnd(
             () -> ampMotor.setControl(voltageRequest.withOutput(AmpConstants.kScoreVoltage)),
             () -> ampMotor.setControl(coastRequest),
-            this);
+            this)
+        .until(this::isAmpNotLoaded);
+  }
+
+  public Command purge() {
+    return Commands.startEnd(() -> setVoltage(-3), this::stop, this);
   }
 
   public boolean isAmpLoaded() {
     return !ampBreakBeam.get();
+  }
+
+  public boolean isAmpNotLoaded() {
+    return ampBreakBeam.get();
   }
 
   public void configureTalonFx(TalonFX motor) {

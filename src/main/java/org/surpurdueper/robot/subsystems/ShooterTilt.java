@@ -8,6 +8,7 @@ import static edu.wpi.first.units.Units.Seconds;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.SignalLogger;
+import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
@@ -22,12 +23,13 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.revrobotics.SparkAbsoluteEncoder;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.Velocity;
 import edu.wpi.first.units.Voltage;
-import edu.wpi.first.wpilibj.DutyCycleEncoder;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -37,14 +39,13 @@ import java.util.ArrayList;
 import java.util.List;
 import org.littletonrobotics.util.LoggedTunableNumber;
 import org.surpurdueper.robot.Constants.CANIDs;
-import org.surpurdueper.robot.Constants.DIOPorts;
 import org.surpurdueper.robot.Constants.TiltConstants;
 
 public class ShooterTilt extends SubsystemBase {
 
   // Class variables
   private TalonFX tiltMotor;
-  private DutyCycleEncoder tiltAbsoluteEncoder;
+  private SparkAbsoluteEncoder tiltAbsoluteEncoder;
   private TalonFXConfiguration tiltConfig;
   private double targetRotations = -1;
 
@@ -105,23 +106,31 @@ public class ShooterTilt extends SubsystemBase {
     pidGains.addAll(List.of(kp, ki, kd, ks, kv, ka, kg, profileKa, profileKv));
   }
 
-  public ShooterTilt() {
+  public ShooterTilt(Intake intake) {
     tiltMotor = new TalonFX(CANIDs.kTiltMotor, "canivore");
-    tiltAbsoluteEncoder = new DutyCycleEncoder(DIOPorts.kTiltEncoder);
-    tiltAbsoluteEncoder.setDistancePerRotation(TiltConstants.kAbsoluteEncoderInverted ? -1 : 1);
-    tiltAbsoluteEncoder.setPositionOffset(TiltConstants.kAbsoluteEncoderOffset);
+
+    tiltAbsoluteEncoder = intake.intakeMotor.getAbsoluteEncoder();
+    tiltAbsoluteEncoder.setPositionConversionFactor(
+        TiltConstants.kAbsoluteEncoderInverted ? -1 : 1);
+    tiltAbsoluteEncoder.setZeroOffset(TiltConstants.kAbsoluteEncoderOffset);
+
     configureTalonFx();
     // setupSysIdTiming(tiltMotor);
+
+    // Elevator reacts to the shooter angle during auto aim. Increase the frequency at which this is
+    // updated
+    BaseStatusSignal.setUpdateFrequencyForAll(
+        250, tiltMotor.getPosition(), tiltMotor.getVelocity());
   }
 
   @Override
   public void periodic() {
-    // Update tunable numbers
-    if (Math.abs(getAbsoluteSensorAngle() - tiltMotor.getPosition().getValueAsDouble())
-        > Units.degreesToRotations(2)) {
-      tiltMotor.setPosition(getAbsoluteSensorAngle());
+    if (DriverStation.isDisabled()
+        && Math.abs(getPositionRotations() - getAbsoluteSensorAngle())
+            > Units.degreesToRotations(1)) {
+      syncMotorAndAbsEncoder();
     }
-
+    // Update tunable numbers
     for (LoggedTunableNumber gain : pidGains) {
       if (gain.hasChanged(hashCode())) {
         // Send new PID gains to talon
@@ -153,7 +162,10 @@ public class ShooterTilt extends SubsystemBase {
         Units.rotationsToDegrees(tiltMotor.getClosedLoopReference().getValueAsDouble());
     SmartDashboard.putNumber("ShooterTilt/Position (Abs)", armPositionAbs);
     SmartDashboard.putNumber("ShooterTilt/Position (Motor)", armPositionMotor);
-    SmartDashboard.putNumber("ShooterTilt/Target Position", armPositionSetpoint);
+    SmartDashboard.putNumber("ShooterTilt/Setpoint", targetRotations);
+    SmartDashboard.putNumber("ShooterTilt/Profile Target", armPositionSetpoint);
+    SmartDashboard.putBoolean("ShooterTilt/AtIntakeAngle", !isNotAtIntakeHeight());
+    SmartDashboard.putBoolean("ShooterTilt/AtPosition", isAtPosition());
   }
 
   private void setupSysIdTiming(TalonFX motorToTest) {
@@ -167,7 +179,7 @@ public class ShooterTilt extends SubsystemBase {
 
   public double getAbsoluteSensorAngle() {
     double wrappedAngle =
-        MathUtil.angleModulus(Units.rotationsToRadians(tiltAbsoluteEncoder.getDistance()));
+        MathUtil.angleModulus(Units.rotationsToRadians(tiltAbsoluteEncoder.getPosition()));
     return Units.radiansToRotations(wrappedAngle);
   }
 
@@ -188,6 +200,22 @@ public class ShooterTilt extends SubsystemBase {
     tiltMotor.setControl(positionRequest.withPosition(targetRotations));
   }
 
+  public double getPositionRotations() {
+    return tiltMotor.getPosition().getValueAsDouble();
+  }
+
+  public void syncMotorAndAbsEncoder() {
+    tiltMotor.setPosition(getAbsoluteSensorAngle());
+  }
+
+  public StatusSignal<Double> getPositionSignal() {
+    return tiltMotor.getPosition();
+  }
+
+  public StatusSignal<Double> getVelocitySignal() {
+    return tiltMotor.getVelocity();
+  }
+
   public void stop() {
     tiltMotor.setControl(stopRequest);
   }
@@ -197,8 +225,13 @@ public class ShooterTilt extends SubsystemBase {
         < TiltConstants.kPositionTolerance;
   }
 
-  public Command goToPosition(double degrees) {
-    return Commands.run(() -> setPositionRotations(degrees)).until(this::isAtPosition);
+  public Command goToPosition(double rotations) {
+    return Commands.runOnce(() -> setPositionRotations(rotations), this);
+  }
+
+  public Command goToPositionBlocking(double rotations) {
+    return Commands.runOnce(() -> setPositionRotations(rotations), this)
+        .andThen(Commands.waitUntil(this::isAtPosition));
   }
 
   public boolean isNotAtIntakeHeight() {
