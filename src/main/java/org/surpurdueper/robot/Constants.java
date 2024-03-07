@@ -84,7 +84,7 @@ public final class Constants {
     public static final double kSprocketGearRatio = (34.0 / 10.0);
     public static final double kAbsoluteEncoderOffset = Units.degreesToRotations(-87.473675);
     public static final double kForwardSoftLimit = Units.degreesToRotations(70);
-    public static final double kReverseSoftLimit = Units.degreesToRotations(-7.5);
+    public static final double kReverseSoftLimit = Units.degreesToRotations(-20);
     public static final double kp = 0;
     public static final double ki = 0;
     public static final double kd = 0;
@@ -95,7 +95,7 @@ public final class Constants {
     public static final double profileKv = 0;
     public static final double profileKa = 0;
     public static final boolean kAbsoluteEncoderInverted = true;
-    public static final double kStatorCurrentLimit = 80;
+    public static final double kStatorCurrentLimit = 100;
     public static final double kGearRatio = kPlanetaryGearRatio * kSprocketGearRatio;
     public static final double kPositionTolerance = 0;
   }
@@ -104,7 +104,7 @@ public final class Constants {
     public static final double kPlanetaryGearRatio = (25.0 / 1.0);
     public static final double kSectorGearRatio = (240.0 / 10.0);
     public static final double kGearRatio = kPlanetaryGearRatio * kSectorGearRatio / 1.07015;
-    public static final double kForwardSoftLimit = Units.degreesToRotations(78.5);
+    public static final double kForwardSoftLimit = Units.degreesToRotations(68.5);
     public static final double kReverseSoftLimit = Units.degreesToRotations(26.2);
     public static final double kAbsoluteEncoderOffset =
         (Units.degreesToRotations(8.079120) - 0.25) + 1;
@@ -167,7 +167,7 @@ public final class Constants {
       elevatorShooterClearance.put(Units.degreesToRotations(48.000), Units.inchesToMeters(13.291));
       elevatorShooterClearance.put(Units.degreesToRotations(52.000), Units.inchesToMeters(15.5));
       elevatorShooterClearance.put(Units.degreesToRotations(53.400), Units.inchesToMeters(18.5));
-      elevatorShooterClearance.put(Units.degreesToRotations(54.500), Units.inchesToMeters(19.5));
+      elevatorShooterClearance.put(Units.degreesToRotations(54.500), Units.inchesToMeters(20));
     }
 
     public static final InterpolatingDoubleTreeMap distanceToShooterAngle =

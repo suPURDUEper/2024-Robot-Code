@@ -16,6 +16,8 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+
 import java.util.Map;
 import org.frc3005.lib.vendor.motorcontroller.SparkMax;
 import org.littletonrobotics.util.AllianceFlipUtil;
@@ -23,6 +25,7 @@ import org.littletonrobotics.util.FieldConstants;
 import org.surpurdueper.robot.Constants.ElevatorConstants;
 import org.surpurdueper.robot.Constants.TiltConstants;
 import org.surpurdueper.robot.commands.AutoAim;
+import org.surpurdueper.robot.commands.auto.Test;
 import org.surpurdueper.robot.commands.auto.TwoDisk;
 import org.surpurdueper.robot.subsystems.Amp;
 import org.surpurdueper.robot.subsystems.Blinkin;
@@ -51,7 +54,7 @@ public class RobotContainer {
   private final Blinkin blinkin;
 
   /* Setting up bindings for necessary control of the swerve drive platform */
-  private double MaxSpeed = Units.feetToMeters(12); // kSpeedAt12VoltsMps desired top speed
+  private double MaxSpeed = Units.feetToMeters(13); // kSpeedAt12VoltsMps desired top speed
   private double MaxAngularRate =
       1.5 * Math.PI; // 3/4 of a rotation per second max angular velocity
   private final CommandXboxController joystick = new CommandXboxController(0); // My joystick
@@ -111,7 +114,7 @@ public class RobotContainer {
                     drive
                         .withVelocityX(squareJoystick(-joystick.getLeftY()) * MaxSpeed)
                         .withVelocityY(squareJoystick(-joystick.getLeftX()) * MaxSpeed)
-                        .withRotationalRate(squareJoystick(joystick.getRightX()) * MaxAngularRate))
+                        .withRotationalRate(squareJoystick(-joystick.getRightX()) * MaxAngularRate))
             .ignoringDisable(true));
     joystick
         .back()
@@ -174,6 +177,7 @@ public class RobotContainer {
 
     joystick.start().onTrue(Commands.run(() -> CommandScheduler.getInstance().cancelAll()));
 
+    // Temporary buttons
     joystick
         .povUp()
         .whileTrue(
@@ -184,6 +188,8 @@ public class RobotContainer {
         .whileTrue(
             Commands.startEnd(
                 () -> shooterTilt.setVoltage(-4), () -> shooterTilt.stop(), shooterTilt));
+
+    joystick.leftTrigger().whileTrue(amp.startEnd(() -> amp.setVoltage(10), () -> amp.stop()));
 
     joystick
         .x()
@@ -206,10 +212,10 @@ public class RobotContainer {
     /* Bindings for characterization */
     /* These bindings require multiple buttons pushed to swap between quastatic and dynamic */
     /* Back/Start select dynamic/quasistatic, Y/X select forward/reverse direction */
-    // joystick2.back().and(joystick2.y()).whileTrue(elevator.sysIdDynamic(Direction.kForward));
-    // joystick2.back().and(joystick2.x()).whileTrue(elevator.sysIdDynamic(Direction.kReverse));
-    // joystick2.start().and(joystick2.y()).whileTrue(elevator.sysIdQuasistatic(Direction.kForward));
-    // joystick2.start().and(joystick2.x()).whileTrue(elevator.sysIdQuasistatic(Direction.kReverse));
+    joystick2.back().and(joystick2.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
+    joystick2.back().and(joystick2.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
+    joystick2.start().and(joystick2.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
+    joystick2.start().and(joystick2.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
   }
 
   public Command intake() {
@@ -234,7 +240,7 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return new TwoDisk(drivetrain, intake, shooterTilt, shooter, elevator);
+    return new Test(drivetrain);
   }
 
   public double applyDeadband(double value) {

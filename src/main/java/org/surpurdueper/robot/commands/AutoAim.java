@@ -39,10 +39,10 @@ public class AutoAim extends Command {
     this.shooter = shooter;
     this.xVelocitySupplier = xVelocitySupplier;
     this.yVelocitySupplier = yVelocitySupplier;
-    addRequirements(drivetrain, elevator, shooter); // TODO: Add shooterTilt back to this
+    addRequirements(drivetrain, elevator, shooter, shooterTilt); // TODO: Add shooterTilt back to this
 
     // Setup request to control drive always facing the speaker
-    swerveRequest = new FieldCentricAutoAim();
+    swerveRequest = new FieldCentricFacingPoint();
     swerveRequest.HeadingController.setPID(10, 0, 0);
     swerveRequest.HeadingController.enableContinuousInput(-180.0, 180.0);
   }
@@ -65,6 +65,12 @@ public class AutoAim extends Command {
     drivetrain.setControl(
         swerveRequest.withVelocityX(velocityX).withVelocityY(velocityY).withDeadband(0.1));
 
+    // Use new pose estimation to set shooter angle
+      double distanceToSpeakerMeters =
+          drivetrain.getState().Pose.getTranslation().getDistance(speakerCenter);
+      shooterTilt.setPositionRotations(
+          LookupTables.distanceToShooterAngle.get(distanceToSpeakerMeters));
+
     // shooterTilt.setPositionRotations(Units.degreesToRotations(shooterAngle.getAsDouble()));
     elevator.followShooter(shooterTilt.getPositionRotations());
   }
@@ -75,20 +81,4 @@ public class AutoAim extends Command {
     shooter.turnOnIdle();
   }
 
-  public class FieldCentricAutoAim extends FieldCentricFacingPoint {
-
-    @Override
-    public StatusCode apply(
-        SwerveControlRequestParameters parameters, SwerveModule... modulesToApply) {
-      StatusCode status = super.apply(parameters, modulesToApply);
-
-      // Use new pose estimation to set shooter angle
-      double distanceToSpeakerMeters =
-          parameters.currentPose.getTranslation().getDistance(speakerCenter);
-      shooterTilt.setPositionRotations(
-          LookupTables.distanceToShooterAngle.get(distanceToSpeakerMeters));
-
-      return status;
-    }
-  }
 }
