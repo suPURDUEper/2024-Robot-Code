@@ -15,6 +15,7 @@ import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Notifier;
@@ -22,6 +23,8 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+
+import java.util.Arrays;
 import java.util.function.Supplier;
 import org.surpurdueper.robot.subsystems.drive.generated.TunerConstants;
 
@@ -159,6 +162,10 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
 
   public ChassisSpeeds getCurrentRobotChassisSpeeds() {
     return m_kinematics.toChassisSpeeds(getState().ModuleStates);
+  }
+
+  public double[] getWheelAngularPositionsRadians() {
+    return Arrays.stream(m_modulePositions).mapToDouble((module) -> module.angle.getRadians()).toArray();
   }
 
   private void startSimThread() {

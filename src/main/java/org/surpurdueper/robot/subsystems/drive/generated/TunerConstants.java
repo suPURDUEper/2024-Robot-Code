@@ -118,6 +118,11 @@ public class TunerConstants {
   private static final double kBackRightXPosInches = -10.375;
   private static final double kBackRightYPosInches = -11.875;
 
+  private static final double kTrackWidthXInches = 20.75;
+  private static final double kWheelbaseYInches = 23.75;
+  private static final double kDriveRadius = Math.hypot(kTrackWidthXInches / 2.0, kWheelbaseYInches /  2.0);
+
+
   private static final SwerveModuleConstants FrontLeft =
       ConstantCreator.createModuleConstants(
           kFrontLeftSteerMotorId,
