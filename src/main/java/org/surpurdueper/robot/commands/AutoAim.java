@@ -1,7 +1,5 @@
 package org.surpurdueper.robot.commands;
 
-import com.ctre.phoenix6.StatusCode;
-import com.ctre.phoenix6.mechanisms.swerve.SwerveModule;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -39,7 +37,8 @@ public class AutoAim extends Command {
     this.shooter = shooter;
     this.xVelocitySupplier = xVelocitySupplier;
     this.yVelocitySupplier = yVelocitySupplier;
-    addRequirements(drivetrain, elevator, shooter, shooterTilt); // TODO: Add shooterTilt back to this
+    addRequirements(
+        drivetrain, elevator, shooter, shooterTilt); // TODO: Add shooterTilt back to this
 
     // Setup request to control drive always facing the speaker
     swerveRequest = new FieldCentricFacingPoint();
@@ -66,10 +65,10 @@ public class AutoAim extends Command {
         swerveRequest.withVelocityX(velocityX).withVelocityY(velocityY).withDeadband(0.1));
 
     // Use new pose estimation to set shooter angle
-      double distanceToSpeakerMeters =
-          drivetrain.getState().Pose.getTranslation().getDistance(speakerCenter);
-      shooterTilt.setPositionRotations(
-          LookupTables.distanceToShooterAngle.get(distanceToSpeakerMeters));
+    double distanceToSpeakerMeters =
+        drivetrain.getState().Pose.getTranslation().getDistance(speakerCenter);
+    shooterTilt.setPositionRotations(
+        LookupTables.distanceToShooterAngle.get(distanceToSpeakerMeters));
 
     // shooterTilt.setPositionRotations(Units.degreesToRotations(shooterAngle.getAsDouble()));
     elevator.followShooter(shooterTilt.getPositionRotations());
@@ -80,5 +79,4 @@ public class AutoAim extends Command {
     elevator.setPositionMeters(0);
     shooter.turnOnIdle();
   }
-
 }

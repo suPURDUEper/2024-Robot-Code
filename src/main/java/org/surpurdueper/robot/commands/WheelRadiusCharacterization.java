@@ -69,7 +69,8 @@
 //         omegaLimiter.calculate(omegaDirection.value * characterizationSpeed.get()));
 
 //     // Get yaw and wheel positions
-//     accumGyroYawRads += MathUtil.angleModulus(gyroYawRadsSupplier.getAsDouble() - lastGyroYawRads);
+//     accumGyroYawRads += MathUtil.angleModulus(gyroYawRadsSupplier.getAsDouble() -
+// lastGyroYawRads);
 //     lastGyroYawRads = gyroYawRadsSupplier.getAsDouble();
 //     double averageWheelPosition = 0.0;
 //     double[] wheelPositiions = drive.getWheelAngularPositionsRadians();
