@@ -141,6 +141,7 @@ public class Elevator extends SubsystemBase {
         Units.metersToInches(elevatorMotor.getClosedLoopReference().getValueAsDouble());
     SmartDashboard.putNumber("Elevator/Position (Motor)", armPositionMotor);
     SmartDashboard.putNumber("Elevator/Target Position", armPositionSetpoint);
+    SmartDashboard.putBoolean("Elevator/At Position", isAtPosition());
   }
 
   private void setupSysIdTiming(TalonFX motorToTest) {
@@ -185,6 +186,10 @@ public class Elevator extends SubsystemBase {
 
   public Command goToPositionBlocking(double meters) {
     return goToPosition(meters).andThen(Commands.waitUntil(this::isAtPosition));
+  }
+
+  public Command waitUntilAtPosition() {
+    return Commands.waitUntil(this::isAtPosition);
   }
 
   public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {

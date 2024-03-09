@@ -25,6 +25,8 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.revrobotics.SparkAbsoluteEncoder;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.Velocity;
@@ -37,8 +39,12 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
+import org.littletonrobotics.util.AllianceFlipUtil;
+import org.littletonrobotics.util.FieldConstants;
 import org.littletonrobotics.util.LoggedTunableNumber;
 import org.surpurdueper.robot.Constants.CANIDs;
+import org.surpurdueper.robot.Constants.LookupTables;
 import org.surpurdueper.robot.Constants.TiltConstants;
 
 public class ShooterTilt extends SubsystemBase {
@@ -232,6 +238,21 @@ public class ShooterTilt extends SubsystemBase {
   public Command goToPositionBlocking(double rotations) {
     return Commands.runOnce(() -> setPositionRotations(rotations), this)
         .andThen(Commands.waitUntil(this::isAtPosition));
+  }
+
+  public Command goToShotAngle(Supplier<Pose2d> robotPoseSupplier) {
+    return runOnce(
+        () -> {
+          Translation2d speakerCenter =
+              AllianceFlipUtil.apply(FieldConstants.Speaker.centerSpeakerOpening.toTranslation2d());
+          double distanceToSpeakerMeters =
+              robotPoseSupplier.get().getTranslation().getDistance(speakerCenter);
+          setPositionRotations(LookupTables.distanceToShooterAngle.get(distanceToSpeakerMeters));
+        });
+  }
+
+  public Command goToShotAngleBlocking(Supplier<Pose2d> robotPoseSupplier) {
+    return goToShotAngle(robotPoseSupplier).andThen(Commands.waitUntil(this::isAtPosition));
   }
 
   public boolean isNotAtIntakeHeight() {

@@ -15,7 +15,7 @@ import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Notifier;
@@ -23,7 +23,6 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-
 import java.util.Arrays;
 import java.util.function.Supplier;
 import org.surpurdueper.robot.subsystems.drive.generated.TunerConstants;
@@ -85,7 +84,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
               (volts) -> setControl(SteerCharacterization.withVolts(volts)), null, this));
 
   /* Change this to the sysid routine you want to test */
-  private final SysIdRoutine RoutineToApply = SysIdRoutineTranslation;
+  private final SysIdRoutine RoutineToApply = SysIdRoutineSteer;
 
   public CommandSwerveDrivetrain(
       SwerveDrivetrainConstants driveTrainConstants,
@@ -165,7 +164,25 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
   }
 
   public double[] getWheelAngularPositionsRadians() {
-    return Arrays.stream(m_modulePositions).mapToDouble((module) -> module.angle.getRadians()).toArray();
+    return Arrays.stream(m_modulePositions)
+        .mapToDouble(
+            (module) -> {
+              double rotationsPerWheelRotation = TunerConstants.kDriveGearRatio;
+              double metersPerWheelRotation =
+                  2 * Math.PI * Units.inchesToMeters(TunerConstants.kWheelRadiusInches);
+              double driveRotationsPerMeter = rotationsPerWheelRotation / metersPerWheelRotation;
+              return Units.rotationsToRadians(module.distanceMeters * driveRotationsPerMeter)
+                  * Math.PI;
+            })
+        .toArray();
+  }
+
+  public void runWheelRadiusCharacterization(double omegaRadiansPerSecond) {
+    this.setControl(AutoRequest.withSpeeds(new ChassisSpeeds(0, 0, omegaRadiansPerSecond)));
+  }
+
+  public double getGyroYawRads() {
+    return Units.degreesToRadians(m_yawGetter.getValueAsDouble());
   }
 
   private void startSimThread() {

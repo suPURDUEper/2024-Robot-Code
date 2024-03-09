@@ -10,6 +10,7 @@ import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -17,7 +18,6 @@ import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
-
 import java.util.Map;
 import org.frc3005.lib.vendor.motorcontroller.SparkMax;
 import org.littletonrobotics.util.AllianceFlipUtil;
@@ -25,8 +25,8 @@ import org.littletonrobotics.util.FieldConstants;
 import org.surpurdueper.robot.Constants.ElevatorConstants;
 import org.surpurdueper.robot.Constants.TiltConstants;
 import org.surpurdueper.robot.commands.AutoAim;
-import org.surpurdueper.robot.commands.auto.Test;
-import org.surpurdueper.robot.commands.auto.TwoDisk;
+import org.surpurdueper.robot.commands.WheelRadiusCharacterization;
+import org.surpurdueper.robot.commands.auto.ThreeDisk;
 import org.surpurdueper.robot.subsystems.Amp;
 import org.surpurdueper.robot.subsystems.Blinkin;
 import org.surpurdueper.robot.subsystems.Climber;
@@ -93,6 +93,7 @@ public class RobotContainer {
             "Fire", intake.fire()));
 
     configureBindings();
+    DriverStation.silenceJoystickConnectionWarning(true);
   }
 
   /**
@@ -216,6 +217,16 @@ public class RobotContainer {
     joystick2.back().and(joystick2.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
     joystick2.start().and(joystick2.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
     joystick2.start().and(joystick2.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
+    joystick2
+        .a()
+        .whileTrue(
+            new WheelRadiusCharacterization(
+                drivetrain, WheelRadiusCharacterization.Direction.CLOCKWISE));
+    joystick2
+        .b()
+        .whileTrue(
+            new WheelRadiusCharacterization(
+                drivetrain, WheelRadiusCharacterization.Direction.COUNTER_CLOCKWISE));
   }
 
   public Command intake() {
@@ -240,7 +251,7 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return new Test(drivetrain);
+    return new ThreeDisk(drivetrain, intake, shooterTilt, shooter, elevator);
   }
 
   public double applyDeadband(double value) {

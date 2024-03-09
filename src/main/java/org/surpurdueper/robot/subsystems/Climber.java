@@ -139,14 +139,17 @@ public class Climber extends SubsystemBase {
   public double getAbsoluteSensorAngle() {
     double zeroedSensorAngle =
         Rotation2d.fromRotations(rawAbsSensorAngle())
-            .rotateBy(Rotation2d.fromRotations(ClimberConstants.kAbsoluteEncoderOffset))
+            .rotateBy(Rotation2d.fromRotations(-1 * ClimberConstants.kAbsoluteEncoderOffset))
             .getRotations();
 
     if (zeroedSensorAngle > Units.degreesToRotations(40)) {
       zeroedSensorAngle--;
     }
-    double armAngle = zeroedSensorAngle * -1 / ClimberConstants.kSprocketGearRatio;
-    return armAngle;
+    Rotation2d armAngle =
+        Rotation2d.fromRotations(zeroedSensorAngle * -1 / ClimberConstants.kSprocketGearRatio);
+    armAngle =
+        armAngle.rotateBy(Rotation2d.fromDegrees(-8.8)); // Zeroed against hardstop at -8.8 degrees.
+    return armAngle.getRotations();
   }
 
   public void syncMotorAndAbsEncoder() {

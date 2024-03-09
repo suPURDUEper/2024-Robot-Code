@@ -82,7 +82,7 @@ public final class Constants {
   public static class ClimberConstants {
     public static final double kPlanetaryGearRatio = (125.0 / 1.0);
     public static final double kSprocketGearRatio = (34.0 / 10.0);
-    public static final double kAbsoluteEncoderOffset = Units.degreesToRotations(-87.473675);
+    public static final double kAbsoluteEncoderOffset = Units.degreesToRotations(-136.214859);
     public static final double kForwardSoftLimit = Units.degreesToRotations(70);
     public static final double kReverseSoftLimit = Units.degreesToRotations(-20);
     public static final double kp = 0;
@@ -104,7 +104,7 @@ public final class Constants {
     public static final double kPlanetaryGearRatio = (25.0 / 1.0);
     public static final double kSectorGearRatio = (240.0 / 10.0);
     public static final double kGearRatio = kPlanetaryGearRatio * kSectorGearRatio / 1.07015;
-    public static final double kForwardSoftLimit = Units.degreesToRotations(68.5);
+    public static final double kForwardSoftLimit = Units.degreesToRotations(62.5);
     public static final double kReverseSoftLimit = Units.degreesToRotations(26.2);
     public static final double kAbsoluteEncoderOffset =
         (Units.degreesToRotations(8.079120) - 0.25) + 1;
