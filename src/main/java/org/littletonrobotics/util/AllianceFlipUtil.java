@@ -54,25 +54,6 @@ public class AllianceFlipUtil {
     }
   }
 
-  //   /**
-  //    * Flips a trajectory state to the correct side of the field based on the current alliance
-  // color.
-  //    */
-  //   public static VehicleState apply(VehicleState state) {
-  //     if (shouldFlip()) {
-  //       return VehicleState.newBuilder()
-  //           .setX(apply(state.getX()))
-  //           .setY(state.getY())
-  //           .setTheta(apply(new Rotation2d(state.getTheta())).getRadians())
-  //           .setVx(-state.getVx())
-  //           .setVy(state.getVy())
-  //           .setOmega(-state.getOmega())
-  //           .build();
-  //     } else {
-  //       return state;
-  //     }
-  //   }
-
   public static boolean shouldFlip() {
     return DriverStation.getAlliance().isPresent()
         && DriverStation.getAlliance().get() == Alliance.Red;

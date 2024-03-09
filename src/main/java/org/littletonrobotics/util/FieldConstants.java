@@ -7,12 +7,8 @@
 
 package org.littletonrobotics.util;
 
-import static edu.wpi.first.apriltag.AprilTagFields.k2024Crescendo;
-
-import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.util.Units;
-import java.io.IOException;
 
 /**
  * Contains various field dimensions and useful reference points. Dimensions are in meters, and sets
@@ -134,15 +130,5 @@ public class FieldConstants {
     public static Pose2d center =
         new Pose2d(Units.inchesToMeters(192.55), Units.inchesToMeters(161.638), new Rotation2d());
   }
-
-  public static double aprilTagWidth = Units.inchesToMeters(6.50);
-  public static AprilTagFieldLayout aprilTags;
-
-  static {
-    try {
-      aprilTags = AprilTagFieldLayout.loadFromResource(k2024Crescendo.m_resourceFile);
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
-  }
+  
 }

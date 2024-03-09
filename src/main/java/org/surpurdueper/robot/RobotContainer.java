@@ -200,8 +200,8 @@ public class RobotContainer {
         .y()
         .whileTrue(Commands.startEnd(() -> climber.setVoltage(12), () -> climber.stop(), climber));
 
-    joystick.povRight().onTrue(elevator.goToPosition(Units.inchesToMeters(20)));
-    joystick.povLeft().onTrue(elevator.goToPosition(Units.inchesToMeters(0)));
+    joystick.povRight().onTrue(shooterTilt.goToPositionBlocking(TiltConstants.kSafeElevator).andThen(elevator.goToPosition(Units.inchesToMeters(20))));
+    joystick.povLeft().onTrue(shooterTilt.goToPositionBlocking(TiltConstants.kSafeElevator).andThen(elevator.goToPosition(Units.inchesToMeters(0))));
 
     // shooterTilt.setDefaultCommand(
     //     Commands.run(
