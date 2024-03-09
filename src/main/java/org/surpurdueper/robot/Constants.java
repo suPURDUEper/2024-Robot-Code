@@ -111,6 +111,8 @@ public final class Constants {
     public static final double kEncoderPositionConversion = 0;
     public static final boolean kAbsoluteEncoderInverted = false;
     public static final int kStatorCurrentLimit = 60;
+    public static final double kWallShot = Units.degreesToRotations(54.5);
+    public static final double kStageShot = Units.degreesToRotations(29.25);
 
     public static final double kp = 720.0; // amps applied per rotation of error
     public static final double ki = 0; // leave at 0

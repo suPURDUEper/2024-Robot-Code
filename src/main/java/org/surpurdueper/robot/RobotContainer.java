@@ -27,6 +27,7 @@ import org.surpurdueper.robot.Constants.TiltConstants;
 import org.surpurdueper.robot.commands.AutoAim;
 import org.surpurdueper.robot.commands.WheelRadiusCharacterization;
 import org.surpurdueper.robot.commands.auto.ThreeDisk;
+import org.surpurdueper.robot.commands.auto.Test;
 import org.surpurdueper.robot.subsystems.Amp;
 import org.surpurdueper.robot.subsystems.Blinkin;
 import org.surpurdueper.robot.subsystems.Climber;
@@ -166,7 +167,7 @@ public class RobotContainer {
         .onTrue(intake.fire().andThen(blinkin.setLightsOff()));
 
     // Load Amp
-    joystick
+    joystick2
         .rightTrigger()
         .onTrue(
             elevator
@@ -177,6 +178,16 @@ public class RobotContainer {
                 .andThen(elevator.goToPosition(ElevatorConstants.kAmpScoreHeight)));
 
     joystick.start().onTrue(Commands.run(() -> CommandScheduler.getInstance().cancelAll()));
+
+    // Load for Trap
+    joystick2
+        .leftTrigger()
+        .onTrue(
+            elevator
+                .goToPosition(0)
+                .andThen(shooterTilt.goToPositionBlocking(TiltConstants.kAmpHandOff))
+                .andThen(Commands.deadline(amp.load(), intake.feedAmp(), shooter.feedAmp()))
+                .andThen(shooterTilt.goToPositionBlocking(TiltConstants.kSafeElevator)));
 
     // Temporary buttons
     joystick
@@ -213,8 +224,14 @@ public class RobotContainer {
     /* Bindings for characterization */
     /* These bindings require multiple buttons pushed to swap between quastatic and dynamic */
     /* Back/Start select dynamic/quasistatic, Y/X select forward/reverse direction */
-    joystick2.back().and(joystick2.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
-    joystick2.back().and(joystick2.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
+    joystick2
+        .back()
+        .and(joystick2.y())
+        .whileTrue(shooterTilt.goToPosition(Constants.TiltConstants.kWallShot));
+    joystick2
+        .back()
+        .and(joystick2.x())
+        .whileTrue(shooterTilt.goToPosition(Constants.TiltConstants.kStageShot));
     joystick2.start().and(joystick2.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
     joystick2.start().and(joystick2.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
     joystick2
