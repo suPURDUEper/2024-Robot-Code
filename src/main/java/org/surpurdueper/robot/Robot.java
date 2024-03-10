@@ -5,10 +5,7 @@
 package org.surpurdueper.robot;
 
 import com.ctre.phoenix6.SignalLogger;
-
 import edu.wpi.first.net.PortForwarder;
-import edu.wpi.first.wpilibj.PowerDistribution;
-import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.Threads;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;

@@ -66,13 +66,14 @@ public final class Constants {
     public static final double kMetersPerRotation = kGearRatio / (kSprocketPitchDiameter * Math.PI);
     public static final float kForwardSoftLimit = (float) Units.inchesToMeters(20.75);
     public static final float kReverseSoftLimit = 0;
+    public static final double kClimbHeight = Units.inchesToMeters(20.5);
     public static final double kAmpScoreHeight = Units.inchesToMeters(18.0);
 
     // Feedforward gains from sysId
     public static final double kg = 0.31678; // volts
     public static final double kv = 8.0; // V*s/m
     public static final double ka = 0.03; // V*s^2/m
-    public static final double kPositionTolerance = Units.inchesToMeters(0.1);
+    public static final double kPositionTolerance = Units.inchesToMeters(0.25);
     public static final double kStatorCurrentLimit = 40;
     public static final double kp = 12.762;
     public static final double ki = 0;
@@ -86,7 +87,7 @@ public final class Constants {
     public static final double kSprocketGearRatio = (34.0 / 10.0);
     public static final double kAbsoluteEncoderOffset = Units.degreesToRotations(-136.214859);
     public static final double kForwardSoftLimit = Units.degreesToRotations(70);
-    public static final double kReverseSoftLimit = Units.degreesToRotations(-9.5);
+    public static final double kReverseSoftLimit = Units.degreesToRotations(-20);
     public static final double kp = 67.136;
     public static final double ki = 0;
     public static final double kd = 59.544;
@@ -100,6 +101,7 @@ public final class Constants {
     public static final double kStatorCurrentLimit = 100;
     public static final double kGearRatio = kPlanetaryGearRatio * kSprocketGearRatio;
     public static final double kPositionTolerance = 0;
+    public static final double kClimbPosition = Units.degreesToRotations(40);
   }
 
   public static class TiltConstants {

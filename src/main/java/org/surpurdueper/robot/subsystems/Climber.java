@@ -12,8 +12,8 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.ControlRequest;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicExpoVoltage;
-import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.StaticBrake;
+import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
@@ -29,9 +29,9 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-
 import java.util.ArrayList;
 import java.util.List;
 import org.littletonrobotics.util.LoggedTunableNumber;
@@ -48,6 +48,7 @@ public class Climber extends SubsystemBase {
 
   private MotionMagicExpoVoltage positionRequest = new MotionMagicExpoVoltage(0);
   private VoltageOut voltageRequest = new VoltageOut(0);
+  private TorqueCurrentFOC torqueRequest = new TorqueCurrentFOC(0);
   private ControlRequest stopRequest = new StaticBrake();
   private Follower followRequest;
   private TalonFXConfiguration climberConfig;
@@ -71,10 +72,7 @@ public class Climber extends SubsystemBase {
       new SysIdRoutine(
           // Empty config defaults to 1 volt/second ramp rate and 7 volt step voltage.
           new SysIdRoutine.Config(
-              null,
-              null,
-              null,
-              state -> SignalLogger.writeString("state", state.toString())),
+              null, null, null, state -> SignalLogger.writeString("state", state.toString())),
           new SysIdRoutine.Mechanism(
               // Tell SysId how to plumb the driving voltage to the motor(s).
               (Measure<Voltage> volts) -> {
@@ -108,7 +106,6 @@ public class Climber extends SubsystemBase {
     absoluteEncoder = new DutyCycleEncoder(Constants.DIOPorts.kClimberEncoder);
     this.bottomLimit1 = new DigitalInput(Constants.DIOPorts.kClimberLimit1);
     this.bottomLimit2 = new DigitalInput(Constants.DIOPorts.kClimberLimit2);
-
   }
 
   @Override
@@ -213,6 +210,17 @@ public class Climber extends SubsystemBase {
   public void stop() {
     climberMotor.setControl(stopRequest);
     climberFollower.setControl(stopRequest);
+  }
+
+  public void stall() {
+    climberMotor.setControl(torqueRequest.withOutput(-10));
+    climberFollower.setControl(followRequest);
+  }
+
+  public Command climb() {
+    return runOnce(() -> setVoltage(-12))
+        .andThen(Commands.waitUntil(this::bottomLimit))
+        .andThen(runOnce(this::stall));
   }
 
   public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {

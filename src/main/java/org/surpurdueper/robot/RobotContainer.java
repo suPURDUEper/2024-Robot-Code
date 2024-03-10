@@ -22,6 +22,7 @@ import java.util.Map;
 import org.frc3005.lib.vendor.motorcontroller.SparkMax;
 import org.littletonrobotics.util.AllianceFlipUtil;
 import org.littletonrobotics.util.FieldConstants;
+import org.surpurdueper.robot.Constants.ClimberConstants;
 import org.surpurdueper.robot.Constants.ElevatorConstants;
 import org.surpurdueper.robot.Constants.TiltConstants;
 import org.surpurdueper.robot.commands.AutoAim;
@@ -59,6 +60,8 @@ public class RobotContainer {
       1.5 * Math.PI; // 3/4 of a rotation per second max angular velocity
   private final CommandXboxController joystick = new CommandXboxController(0); // My joystick
   private final CommandXboxController joystick2 = new CommandXboxController(1); // My joystick
+  private final CommandXboxController joystick3 = new CommandXboxController(2); // My joystick
+
 
   public final CommandSwerveDrivetrain drivetrain = TunerConstants.DriveTrain; // My drivetrain
 
@@ -165,6 +168,8 @@ public class RobotContainer {
         .and(amp::isAmpNotLoaded)
         .onTrue(intake.fire().andThen(blinkin.setLightsOff()));
 
+    joystick.leftTrigger().onTrue(climber.run(() -> climber.setPositionRotations(ClimberConstants.kClimbPosition)));
+
     // Load Amp
     joystick2
         .rightTrigger()
@@ -187,6 +192,11 @@ public class RobotContainer {
                 .andThen(shooterTilt.goToPositionBlocking(TiltConstants.kAmpHandOff))
                 .andThen(Commands.deadline(amp.load(), intake.feedAmp(), shooter.feedAmp()))
                 .andThen(shooterTilt.goToPositionBlocking(TiltConstants.kSafeElevator)));
+
+    // Climb
+    joystick2.a().onTrue(elevator.goToPositionBlocking(ElevatorConstants.kClimbHeight)
+    .andThen(climber.climb())
+    .andThen(amp.trapScore()));
 
     // Temporary buttons
     joystick
@@ -223,13 +233,6 @@ public class RobotContainer {
                 .goToPositionBlocking(TiltConstants.kSafeElevator)
                 .andThen(elevator.goToPosition(Units.inchesToMeters(0))));
 
-    // shooterTilt.setDefaultCommand(
-    //     Commands.run(
-    //         () -> shooterTilt.setVoltage(8 * applyDeadband(joystick2.getRightY())),
-    // shooterTilt));
-    // joystick2.a().onTrue(intake.load());
-    // joystick2.b().whileTrue(intake.purge());
-
     /* Bindings for characterization */
     /* These bindings require multiple buttons pushed to swap between quastatic and dynamic */
     /* Back/Start select dynamic/quasistatic, Y/X select forward/reverse direction */
@@ -241,6 +244,9 @@ public class RobotContainer {
         .back()
         .and(joystick2.x())
         .whileTrue(shooterTilt.goToPosition(Constants.TiltConstants.kStageShot));
+
+
+    // Temporary buttons
     joystick2.start().and(joystick2.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
     joystick2.start().and(joystick2.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
     joystick2
@@ -253,6 +259,7 @@ public class RobotContainer {
         .whileTrue(
             new WheelRadiusCharacterization(
                 drivetrain, WheelRadiusCharacterization.Direction.COUNTER_CLOCKWISE));
+    joystick3.a().onTrue(climber.climb());
   }
 
   public Command intake() {
