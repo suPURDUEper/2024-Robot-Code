@@ -24,9 +24,7 @@ public class Autos {
   }
 
   public static Command aimAndFireNoElevator(
-      ShooterTilt shooterTilt,
-      Intake intake,
-      Supplier<Pose2d> robotPoseSupplier) {
+      ShooterTilt shooterTilt, Intake intake, Supplier<Pose2d> robotPoseSupplier) {
     return Commands.sequence(
         shooterTilt.goToShotAngleBlocking(robotPoseSupplier), intake.fire().withTimeout(0.3));
   }

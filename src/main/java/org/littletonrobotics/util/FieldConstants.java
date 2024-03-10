@@ -130,5 +130,4 @@ public class FieldConstants {
     public static Pose2d center =
         new Pose2d(Units.inchesToMeters(192.55), Units.inchesToMeters(161.638), new Rotation2d());
   }
-  
 }

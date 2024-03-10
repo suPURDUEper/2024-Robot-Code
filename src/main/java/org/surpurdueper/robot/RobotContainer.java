@@ -27,7 +27,6 @@ import org.surpurdueper.robot.Constants.TiltConstants;
 import org.surpurdueper.robot.commands.AutoAim;
 import org.surpurdueper.robot.commands.WheelRadiusCharacterization;
 import org.surpurdueper.robot.commands.auto.ThreeDisk;
-import org.surpurdueper.robot.commands.auto.Test;
 import org.surpurdueper.robot.subsystems.Amp;
 import org.surpurdueper.robot.subsystems.Blinkin;
 import org.surpurdueper.robot.subsystems.Climber;
@@ -211,8 +210,18 @@ public class RobotContainer {
         .y()
         .whileTrue(Commands.startEnd(() -> climber.setVoltage(12), () -> climber.stop(), climber));
 
-    joystick.povRight().onTrue(shooterTilt.goToPositionBlocking(TiltConstants.kSafeElevator).andThen(elevator.goToPosition(Units.inchesToMeters(20))));
-    joystick.povLeft().onTrue(shooterTilt.goToPositionBlocking(TiltConstants.kSafeElevator).andThen(elevator.goToPosition(Units.inchesToMeters(0))));
+    joystick
+        .povRight()
+        .onTrue(
+            shooterTilt
+                .goToPositionBlocking(TiltConstants.kSafeElevator)
+                .andThen(elevator.goToPosition(Units.inchesToMeters(20))));
+    joystick
+        .povLeft()
+        .onTrue(
+            shooterTilt
+                .goToPositionBlocking(TiltConstants.kSafeElevator)
+                .andThen(elevator.goToPosition(Units.inchesToMeters(0))));
 
     // shooterTilt.setDefaultCommand(
     //     Commands.run(
