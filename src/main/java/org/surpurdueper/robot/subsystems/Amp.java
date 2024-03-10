@@ -57,6 +57,14 @@ public class Amp extends SubsystemBase {
         .until(this::isAmpLoaded);
   }
 
+  public Command trapLoad() {
+    return Commands.startEnd(
+            () -> ampMotor.setControl(voltageRequest.withOutput(AmpConstants.kTrapLoadVoltage)),
+            () -> ampMotor.setControl(stopRequest),
+            this)
+        .until(this::isAmpNotLoaded);
+  }
+
   public Command score() {
     return Commands.startEnd(
             () -> ampMotor.setControl(voltageRequest.withOutput(AmpConstants.kScoreVoltage)),

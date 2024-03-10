@@ -186,7 +186,8 @@ public class RobotContainer {
                 .goToPosition(0)
                 .andThen(shooterTilt.goToPositionBlocking(TiltConstants.kAmpHandOff))
                 .andThen(Commands.deadline(amp.load(), intake.feedAmp(), shooter.feedAmp()))
-                .andThen(shooterTilt.goToPositionBlocking(TiltConstants.kSafeElevator)));
+                .andThen(shooterTilt.goToPositionBlocking(TiltConstants.kSafeElevator))
+                .andThen(Commands.deadline(amp.trapLoad())));
 
     // Temporary buttons
     joystick

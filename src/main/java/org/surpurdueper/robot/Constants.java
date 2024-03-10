@@ -54,6 +54,7 @@ public final class Constants {
     public static final double kSupplyCurrentLimitThreshold = 60;
     public static final double kSupplyTimeThreshold = 0.5;
     public static final double kLoadVoltage = 12;
+    public static final double kTrapLoadVoltage = -6;
     public static final double kScoreVoltage = 12;
   }
 
