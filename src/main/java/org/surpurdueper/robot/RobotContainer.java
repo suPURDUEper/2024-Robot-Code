@@ -59,7 +59,7 @@ public class RobotContainer {
       1.5 * Math.PI; // 3/4 of a rotation per second max angular velocity
   private final CommandXboxController joystick = new CommandXboxController(0); // My joystick
   private final CommandXboxController joystick2 = new CommandXboxController(1); // My joystick
-
+  private final CommandXboxController joystick3 = new CommandXboxController(2);
   public final CommandSwerveDrivetrain drivetrain = TunerConstants.DriveTrain; // My drivetrain
 
   private final SwerveRequest.FieldCentric drive =
@@ -146,6 +146,8 @@ public class RobotContainer {
     // Intake
     joystick.leftBumper().onTrue(intake());
 
+    joystick3.leftBumper().onTrue(intake());
+
     joystick
         .b()
         .whileTrue(
@@ -175,6 +177,8 @@ public class RobotContainer {
                 .andThen(Commands.deadline(amp.load(), intake.feedAmp(), shooter.feedAmp()))
                 .andThen(shooterTilt.goToPositionBlocking(TiltConstants.kSafeElevator))
                 .andThen(elevator.goToPosition(ElevatorConstants.kAmpScoreHeight)));
+   
+
 
     joystick.start().onTrue(Commands.run(() -> CommandScheduler.getInstance().cancelAll()));
 
@@ -188,6 +192,15 @@ public class RobotContainer {
                 .andThen(Commands.deadline(amp.load(), intake.feedAmp(), shooter.feedAmp()))
                 .andThen(shooterTilt.goToPositionBlocking(TiltConstants.kSafeElevator))
                 .andThen(Commands.deadline(amp.trapLoad())));
+      joystick3
+        .rightTrigger()
+        .onTrue(
+            elevator
+                .goToPosition(0)
+                .andThen(shooterTilt.goToPositionBlocking(TiltConstants.kAmpHandOff))
+                .andThen(Commands.deadline(amp.load(), intake.feedAmp(), shooter.feedAmp()))
+                .andThen(shooterTilt.goToPositionBlocking(TiltConstants.kSafeElevator))
+                .andThen(amp.trapLoad()));
 
     // Temporary buttons
     joystick
