@@ -5,6 +5,8 @@
 package org.surpurdueper.robot;
 
 import com.ctre.phoenix6.SignalLogger;
+
+import edu.wpi.first.net.PortForwarder;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.Threads;
@@ -36,9 +38,16 @@ public class Robot extends TimedRobot {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
-    PowerDistribution pdh = new PowerDistribution(12, ModuleType.kRev);
-    pdh.clearStickyFaults();
-    pdh.close();
+
+    // Clear PDH sticky faults
+    // PowerDistribution pdh = new PowerDistribution(12, ModuleType.kRev);
+    // pdh.clearStickyFaults();
+    // pdh.close();
+
+    // Forward limelight
+    PortForwarder.add(5800, "10.74.57.11", 5800);
+    PortForwarder.add(5801, "10.74.57.11", 5801);
+    PortForwarder.add(5805, "10.74.57.11", 5805);
   }
 
   /**

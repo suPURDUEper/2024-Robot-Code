@@ -45,6 +45,8 @@ public final class Constants {
     public static final int kFeederBreakBeam2 = 7;
     public static final int kAmpBreakBeam = 6;
     public static final int kClimberEncoder = 9;
+    public static final int kClimberLimit1 = 4;
+    public static final int kClimberLimit2 = 5;
   }
 
   public static class AmpConstants {
@@ -84,16 +86,16 @@ public final class Constants {
     public static final double kSprocketGearRatio = (34.0 / 10.0);
     public static final double kAbsoluteEncoderOffset = Units.degreesToRotations(-136.214859);
     public static final double kForwardSoftLimit = Units.degreesToRotations(70);
-    public static final double kReverseSoftLimit = Units.degreesToRotations(-20);
-    public static final double kp = 0;
+    public static final double kReverseSoftLimit = Units.degreesToRotations(-9.5);
+    public static final double kp = 67.136;
     public static final double ki = 0;
-    public static final double kd = 0;
-    public static final double ks = 0;
-    public static final double kv = 0;
-    public static final double ka = 0;
-    public static final double kg = 0;
-    public static final double profileKv = 0;
-    public static final double profileKa = 0;
+    public static final double kd = 59.544;
+    public static final double ks = 0.81355;
+    public static final double kv = 37.222;
+    public static final double ka = 0.76096;
+    public static final double kg = 0.78433;
+    public static final double profileKv = 40;
+    public static final double profileKa = 1;
     public static final boolean kAbsoluteEncoderInverted = true;
     public static final double kStatorCurrentLimit = 100;
     public static final double kGearRatio = kPlanetaryGearRatio * kSprocketGearRatio;
@@ -135,15 +137,15 @@ public final class Constants {
   }
 
   public static class ShooterConstants {
-    public static final double kGearRatio = 1.0 / 2.0;
+    public static final double kGearRatio = 24.0 / 36.0;
     public static final int kStatorCurrentLimit = 80;
 
-    public static final double kp = 0.35; // 0.00015287; // amps applied per rotation of error
+    public static final double kp = 10.0; // 0.00015287; // amps applied per rotation of error
     public static final double ki = 0; // leave at 0
     public static final double kd = 0; // amps applied per rps of error
-    public static final double ks = 0.25724; // minimum amount of amps to move arm
-    public static final double kv = 0.067409; // Probably leave at 0
-    public static final double ka = 0.022749; // Amps required to accelerate arm 1 rot/s^2
+    public static final double ks = 10.0; // minimum amount of amps to move arm
+    public static final double kv = 0.1; // Probably leave at 0
+    public static final double ka = 0.0; // Amps required to accelerate arm 1 rot/s^2
     public static final double kShooterRpsTolerance = 10;
 
     public static final double kLeftShooterSpeedRps = 6000 / 60.0;
