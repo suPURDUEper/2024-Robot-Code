@@ -1,6 +1,7 @@
 package org.surpurdueper.robot.subsystems;
 
 import com.ctre.phoenix6.BaseStatusSignal;
+import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
@@ -11,6 +12,7 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.ControlRequest;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicExpoVoltage;
+import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.StaticBrake;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -20,10 +22,16 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.Voltage;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+
 import java.util.ArrayList;
 import java.util.List;
 import org.littletonrobotics.util.LoggedTunableNumber;
@@ -43,6 +51,8 @@ public class Climber extends SubsystemBase {
   private ControlRequest stopRequest = new StaticBrake();
   private Follower followRequest;
   private TalonFXConfiguration climberConfig;
+  private DigitalInput bottomLimit1;
+  private DigitalInput bottomLimit2;
 
   // Tunable numbers
   private static final LoggedTunableNumber kp = new LoggedTunableNumber("Climber/Kp");
@@ -55,6 +65,27 @@ public class Climber extends SubsystemBase {
   private static final LoggedTunableNumber profileKv = new LoggedTunableNumber("Climber/profileKv");
   private static final LoggedTunableNumber profileKa = new LoggedTunableNumber("Climber/profileKa");
   private static final List<LoggedTunableNumber> pidGains = new ArrayList<>();
+
+  // SysID Setup
+  private final SysIdRoutine sysIdRoutine =
+      new SysIdRoutine(
+          // Empty config defaults to 1 volt/second ramp rate and 7 volt step voltage.
+          new SysIdRoutine.Config(
+              null,
+              null,
+              null,
+              state -> SignalLogger.writeString("state", state.toString())),
+          new SysIdRoutine.Mechanism(
+              // Tell SysId how to plumb the driving voltage to the motor(s).
+              (Measure<Voltage> volts) -> {
+                setVoltage(volts.in(edu.wpi.first.units.Units.Volts));
+              },
+              // Tell SysId how to record a frame of data for each motor on the mechanism being
+              // characterized.
+              null, // Using the CTRE SignalLogger API instead
+              // Tell SysId to make generated commands require this subsystem, suffix test state in
+              // WPILog with this subsystem's name ("shooter")
+              this));
 
   static {
     kp.initDefault(ClimberConstants.kp);
@@ -75,6 +106,9 @@ public class Climber extends SubsystemBase {
     configureTalonFX();
     followRequest = new Follower(climberMotor.getDeviceID(), true).withUpdateFreqHz(250);
     absoluteEncoder = new DutyCycleEncoder(Constants.DIOPorts.kClimberEncoder);
+    this.bottomLimit1 = new DigitalInput(Constants.DIOPorts.kClimberLimit1);
+    this.bottomLimit2 = new DigitalInput(Constants.DIOPorts.kClimberLimit2);
+
   }
 
   @Override
@@ -120,6 +154,8 @@ public class Climber extends SubsystemBase {
     SmartDashboard.putNumber("Climber/Position (Motor)", armPositionMotor);
     SmartDashboard.putNumber("Climber/Profile Target", armPositionSetpoint);
     SmartDashboard.putNumber("Climber/Raw Abs Sensor", rawAbsSensor);
+    SmartDashboard.putBoolean("Climber/Limit 1", bottomLimit1.get());
+    SmartDashboard.putBoolean("Climber/Limit 2", bottomLimit2.get());
   }
 
   private void setupSysIdTiming(TalonFX motorToTest) {
@@ -152,6 +188,10 @@ public class Climber extends SubsystemBase {
     return armAngle.getRotations();
   }
 
+  public boolean bottomLimit() {
+    return !bottomLimit1.get() || !bottomLimit2.get();
+  }
+
   public void syncMotorAndAbsEncoder() {
     climberMotor.setPosition(getAbsoluteSensorAngle());
   }
@@ -173,6 +213,14 @@ public class Climber extends SubsystemBase {
   public void stop() {
     climberMotor.setControl(stopRequest);
     climberFollower.setControl(stopRequest);
+  }
+
+  public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
+    return sysIdRoutine.quasistatic(direction);
+  }
+
+  public Command sysIdDynamic(SysIdRoutine.Direction direction) {
+    return sysIdRoutine.dynamic(direction);
   }
 
   private void configureTalonFX() {
