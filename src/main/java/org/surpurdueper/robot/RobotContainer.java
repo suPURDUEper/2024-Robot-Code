@@ -6,7 +6,6 @@ package org.surpurdueper.robot;
 
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
-import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
@@ -18,7 +17,6 @@ import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
-import java.util.Map;
 import org.frc3005.lib.vendor.motorcontroller.SparkMax;
 import org.littletonrobotics.util.AllianceFlipUtil;
 import org.littletonrobotics.util.FieldConstants;
@@ -62,7 +60,6 @@ public class RobotContainer {
   private final CommandXboxController joystick2 = new CommandXboxController(1); // My joystick
   private final CommandXboxController joystick3 = new CommandXboxController(2); // My joystick
 
-
   public final CommandSwerveDrivetrain drivetrain = TunerConstants.DriveTrain; // My drivetrain
 
   private final SwerveRequest.FieldCentric drive =
@@ -87,14 +84,6 @@ public class RobotContainer {
     shooterTilt = new ShooterTilt(intake);
     blinkin = new Blinkin();
 
-    NamedCommands.registerCommands(
-        Map.of(
-            "Shooter On", shooter.on(),
-            "Shooter Off", shooter.off(),
-            "Intake", intake(),
-            "Elevator Follow", elevator.followShooter(shooterTilt::getPositionRotations),
-            "Fire", intake.fire()));
-
     configureBindings();
     DriverStation.silenceJoystickConnectionWarning(true);
   }
@@ -109,7 +98,9 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-
+    /*******************/
+    /* DRIVER CONTROLS */
+    /*******************/
     // Drive
     drivetrain.setDefaultCommand( // Drivetrain will execute this command periodically
         drivetrain
@@ -149,14 +140,6 @@ public class RobotContainer {
     // Intake
     joystick.leftBumper().onTrue(intake());
 
-    joystick
-        .b()
-        .whileTrue(
-            Commands.parallel(
-                intake.purge(),
-                shooter.purge(),
-                elevator.goToPositionBlocking(0).andThen(amp.purge())));
-
     // Score
     joystick
         .rightBumper()
@@ -168,8 +151,14 @@ public class RobotContainer {
         .and(amp::isAmpNotLoaded)
         .onTrue(intake.fire().andThen(blinkin.setLightsOff()));
 
-    joystick.leftTrigger().onTrue(climber.run(() -> climber.setPositionRotations(ClimberConstants.kClimbPosition)));
+    joystick
+        .leftTrigger()
+        .onTrue(climber.run(() -> climber.setPositionRotations(ClimberConstants.kClimbPosition)));
+    joystick.start().onTrue(Commands.run(() -> CommandScheduler.getInstance().cancelAll()));
 
+    /*********************/
+    /* OPERATOR CONTROLS */
+    /*********************/
     // Load Amp
     joystick2
         .rightTrigger()
@@ -181,8 +170,6 @@ public class RobotContainer {
                 .andThen(shooterTilt.goToPositionBlocking(TiltConstants.kSafeElevator))
                 .andThen(elevator.goToPosition(ElevatorConstants.kAmpScoreHeight)));
 
-    joystick.start().onTrue(Commands.run(() -> CommandScheduler.getInstance().cancelAll()));
-
     // Load for Trap
     joystick2
         .leftTrigger()
@@ -191,12 +178,29 @@ public class RobotContainer {
                 .goToPosition(0)
                 .andThen(shooterTilt.goToPositionBlocking(TiltConstants.kAmpHandOff))
                 .andThen(Commands.deadline(amp.load(), intake.feedAmp(), shooter.feedAmp()))
-                .andThen(shooterTilt.goToPositionBlocking(TiltConstants.kSafeElevator)));
+                .andThen(shooterTilt.goToPositionBlocking(TiltConstants.kSafeElevator))
+                .andThen(Commands.deadline(amp.trapLoad())));
 
     // Climb
-    joystick2.a().onTrue(elevator.goToPositionBlocking(ElevatorConstants.kClimbHeight)
-    .andThen(climber.climb())
-    .andThen(amp.trapScore()));
+    joystick2
+        .a()
+        .onTrue(
+            elevator
+                .goToPositionBlocking(ElevatorConstants.kClimbHeight)
+                .andThen(climber.climb())
+                .andThen(amp.trapScore()));
+
+    // Purge
+    joystick2
+        .b()
+        .whileTrue(
+            Commands.parallel(
+                intake.purge(),
+                shooter.purge(),
+                elevator.goToPositionBlocking(0).andThen(amp.purge())));
+
+    joystick2.y().whileTrue(shooterTilt.goToPosition(Constants.TiltConstants.kWallShot));
+    joystick2.x().whileTrue(shooterTilt.goToPosition(Constants.TiltConstants.kStageShot));
 
     // Temporary buttons
     joystick
@@ -209,9 +213,6 @@ public class RobotContainer {
         .whileTrue(
             Commands.startEnd(
                 () -> shooterTilt.setVoltage(-4), () -> shooterTilt.stop(), shooterTilt));
-
-    joystick.leftTrigger().whileTrue(amp.startEnd(() -> amp.setVoltage(10), () -> amp.stop()));
-
     joystick
         .x()
         .whileTrue(Commands.startEnd(() -> climber.setVoltage(-12), () -> climber.stop(), climber));
@@ -236,30 +237,29 @@ public class RobotContainer {
     /* Bindings for characterization */
     /* These bindings require multiple buttons pushed to swap between quastatic and dynamic */
     /* Back/Start select dynamic/quasistatic, Y/X select forward/reverse direction */
-    joystick2
-        .back()
-        .and(joystick2.y())
-        .whileTrue(shooterTilt.goToPosition(Constants.TiltConstants.kWallShot));
-    joystick2
-        .back()
-        .and(joystick2.x())
-        .whileTrue(shooterTilt.goToPosition(Constants.TiltConstants.kStageShot));
-
 
     // Temporary buttons
-    joystick2.start().and(joystick2.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
-    joystick2.start().and(joystick2.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
-    joystick2
+    joystick3
+        .rightTrigger()
+        .onTrue(
+            elevator
+                .goToPosition(0)
+                .andThen(shooterTilt.goToPositionBlocking(TiltConstants.kAmpHandOff))
+                .andThen(Commands.deadline(amp.load(), intake.feedAmp(), shooter.feedAmp()))
+                .andThen(shooterTilt.goToPositionBlocking(TiltConstants.kSafeElevator))
+                .andThen(amp.trapLoad()));
+    joystick3.start().and(joystick2.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
+    joystick3.start().and(joystick2.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
+    joystick3
         .a()
         .whileTrue(
             new WheelRadiusCharacterization(
                 drivetrain, WheelRadiusCharacterization.Direction.CLOCKWISE));
-    joystick2
+    joystick3
         .b()
         .whileTrue(
             new WheelRadiusCharacterization(
                 drivetrain, WheelRadiusCharacterization.Direction.COUNTER_CLOCKWISE));
-    joystick3.a().onTrue(climber.climb());
   }
 
   public Command intake() {

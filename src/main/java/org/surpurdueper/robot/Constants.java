@@ -56,6 +56,7 @@ public final class Constants {
     public static final double kSupplyCurrentLimitThreshold = 60;
     public static final double kSupplyTimeThreshold = 0.5;
     public static final double kLoadVoltage = 12;
+    public static final double kTrapLoadVoltage = -1;
     public static final double kScoreVoltage = 12;
   }
 
@@ -85,7 +86,7 @@ public final class Constants {
   public static class ClimberConstants {
     public static final double kPlanetaryGearRatio = (125.0 / 1.0);
     public static final double kSprocketGearRatio = (34.0 / 10.0);
-    public static final double kAbsoluteEncoderOffset = Units.degreesToRotations(-136.214859);
+    public static final double kAbsoluteEncoderOffset = Units.degreesToRotations(75.178847);
     public static final double kForwardSoftLimit = Units.degreesToRotations(70);
     public static final double kReverseSoftLimit = Units.degreesToRotations(-20);
     public static final double kp = 67.136;
