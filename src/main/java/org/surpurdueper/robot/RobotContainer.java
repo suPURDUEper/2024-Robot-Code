@@ -31,6 +31,7 @@ import org.surpurdueper.robot.subsystems.Blinkin;
 import org.surpurdueper.robot.subsystems.Climber;
 import org.surpurdueper.robot.subsystems.Elevator;
 import org.surpurdueper.robot.subsystems.Intake;
+import org.surpurdueper.robot.subsystems.Limelight;
 import org.surpurdueper.robot.subsystems.Shooter;
 import org.surpurdueper.robot.subsystems.ShooterTilt;
 import org.surpurdueper.robot.subsystems.drive.CommandSwerveDrivetrain;
@@ -51,6 +52,7 @@ public class RobotContainer {
   private final Shooter shooter;
   private final ShooterTilt shooterTilt;
   private final Blinkin blinkin;
+  private final Limelight limelight;
 
   /* Setting up bindings for necessary control of the swerve drive platform */
   private double MaxSpeed = Units.feetToMeters(13); // kSpeedAt12VoltsMps desired top speed
@@ -83,6 +85,7 @@ public class RobotContainer {
     shooter = new Shooter();
     shooterTilt = new ShooterTilt(intake);
     blinkin = new Blinkin();
+    limelight = new Limelight(drivetrain);
 
     configureBindings();
     DriverStation.silenceJoystickConnectionWarning(true);
@@ -98,10 +101,12 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
+
     /*******************/
     /* DRIVER CONTROLS */
     /*******************/
     // Drive
+    drivetrain.registerTelemetry(logger::telemeterize);
     drivetrain.setDefaultCommand( // Drivetrain will execute this command periodically
         drivetrain
             .applyRequest(
@@ -124,7 +129,8 @@ public class RobotContainer {
                           Rotation2d.fromDegrees(180));
                   drivetrain.seedFieldRelative(AllianceFlipUtil.apply(resetPose));
                 }));
-    drivetrain.registerTelemetry(logger::telemeterize);
+    joystick.start().onTrue(Commands.run(() -> CommandScheduler.getInstance().cancelAll()));
+
 
     joystick
         .a()
@@ -134,6 +140,7 @@ public class RobotContainer {
                 shooterTilt,
                 elevator,
                 shooter,
+                limelight,
                 () -> squareJoystick(-joystick.getLeftY()) * MaxSpeed,
                 () -> squareJoystick(-joystick.getLeftX()) * MaxSpeed));
 
@@ -154,7 +161,7 @@ public class RobotContainer {
     joystick
         .leftTrigger()
         .onTrue(climber.run(() -> climber.setPositionRotations(ClimberConstants.kClimbPosition)));
-    joystick.start().onTrue(Commands.run(() -> CommandScheduler.getInstance().cancelAll()));
+
 
     /*********************/
     /* OPERATOR CONTROLS */
@@ -199,7 +206,7 @@ public class RobotContainer {
                 shooter.purge(),
                 elevator.goToPositionBlocking(0).andThen(amp.purge())));
 
-    joystick2.y().whileTrue(shooterTilt.goToPosition(Constants.TiltConstants.kWallShot));
+    joystick2.y().onTrue(shooterTilt.goToPosition(Constants.TiltConstants.kWallShot));
     joystick2.x().whileTrue(shooterTilt.goToPosition(Constants.TiltConstants.kStageShot));
 
     // Temporary buttons
