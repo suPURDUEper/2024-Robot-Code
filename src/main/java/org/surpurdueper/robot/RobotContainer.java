@@ -206,8 +206,8 @@ public class RobotContainer {
                 elevator.goToPositionBlocking(0).andThen(amp.purge())));
 
     // Manual shot locations
-    joystick2.y().onTrue(shooterTilt.goToPosition(Constants.TiltConstants.kWallShot));
-    joystick2.x().onTrue(shooterTilt.goToPosition(Constants.TiltConstants.kStageShot));
+    joystick2.y().onTrue(shooterTilt.goToPosition(Constants.TiltConstants.kWallShot).alongWith(elevator.followShooter(null)));
+    joystick2.x().onTrue(shooterTilt.goToPosition(Constants.TiltConstants.kStageShot).alongWith(elevator.followShooter(null)));
     joystick2.y().or(joystick2.x()).whileTrue(shooter.startEnd(shooter::on, shooter::idle));
 
     // Manual shooter tilt and climber control
