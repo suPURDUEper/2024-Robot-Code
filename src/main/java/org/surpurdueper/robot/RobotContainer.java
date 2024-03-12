@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import java.util.function.DoubleSupplier;
 import org.frc3005.lib.vendor.motorcontroller.SparkMax;
 import org.littletonrobotics.util.AllianceFlipUtil;
 import org.littletonrobotics.util.FieldConstants;
@@ -131,7 +132,6 @@ public class RobotContainer {
                 }));
     joystick.start().onTrue(Commands.run(() -> CommandScheduler.getInstance().cancelAll()));
 
-
     joystick
         .a()
         .whileTrue(
@@ -161,7 +161,6 @@ public class RobotContainer {
     joystick
         .leftTrigger()
         .onTrue(climber.run(() -> climber.setPositionRotations(ClimberConstants.kClimbPosition)));
-
 
     /*********************/
     /* OPERATOR CONTROLS */
@@ -206,36 +205,29 @@ public class RobotContainer {
                 shooter.purge(),
                 elevator.goToPositionBlocking(0).andThen(amp.purge())));
 
+    // Manual shot locations
     joystick2.y().onTrue(shooterTilt.goToPosition(Constants.TiltConstants.kWallShot));
-    joystick2.x().whileTrue(shooterTilt.goToPosition(Constants.TiltConstants.kStageShot));
+    joystick2.x().onTrue(shooterTilt.goToPosition(Constants.TiltConstants.kStageShot));
+    joystick2.y().or(joystick2.x()).whileTrue(shooter.startEnd(shooter::on, shooter::idle));
 
-    // Temporary buttons
-    joystick
+    // Manual shooter tilt and climber control
+    overDeadband(joystick2::getLeftY)
+        .whileTrue(
+            shooterTilt.startEnd(
+                () -> shooterTilt.setVoltage(12 * joystick2.getLeftY()), shooterTilt::stop));
+    overDeadband(joystick2::getRightY)
+        .whileTrue(
+            climber.startEnd(() -> climber.setVoltage(12 * joystick2.getRightY()), climber::stop));
+
+    // Manual elevator up and down
+    joystick2
         .povUp()
-        .whileTrue(
-            Commands.startEnd(
-                () -> shooterTilt.setVoltage(4), () -> shooterTilt.stop(), shooterTilt));
-    joystick
-        .povDown()
-        .whileTrue(
-            Commands.startEnd(
-                () -> shooterTilt.setVoltage(-4), () -> shooterTilt.stop(), shooterTilt));
-    joystick
-        .x()
-        .whileTrue(Commands.startEnd(() -> climber.setVoltage(-12), () -> climber.stop(), climber));
-
-    joystick
-        .y()
-        .whileTrue(Commands.startEnd(() -> climber.setVoltage(12), () -> climber.stop(), climber));
-
-    joystick
-        .povRight()
         .onTrue(
             shooterTilt
                 .goToPositionBlocking(TiltConstants.kSafeElevator)
                 .andThen(elevator.goToPosition(Units.inchesToMeters(20))));
-    joystick
-        .povLeft()
+    joystick2
+        .povDown()
         .onTrue(
             shooterTilt
                 .goToPositionBlocking(TiltConstants.kSafeElevator)
@@ -305,5 +297,9 @@ public class RobotContainer {
   public double squareJoystick(double value) {
     double sign = Math.signum(value);
     return value * value * sign;
+  }
+
+  public Trigger overDeadband(DoubleSupplier joystick) {
+    return new Trigger(() -> applyDeadband(joystick.getAsDouble()) > 0.0);
   }
 }

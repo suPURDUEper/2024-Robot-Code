@@ -5,7 +5,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-
 import java.util.Optional;
 import java.util.function.DoubleSupplier;
 import org.littletonrobotics.util.AllianceFlipUtil;
@@ -32,8 +31,8 @@ public class AutoAim extends Command {
   private Translation2d speakerCenter;
   private FieldCentricFacingPoint poseAimRequest;
   private FieldCentricFacingAngle limelightAimRequest;
-  private LoggedTunableNumber shooterAngle = new LoggedTunableNumber("ShooterTilt/AutoAim Angle", 30);
-
+  private LoggedTunableNumber shooterAngle =
+      new LoggedTunableNumber("ShooterTilt/AutoAim Angle", 30);
 
   public AutoAim(
       CommandSwerveDrivetrain drivetrain,

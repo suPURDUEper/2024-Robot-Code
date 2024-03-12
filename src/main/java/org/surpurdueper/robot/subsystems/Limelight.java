@@ -25,6 +25,7 @@ public class Limelight extends VirtualSubsystem {
   private static final double a1 = Units.degreesToRadians(12.5); // Camera Lens Angle
   private static final double h1 = Units.inchesToMeters(10.566051); // Camera Lens Height
   private static final double h2 = Units.inchesToMeters(57.13); // Apriltag height
+
   private static double getDistance(double a2) {
     return (h2 - h1) / Math.tan(a1 + a2);
   }
