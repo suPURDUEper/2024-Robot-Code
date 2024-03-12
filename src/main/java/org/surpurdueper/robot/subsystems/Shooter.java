@@ -4,6 +4,9 @@
 
 package org.surpurdueper.robot.subsystems;
 
+import static edu.wpi.first.units.Units.Seconds;
+import static edu.wpi.first.units.Units.Volts;
+
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
@@ -15,8 +18,6 @@ import com.ctre.phoenix6.controls.ControlRequest;
 import com.ctre.phoenix6.controls.NeutralOut;
 import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
-import com.ctre.phoenix6.controls.VelocityVoltage;
-import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -28,10 +29,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-
-import static edu.wpi.first.units.Units.Seconds;
-import static edu.wpi.first.units.Units.Volts;
-
 import java.util.ArrayList;
 import java.util.List;
 import org.littletonrobotics.util.LoggedTunableNumber;
@@ -66,7 +63,10 @@ public class Shooter extends SubsystemBase {
       new SysIdRoutine(
           // Empty config defaults to 1 volt/second ramp rate and 7 volt step voltage.
           new SysIdRoutine.Config(
-              Volts.of(10).per(Seconds.of(1)), Volts.of(40), null, state -> SignalLogger.writeString("state", state.toString())),
+              Volts.of(10).per(Seconds.of(1)),
+              Volts.of(40),
+              null,
+              state -> SignalLogger.writeString("state", state.toString())),
           new SysIdRoutine.Mechanism(
               // Tell SysId how to plumb the driving voltage to the motor(s).
               (Measure<Voltage> volts) -> {

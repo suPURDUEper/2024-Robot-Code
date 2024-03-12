@@ -11,12 +11,16 @@ import org.littletonrobotics.util.VirtualSubsystem;
 
 public class Blinkin extends VirtualSubsystem {
 
-  private final Spark lights = new Spark(1);
+  private final Spark lights;
 
   public static final double orange = 0.65;
   public static final double strobeGold = -0.07;
   public static final double black = .99;
   public static final double rainbow = -0.99;
+
+  public Blinkin() {
+    lights = new Spark(1);
+  }
 
   /** Creates a new blinkin. */
   public Command setLightsOrange() {
@@ -24,18 +28,16 @@ public class Blinkin extends VirtualSubsystem {
   }
 
   public Command setLightsStrobeGold() {
-    return Commands.runOnce(() -> lights.set(orange));
+    return Commands.runOnce(() -> lights.set(strobeGold));
   }
 
   public Command setLightsOff() {
-    return Commands.runOnce(() -> lights.set(orange));
+    return Commands.runOnce(() -> lights.set(black));
   }
 
   public Command setLightsRainbow() {
     return Commands.runOnce(() -> lights.set(rainbow));
   }
-
-  public Blinkin() {}
 
   @Override
   public void periodic() {

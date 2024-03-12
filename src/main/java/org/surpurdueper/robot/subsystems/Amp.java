@@ -73,6 +73,10 @@ public class Amp extends SubsystemBase {
         .until(this::isAmpNotLoaded);
   }
 
+  public Command trapScore() {
+    return load().andThen(score());
+  }
+
   public Command purge() {
     return Commands.startEnd(() -> setVoltage(-3), this::stop, this);
   }
