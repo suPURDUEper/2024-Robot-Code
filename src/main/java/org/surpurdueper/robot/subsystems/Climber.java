@@ -203,6 +203,9 @@ public class Climber extends SubsystemBase {
   }
 
   public void setVoltage(double volts) {
+    if (bottomLimit()) {
+      volts = Math.max(0.0, volts);
+    }
     climberMotor.setControl(voltageRequest.withOutput(volts));
     climberFollower.setControl(followRequest);
   }

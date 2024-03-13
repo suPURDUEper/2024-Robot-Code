@@ -1,6 +1,9 @@
 package org.surpurdueper.robot.commands;
 
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest.FieldCentricFacingAngle;
+import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest.ForwardReference;
+
+import edu.wpi.first.math.MatBuilder;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -19,7 +22,7 @@ import org.surpurdueper.robot.subsystems.drive.CommandSwerveDrivetrain;
 
 public class AutoAim extends Command {
 
-  private static final boolean USE_LIMELIGHT = false;
+  private static final boolean USE_LIMELIGHT = true;
 
   private CommandSwerveDrivetrain drivetrain;
   private ShooterTilt shooterTilt;
@@ -30,7 +33,7 @@ public class AutoAim extends Command {
   private DoubleSupplier yVelocitySupplier;
   private Translation2d speakerCenter;
   private FieldCentricFacingPoint poseAimRequest;
-  private FieldCentricFacingAngle limelightAimRequest;
+  private FieldCentricFacingFieldAngle limelightAimRequest;
   private LoggedTunableNumber shooterAngle =
       new LoggedTunableNumber("ShooterTilt/AutoAim Angle", 30);
 
@@ -54,17 +57,18 @@ public class AutoAim extends Command {
     // Setup request to control drive always facing the speaker
     poseAimRequest = new FieldCentricFacingPoint();
     poseAimRequest.HeadingController.setPID(10, 0, 0);
-    poseAimRequest.HeadingController.enableContinuousInput(-180.0, 180.0);
+    poseAimRequest.HeadingController.enableContinuousInput(-Math.PI, Math.PI);
 
-    limelightAimRequest = new FieldCentricFacingAngle();
-    limelightAimRequest.HeadingController.setPID(10, 0, 0);
-    limelightAimRequest.HeadingController.enableContinuousInput(-180.0, 180.0);
+    limelightAimRequest = new FieldCentricFacingFieldAngle();
+    limelightAimRequest.HeadingController.setPID(5, 0, 0);
+    limelightAimRequest.HeadingController.enableContinuousInput(-Math.PI, Math.PI);
   }
 
   @Override
   public void initialize() {
     speakerCenter =
         AllianceFlipUtil.apply(FieldConstants.Speaker.centerSpeakerOpening.toTranslation2d());
+    SmartDashboard.putNumberArray("Auto Aim/Speaker Center", new double[]{speakerCenter.getX(), speakerCenter.getY()});
     poseAimRequest.setPointToFace(speakerCenter);
     shooter.turnOn();
   }
@@ -72,31 +76,37 @@ public class AutoAim extends Command {
   @Override
   public void execute() {
     // Update drivetrain with new joystick values
-    SmartDashboard.putNumber(
-        "AutoAim/TargetDirection", poseAimRequest.getTargetDirection().getDegrees());
     double velocityX = xVelocitySupplier.getAsDouble();
     double velocityY = yVelocitySupplier.getAsDouble();
 
     Optional<Rotation2d> targetLimelightAngle = limelight.getLatencyCompensatedAngleToGoal();
+    Optional<Double> targetLimelightDistance = limelight.getDistanceToGoalMeters();
 
     if (USE_LIMELIGHT && targetLimelightAngle.isPresent()) {
       drivetrain.setControl(
           limelightAimRequest
-              .withTargetDirection(targetLimelightAngle.get())
+              .withFieldCentricTargetDirection(targetLimelightAngle.get())
               .withVelocityX(velocityX)
               .withVelocityY(velocityY));
+      SmartDashboard.putNumber(
+        "AutoAim/TargetDirection", limelightAimRequest.getTargetDirection().getDegrees());
     } else {
       drivetrain.setControl(
           poseAimRequest.withVelocityX(velocityX).withVelocityY(velocityY).withDeadband(0.1));
+      SmartDashboard.putNumber(
+        "AutoAim/TargetDirection", poseAimRequest.getTargetDirection().getDegrees());
     }
 
     // Use new pose estimation to set shooter angle
-    double distanceToSpeakerMeters =
-        drivetrain.getState().Pose.getTranslation().getDistance(speakerCenter);
+
+    double distanceToSpeakerMeters;
+    if (USE_LIMELIGHT && targetLimelightDistance.isPresent()) {
+      distanceToSpeakerMeters = targetLimelightDistance.get();
+    } else {
+      distanceToSpeakerMeters = drivetrain.getState().Pose.getTranslation().getDistance(speakerCenter);
+    }
     shooterTilt.setPositionRotations(
         LookupTables.distanceToShooterAngle.get(distanceToSpeakerMeters));
-
-    // shooterTilt.setPositionRotations(Units.degreesToRotations(shooterAngle.getAsDouble()));
     elevator.followShooter(shooterTilt.getPositionRotations());
   }
 

@@ -18,29 +18,32 @@ public class Blinkin extends VirtualSubsystem {
   public static final double black = .99;
   public static final double rainbow = -0.99;
 
+  private double currentLights = 0;
+
   public Blinkin() {
-    lights = new Spark(1);
+    super();
+    lights = new Spark(9);
   }
 
   /** Creates a new blinkin. */
   public Command setLightsOrange() {
-    return Commands.runOnce(() -> lights.set(orange));
+    return Commands.runOnce(() -> currentLights = orange);
   }
 
   public Command setLightsStrobeGold() {
-    return Commands.runOnce(() -> lights.set(strobeGold));
+    return Commands.runOnce(() -> currentLights = strobeGold);
   }
 
   public Command setLightsOff() {
-    return Commands.runOnce(() -> lights.set(black));
+    return Commands.runOnce(() -> currentLights = black);
   }
 
   public Command setLightsRainbow() {
-    return Commands.runOnce(() -> lights.set(rainbow));
+    return Commands.runOnce(() -> currentLights = rainbow);
   }
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
+    lights.set(currentLights);
   }
 }

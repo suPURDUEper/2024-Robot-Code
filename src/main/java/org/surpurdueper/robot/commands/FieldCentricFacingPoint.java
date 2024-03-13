@@ -20,7 +20,12 @@ public class FieldCentricFacingPoint extends SwerveRequest.FieldCentricFacingAng
   @Override
   public StatusCode apply(
       SwerveControlRequestParameters parameters, SwerveModule... modulesToApply) {
-    this.TargetDirection = parameters.currentPose.getTranslation().minus(pointToFace).getAngle();
+    this.TargetDirection = pointToFace.minus(parameters.currentPose.getTranslation()).getAngle();
+    if (ForwardReference == SwerveRequest.ForwardReference.OperatorPerspective) {
+      // This is an angle from the frame of the reference of the field. Subtract
+      // the operator persepctive to counteract CTRE adding it later
+      this.TargetDirection = this.TargetDirection.minus(parameters.operatorForwardDirection);
+    }
     // TODO: Adjust direction we're aiming based on current robot velocity in
     // parameters.currentChassisSpeed
     return super.apply(parameters, modulesToApply);

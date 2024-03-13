@@ -5,6 +5,8 @@
 package org.surpurdueper.robot;
 
 import com.ctre.phoenix6.SignalLogger;
+
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.net.PortForwarder;
 import edu.wpi.first.wpilibj.Threads;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -32,6 +34,9 @@ public class Robot extends TimedRobot {
     // Start logging
     SignalLogger.enableAutoLogging(true);
 
+    // Enable camera server for driver station
+    CameraServer.startAutomaticCapture();
+
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
@@ -42,9 +47,9 @@ public class Robot extends TimedRobot {
     // pdh.close();
 
     // Forward limelight
-    PortForwarder.add(5800, "10.74.57.11", 5800);
-    PortForwarder.add(5801, "10.74.57.11", 5801);
-    PortForwarder.add(5805, "10.74.57.11", 5805);
+    for (int port = 5800; port <= 5807; port++) {
+      PortForwarder.add(5800, "10.74.57.11", port);
+    }
   }
 
   /**

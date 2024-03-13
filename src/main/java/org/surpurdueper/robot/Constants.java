@@ -86,7 +86,7 @@ public final class Constants {
   public static class ClimberConstants {
     public static final double kPlanetaryGearRatio = (125.0 / 1.0);
     public static final double kSprocketGearRatio = (34.0 / 10.0);
-    public static final double kAbsoluteEncoderOffset = Units.degreesToRotations(75.178847);
+    public static final double kAbsoluteEncoderOffset = Units.degreesToRotations(-37.8);
     public static final double kForwardSoftLimit = Units.degreesToRotations(70);
     public static final double kReverseSoftLimit = Units.degreesToRotations(-20);
     public static final double kp = 67.136;
@@ -102,7 +102,7 @@ public final class Constants {
     public static final double kStatorCurrentLimit = 100;
     public static final double kGearRatio = kPlanetaryGearRatio * kSprocketGearRatio;
     public static final double kPositionTolerance = 0;
-    public static final double kClimbPosition = Units.degreesToRotations(40);
+    public static final double kClimbPosition = Units.degreesToRotations(33.574219);
   }
 
   public static class TiltConstants {
@@ -155,6 +155,8 @@ public final class Constants {
     public static final double kRightShooterSpeedRps = 3000 / 60.0;
     public static final double kLeftShooterIdleRps = 1500 / 60.0;
     public static final double kRightShooterIdleRps = 1500 / 60.0;
+    public static final double kLeftShooterAmpRps = 2000 / 60.0;
+    public static final double kRightShooterAmpRps = 2000 / 60.0;
   }
 
   public static class LookupTables {

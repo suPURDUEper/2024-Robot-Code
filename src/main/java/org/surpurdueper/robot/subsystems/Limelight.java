@@ -22,7 +22,7 @@ import org.surpurdueper.robot.utils.LimelightHelpers;
 public class Limelight extends VirtualSubsystem {
 
   // https://docs.limelightvision.io/docs/docs-limelight/tutorials/tutorial-estimating-distance
-  private static final double a1 = Units.degreesToRadians(12.5); // Camera Lens Angle
+  private static final double a1 = Units.degreesToRadians(15.3); // Camera Lens Angle
   private static final double h1 = Units.inchesToMeters(10.566051); // Camera Lens Height
   private static final double h2 = Units.inchesToMeters(57.13); // Apriltag height
 
@@ -72,7 +72,8 @@ public class Limelight extends VirtualSubsystem {
     if (robotAngleOptional.isEmpty()) {
       return Optional.empty();
     }
-    return Optional.of(robotAngleOptional.get().rotateBy(tx));
+    Rotation2d angleToGoal = robotAngleOptional.get().minus(tx);
+    return Optional.of(angleToGoal);
   }
 
   private void updatePose2DAprilTag() {
@@ -92,13 +93,15 @@ public class Limelight extends VirtualSubsystem {
     double timestamp = MathSharedStore.getTimestamp() - latencyMs / 1000.0;
     // Calculate how far we are from the apriltag
     double distance = getDistance(Units.degreesToRadians(ty));
+    SmartDashboard.putNumber("Vision/Distance (in)", Units.metersToInches(distance));
 
     // Calculate the angle from the apriltag to the camera. Account for the delay in the camera
     // capture and processing
     Optional<Rotation2d> robotAngleOptional = robotAngleBuffer.getSample(timestamp);
     Rotation2d robotAngle =
         robotAngleOptional.orElseGet(() -> drivetrain.getState().Pose.getRotation());
-    Rotation2d angle = robotAngle.rotateBy(Rotation2d.fromDegrees(tx));
+    Rotation2d angle = robotAngle.minus(Rotation2d.fromDegrees(tx));
+    SmartDashboard.putNumber("Vision/AngleToGoal (deg)", angle.getDegrees());
 
     // Make a vector using the previous distance and angle and calculate the camera position
     Translation2d apriltag =

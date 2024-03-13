@@ -183,7 +183,7 @@ public class Shooter extends SubsystemBase {
   }
 
   public Command feedAmp() {
-    return Commands.startEnd(() -> setShooterRps(1500 / 60.0, 1500 / 60.0), () -> stop(), this);
+    return Commands.startEnd(() -> setShooterRps(ShooterConstants.kLeftShooterAmpRps, ShooterConstants.kRightShooterAmpRps), () -> stop(), this);
   }
 
   public Command purge() {

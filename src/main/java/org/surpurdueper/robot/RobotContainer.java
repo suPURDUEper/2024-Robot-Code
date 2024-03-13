@@ -56,7 +56,7 @@ public class RobotContainer {
   private final Limelight limelight;
 
   /* Setting up bindings for necessary control of the swerve drive platform */
-  private double MaxSpeed = Units.feetToMeters(13); // kSpeedAt12VoltsMps desired top speed
+  private double MaxSpeed = Units.feetToMeters(14.5); // kSpeedAt12VoltsMps desired top speed
   private double MaxAngularRate =
       1.5 * Math.PI; // 3/4 of a rotation per second max angular velocity
   private final CommandXboxController joystick = new CommandXboxController(0); // My joystick
@@ -151,12 +151,12 @@ public class RobotContainer {
     joystick
         .rightBumper()
         .and(amp::isAmpLoaded)
-        .onTrue(amp.score().andThen(elevator.goToPosition(0), blinkin.setLightsOff()));
+        .onTrue(amp.score().andThen(elevator.goToPosition(0)));
 
     joystick
         .rightBumper()
         .and(amp::isAmpNotLoaded)
-        .onTrue(intake.fire().andThen(blinkin.setLightsOff()));
+        .onTrue(intake.fire());
 
     joystick
         .leftTrigger()
@@ -206,18 +206,30 @@ public class RobotContainer {
                 elevator.goToPositionBlocking(0).andThen(amp.purge())));
 
     // Manual shot locations
-    joystick2.y().onTrue(shooterTilt.goToPosition(Constants.TiltConstants.kWallShot).alongWith(elevator.followShooter(null)));
-    joystick2.x().onTrue(shooterTilt.goToPosition(Constants.TiltConstants.kStageShot).alongWith(elevator.followShooter(null)));
-    joystick2.y().or(joystick2.x()).whileTrue(shooter.startEnd(shooter::on, shooter::idle));
+    joystick2
+        .y()
+        .whileTrue(
+            shooterTilt
+                .goToPosition(Constants.TiltConstants.kWallShot)
+                .alongWith(elevator.followShooter(shooterTilt::getPositionRotations)));
+    joystick2.y().onFalse(elevator.goToPosition(0));
+
+    joystick2
+        .x()
+        .whileTrue(
+            shooterTilt
+                .goToPosition(Constants.TiltConstants.kStageShot)
+                .alongWith(elevator.goToPosition(0)));
+    joystick2.y().or(joystick2.x()).whileTrue(shooter.startEnd(shooter::turnOn, shooter::turnOnIdle));
 
     // Manual shooter tilt and climber control
     overDeadband(joystick2::getLeftY)
         .whileTrue(
-            shooterTilt.startEnd(
-                () -> shooterTilt.setVoltage(12 * joystick2.getLeftY()), shooterTilt::stop));
+            shooterTilt.runEnd(
+                () -> shooterTilt.setVoltage(12 * applyDeadband(-joystick2.getLeftY())), shooterTilt::stop));
     overDeadband(joystick2::getRightY)
         .whileTrue(
-            climber.startEnd(() -> climber.setVoltage(12 * joystick2.getRightY()), climber::stop));
+            climber.runEnd(() -> climber.setVoltage(12 * applyDeadband(-joystick2.getRightY())), climber::stop));
 
     // Manual elevator up and down
     joystick2
@@ -232,6 +244,9 @@ public class RobotContainer {
             shooterTilt
                 .goToPositionBlocking(TiltConstants.kSafeElevator)
                 .andThen(elevator.goToPosition(Units.inchesToMeters(0))));
+    
+    // Resync shooter tilt to abs encoder
+    joystick2.start().onTrue(shooterTilt.runOnce(shooterTilt::syncMotorAndAbsEncoder));
 
     /* Bindings for characterization */
     /* These bindings require multiple buttons pushed to swap between quastatic and dynamic */
@@ -273,7 +288,7 @@ public class RobotContainer {
                     new ScheduleCommand(
                         Commands.sequence(
                             blinkin.setLightsStrobeGold(),
-                            Commands.waitSeconds(1),
+                            Commands.waitSeconds(2),
                             blinkin.setLightsOrange()))));
   }
 
@@ -300,6 +315,6 @@ public class RobotContainer {
   }
 
   public Trigger overDeadband(DoubleSupplier joystick) {
-    return new Trigger(() -> applyDeadband(joystick.getAsDouble()) > 0.0);
+    return new Trigger(() -> applyDeadband(Math.abs(joystick.getAsDouble())) > 0.0);
   }
 }
