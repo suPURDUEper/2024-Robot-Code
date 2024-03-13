@@ -68,6 +68,7 @@ public final class Constants {
     public static final float kForwardSoftLimit = (float) Units.inchesToMeters(20.75);
     public static final float kReverseSoftLimit = 0;
     public static final double kClimbHeight = Units.inchesToMeters(20.5);
+    public static final double kAfterClimbHeight = Units.inchesToMeters(14);
     public static final double kAmpScoreHeight = Units.inchesToMeters(18.0);
 
     // Feedforward gains from sysId
@@ -86,7 +87,7 @@ public final class Constants {
   public static class ClimberConstants {
     public static final double kPlanetaryGearRatio = (125.0 / 1.0);
     public static final double kSprocketGearRatio = (34.0 / 10.0);
-    public static final double kAbsoluteEncoderOffset = Units.degreesToRotations(-37.8);
+    public static final double kAbsoluteEncoderOffset = Units.degreesToRotations(27.050374);
     public static final double kForwardSoftLimit = Units.degreesToRotations(70);
     public static final double kReverseSoftLimit = Units.degreesToRotations(-20);
     public static final double kp = 67.136;

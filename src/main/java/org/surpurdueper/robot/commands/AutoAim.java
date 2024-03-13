@@ -1,9 +1,5 @@
 package org.surpurdueper.robot.commands;
 
-import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest.FieldCentricFacingAngle;
-import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest.ForwardReference;
-
-import edu.wpi.first.math.MatBuilder;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -68,7 +64,8 @@ public class AutoAim extends Command {
   public void initialize() {
     speakerCenter =
         AllianceFlipUtil.apply(FieldConstants.Speaker.centerSpeakerOpening.toTranslation2d());
-    SmartDashboard.putNumberArray("Auto Aim/Speaker Center", new double[]{speakerCenter.getX(), speakerCenter.getY()});
+    SmartDashboard.putNumberArray(
+        "Auto Aim/Speaker Center", new double[] {speakerCenter.getX(), speakerCenter.getY()});
     poseAimRequest.setPointToFace(speakerCenter);
     shooter.turnOn();
   }
@@ -89,12 +86,12 @@ public class AutoAim extends Command {
               .withVelocityX(velocityX)
               .withVelocityY(velocityY));
       SmartDashboard.putNumber(
-        "AutoAim/TargetDirection", limelightAimRequest.getTargetDirection().getDegrees());
+          "AutoAim/TargetDirection", limelightAimRequest.getTargetDirection().getDegrees());
     } else {
       drivetrain.setControl(
           poseAimRequest.withVelocityX(velocityX).withVelocityY(velocityY).withDeadband(0.1));
       SmartDashboard.putNumber(
-        "AutoAim/TargetDirection", poseAimRequest.getTargetDirection().getDegrees());
+          "AutoAim/TargetDirection", poseAimRequest.getTargetDirection().getDegrees());
     }
 
     // Use new pose estimation to set shooter angle
@@ -103,7 +100,8 @@ public class AutoAim extends Command {
     if (USE_LIMELIGHT && targetLimelightDistance.isPresent()) {
       distanceToSpeakerMeters = targetLimelightDistance.get();
     } else {
-      distanceToSpeakerMeters = drivetrain.getState().Pose.getTranslation().getDistance(speakerCenter);
+      distanceToSpeakerMeters =
+          drivetrain.getState().Pose.getTranslation().getDistance(speakerCenter);
     }
     shooterTilt.setPositionRotations(
         LookupTables.distanceToShooterAngle.get(distanceToSpeakerMeters));

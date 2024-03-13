@@ -153,10 +153,7 @@ public class RobotContainer {
         .and(amp::isAmpLoaded)
         .onTrue(amp.score().andThen(elevator.goToPosition(0)));
 
-    joystick
-        .rightBumper()
-        .and(amp::isAmpNotLoaded)
-        .onTrue(intake.fire());
+    joystick.rightBumper().and(amp::isAmpNotLoaded).onTrue(intake.fire());
 
     joystick
         .leftTrigger()
@@ -191,10 +188,13 @@ public class RobotContainer {
     joystick2
         .a()
         .onTrue(
-            elevator
-                .goToPositionBlocking(ElevatorConstants.kClimbHeight)
-                .andThen(climber.climb())
-                .andThen(amp.trapScore()));
+            shooterTilt
+                .goToPosition(TiltConstants.kSafeElevator)
+                .andThen(
+                    elevator
+                        .goToPositionBlocking(ElevatorConstants.kClimbHeight)
+                        .andThen(climber.climb())
+                        .andThen(amp.trapScore())));
 
     // Purge
     joystick2
@@ -220,16 +220,22 @@ public class RobotContainer {
             shooterTilt
                 .goToPosition(Constants.TiltConstants.kStageShot)
                 .alongWith(elevator.goToPosition(0)));
-    joystick2.y().or(joystick2.x()).whileTrue(shooter.startEnd(shooter::turnOn, shooter::turnOnIdle));
+    joystick2
+        .y()
+        .or(joystick2.x())
+        .whileTrue(shooter.startEnd(shooter::turnOn, shooter::turnOnIdle));
 
     // Manual shooter tilt and climber control
     overDeadband(joystick2::getLeftY)
         .whileTrue(
             shooterTilt.runEnd(
-                () -> shooterTilt.setVoltage(12 * applyDeadband(-joystick2.getLeftY())), shooterTilt::stop));
+                () -> shooterTilt.setVoltage(12 * applyDeadband(-joystick2.getLeftY())),
+                shooterTilt::stop));
     overDeadband(joystick2::getRightY)
         .whileTrue(
-            climber.runEnd(() -> climber.setVoltage(12 * applyDeadband(-joystick2.getRightY())), climber::stop));
+            climber.runEnd(
+                () -> climber.setVoltage(12 * applyDeadband(-joystick2.getRightY())),
+                climber::stop));
 
     // Manual elevator up and down
     joystick2
@@ -244,7 +250,7 @@ public class RobotContainer {
             shooterTilt
                 .goToPositionBlocking(TiltConstants.kSafeElevator)
                 .andThen(elevator.goToPosition(Units.inchesToMeters(0))));
-    
+
     // Resync shooter tilt to abs encoder
     joystick2.start().onTrue(shooterTilt.runOnce(shooterTilt::syncMotorAndAbsEncoder));
 

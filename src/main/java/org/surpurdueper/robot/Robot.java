@@ -5,7 +5,6 @@
 package org.surpurdueper.robot;
 
 import com.ctre.phoenix6.SignalLogger;
-
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.net.PortForwarder;
 import edu.wpi.first.wpilibj.Threads;

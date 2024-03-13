@@ -216,7 +216,7 @@ public class Climber extends SubsystemBase {
   }
 
   public void stall() {
-    climberMotor.setControl(torqueRequest.withOutput(-10));
+    climberMotor.setControl(torqueRequest.withOutput(-13));
     climberFollower.setControl(followRequest);
   }
 
