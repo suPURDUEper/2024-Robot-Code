@@ -10,6 +10,8 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -26,7 +28,9 @@ import org.surpurdueper.robot.Constants.ElevatorConstants;
 import org.surpurdueper.robot.Constants.TiltConstants;
 import org.surpurdueper.robot.commands.AutoAim;
 import org.surpurdueper.robot.commands.WheelRadiusCharacterization;
+import org.surpurdueper.robot.commands.auto.FourDisk;
 import org.surpurdueper.robot.commands.auto.ThreeDisk;
+import org.surpurdueper.robot.commands.auto.TwoDisk;
 import org.surpurdueper.robot.subsystems.Amp;
 import org.surpurdueper.robot.subsystems.Blinkin;
 import org.surpurdueper.robot.subsystems.Climber;
@@ -75,6 +79,9 @@ public class RobotContainer {
 
   private final Telemetry logger = new Telemetry(MaxSpeed);
 
+  private final SendableChooser<Command> m_chooser = new SendableChooser<>();
+
+
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     SparkMax.burnFlashInSync();
@@ -87,6 +94,17 @@ public class RobotContainer {
     shooterTilt = new ShooterTilt(intake);
     blinkin = new Blinkin();
     limelight = new Limelight(drivetrain);
+
+    Command doNothingAuto = Commands.none();
+    Command twoDisk = new TwoDisk(drivetrain, intake, shooterTilt, shooter, elevator, limelight);
+    Command threeDisk = new ThreeDisk(drivetrain, intake, shooterTilt, shooter, elevator, limelight);
+    Command fourDisk = new FourDisk(drivetrain, intake, shooterTilt, shooter, elevator, limelight);
+
+    m_chooser.setDefaultOption("Do Nothing", doNothingAuto);
+    m_chooser.addOption("Two Disk", twoDisk);
+    m_chooser.addOption("Three Disk", threeDisk);
+    m_chooser.addOption("Four Disk", fourDisk);
+    SmartDashboard.putData("Autonomous Routine", m_chooser);
 
     configureBindings();
     DriverStation.silenceJoystickConnectionWarning(true);
@@ -304,7 +322,7 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return new ThreeDisk(drivetrain, intake, shooterTilt, shooter, elevator);
+    return m_chooser.getSelected();
   }
 
   public double applyDeadband(double value) {

@@ -1,8 +1,7 @@
-package org.surpurdueper.robot.commands;
+package org.surpurdueper.robot.commands.auto;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import java.util.Optional;
@@ -11,20 +10,20 @@ import org.littletonrobotics.util.AllianceFlipUtil;
 import org.littletonrobotics.util.FieldConstants;
 import org.littletonrobotics.util.LoggedTunableNumber;
 import org.surpurdueper.robot.Constants.LookupTables;
+import org.surpurdueper.robot.commands.FieldCentricFacingFieldAngle;
+import org.surpurdueper.robot.commands.FieldCentricFacingPoint;
 import org.surpurdueper.robot.subsystems.Elevator;
 import org.surpurdueper.robot.subsystems.Limelight;
-import org.surpurdueper.robot.subsystems.Shooter;
 import org.surpurdueper.robot.subsystems.ShooterTilt;
 import org.surpurdueper.robot.subsystems.drive.CommandSwerveDrivetrain;
 
-public class AutoAim extends Command {
+public class AutoAutoAim extends Command {
 
   private static final boolean USE_LIMELIGHT = true;
 
   private CommandSwerveDrivetrain drivetrain;
   private ShooterTilt shooterTilt;
   private Elevator elevator;
-  private Shooter shooter;
   private Limelight limelight;
   private DoubleSupplier xVelocitySupplier;
   private DoubleSupplier yVelocitySupplier;
@@ -36,22 +35,20 @@ public class AutoAim extends Command {
 
   private boolean shouldElevatorFollow;
 
-  public AutoAim(
+  public AutoAutoAim(
       CommandSwerveDrivetrain drivetrain,
       ShooterTilt shooterTilt,
       Elevator elevator,
-      Shooter shooter,
       Limelight limelight,
       DoubleSupplier xVelocitySupplier,
       DoubleSupplier yVelocitySupplier) {
-        this(drivetrain, shooterTilt, elevator, shooter, limelight, xVelocitySupplier, yVelocitySupplier, true);
+        this(drivetrain, shooterTilt, elevator, limelight, xVelocitySupplier, yVelocitySupplier, true);
       }
 
-  public AutoAim(
+  public AutoAutoAim(
       CommandSwerveDrivetrain drivetrain,
       ShooterTilt shooterTilt,
       Elevator elevator,
-      Shooter shooter,
       Limelight limelight,
       DoubleSupplier xVelocitySupplier,
       DoubleSupplier yVelocitySupplier, 
@@ -59,12 +56,11 @@ public class AutoAim extends Command {
     this.drivetrain = drivetrain;
     this.shooterTilt = shooterTilt;
     this.elevator = elevator;
-    this.shooter = shooter;
     this.limelight = limelight;
     this.xVelocitySupplier = xVelocitySupplier;
     this.yVelocitySupplier = yVelocitySupplier;
     this.shouldElevatorFollow = shouldElevatorFollow;
-    addRequirements(drivetrain, elevator, shooter, shooterTilt);
+    addRequirements(drivetrain, elevator, shooterTilt);
 
     // Setup request to control drive always facing the speaker
     poseAimRequest = new FieldCentricFacingPoint();
@@ -83,7 +79,6 @@ public class AutoAim extends Command {
     SmartDashboard.putNumberArray(
         "Auto Aim/Speaker Center", new double[] {speakerCenter.getX(), speakerCenter.getY()});
     poseAimRequest.setPointToFace(speakerCenter);
-    shooter.turnOn();
   }
 
   @Override
@@ -131,6 +126,5 @@ public class AutoAim extends Command {
   @Override
   public void end(boolean interrupted) {
     elevator.setPositionMeters(0);
-    shooter.turnOnIdle();
   }
 }

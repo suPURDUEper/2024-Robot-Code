@@ -202,6 +202,11 @@ public final class Constants {
       addPointToDistanceToShooterAngle(72, 34.5);
       addPointToDistanceToShooterAngle(84, 31.75);
       addPointToDistanceToShooterAngle(96, 29.25);
+      addPointToDistanceToShooterAngle(112, 28.5);
+      addPointToDistanceToShooterAngle(120, 27.5);
+      addPointToDistanceToShooterAngle(132, 26.375);
+      addPointToDistanceToShooterAngle(144, 25.25);
+      addPointToDistanceToShooterAngle(156, 24.25);
     }
   }
 }

@@ -54,7 +54,9 @@ public class Limelight extends VirtualSubsystem {
     if (!LimelightHelpers.getTV("")) {
       return Optional.empty();
     }
-    return Optional.of(getDistance(Units.degreesToRadians(LimelightHelpers.getTY(""))));
+    double lensToTagDistanceMeters = getDistance(Units.degreesToRadians(LimelightHelpers.getTY("")));
+
+    return Optional.of(lensToTagDistanceMeters + Units.inchesToMeters(5));
   }
 
   public Optional<Rotation2d> getLatencyCompensatedAngleToGoal() {

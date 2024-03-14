@@ -12,6 +12,7 @@ import org.littletonrobotics.util.AllianceFlipUtil;
 import org.surpurdueper.robot.Constants.TiltConstants;
 import org.surpurdueper.robot.subsystems.Elevator;
 import org.surpurdueper.robot.subsystems.Intake;
+import org.surpurdueper.robot.subsystems.Limelight;
 import org.surpurdueper.robot.subsystems.Shooter;
 import org.surpurdueper.robot.subsystems.ShooterTilt;
 import org.surpurdueper.robot.subsystems.drive.CommandSwerveDrivetrain;
@@ -23,27 +24,23 @@ public class TwoDisk extends SequentialCommandGroup {
       Intake intake,
       ShooterTilt shooterTilt,
       Shooter shooter,
-      Elevator elevator) {
+      Elevator elevator,
+      Limelight limelight) {
 
-    PathPlannerPath toFirstDisk = PathPlannerPath.fromChoreoTrajectory("5 Standard.1");
+    PathPlannerPath lineupFirstShot = PathPlannerPath.fromChoreoTrajectory("5 Standard.1");
+    PathPlannerPath toSecondDisk = PathPlannerPath.fromChoreoTrajectory("5 Standard.2");
+
     Rotation2d startingHeading = Rotation2d.fromRadians(-2.0848597284421473);
     Pose2d startingPose =
-        new Pose2d(toFirstDisk.getPreviewStartingHolonomicPose().getTranslation(), startingHeading);
-    Supplier<Pose2d> robotPoseSupplier = () -> drivetrain.getState().Pose;
+        new Pose2d(lineupFirstShot.getPreviewStartingHolonomicPose().getTranslation(), startingHeading);
 
     addCommands(
         Commands.runOnce(() -> drivetrain.seedFieldRelative(AllianceFlipUtil.apply(startingPose))),
-        Commands.deadline(
-            Commands.sequence(
-                shooter.on(),
-                shooterTilt.goToPositionBlocking(Units.degreesToRotations(54.5)),
-                elevator.waitUntilAtPosition(),
-                intake.fire().withTimeout(0.5)),
-            elevator.followShooter(shooterTilt::getPositionRotations)),
-        elevator.goToPosition(0),
-        Commands.waitSeconds(0.5),
+        shooter.on(),
+        AutoBuilder.followPath(lineupFirstShot),
+        Autos.aimAndFireWithElevator(drivetrain, shooterTilt, elevator, shooter, limelight, intake).withTimeout(1.25),
         shooterTilt.goToPositionBlocking(TiltConstants.kIntakeAngle),
-        Commands.parallel(intake.load(), AutoBuilder.followPath(toFirstDisk)),
-        Autos.aimAndFireWithElevator(shooterTilt, elevator, intake, robotPoseSupplier));
-  }
+        Commands.parallel(intake.load(), AutoBuilder.followPath(toSecondDisk)),
+        Autos.aimAndFireWithElevator(drivetrain, shooterTilt, elevator, shooter, limelight, intake).withTimeout(1.25));
+      }
 }
