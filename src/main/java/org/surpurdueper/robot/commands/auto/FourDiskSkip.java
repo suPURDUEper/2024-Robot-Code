@@ -30,7 +30,7 @@ public class FourDiskSkip extends SequentialCommandGroup {
         Commands.deadline(
             AutoBuilder.followPath(toThirdDisk),
             intake.load()),
-        Autos.aimAndFireNoElevator(drivetrain, shooterTilt, elevator, shooter, limelight, intake).withTimeout(1.25));
+        Autos.aimAndFireNoElevator(drivetrain, shooterTilt, elevator, shooter, limelight, intake, 0.5).withTimeout(1));
 
       }
     

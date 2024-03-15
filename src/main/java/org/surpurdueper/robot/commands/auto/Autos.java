@@ -38,4 +38,15 @@ public class Autos {
     return new AutoAutoAim(drivetrain, shooterTilt, elevator, limelight, zero, zero, false)
     .alongWith(Commands.waitSeconds(0.75).andThen(intake.fire()));
   }
+
+  public static Command aimAndFireNoElevator(CommandSwerveDrivetrain drivetrain,
+      ShooterTilt shooterTilt,
+      Elevator elevator,
+      Shooter shooter,
+      Limelight limelight,
+      Intake intake, 
+      double aimTime) {
+    return new AutoAutoAim(drivetrain, shooterTilt, elevator, limelight, zero, zero, false)
+    .alongWith(Commands.waitSeconds(aimTime).andThen(intake.fire()));
+  }
 }

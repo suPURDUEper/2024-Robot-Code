@@ -22,12 +22,13 @@ import org.surpurdueper.robot.utils.LimelightHelpers;
 public class Limelight extends VirtualSubsystem {
 
   // https://docs.limelightvision.io/docs/docs-limelight/tutorials/tutorial-estimating-distance
-  private static final double a1 = Units.degreesToRadians(15.3); // Camera Lens Angle
+  private static final double a1 = Units.degreesToRadians(15.70); // Camera Lens Angle
   private static final double h1 = Units.inchesToMeters(10.566051); // Camera Lens Height
   private static final double h2 = Units.inchesToMeters(57.13); // Apriltag height
 
   private static double getDistance(double a2) {
     return (h2 - h1) / Math.tan(a1 + a2);
+    // (57.13 - 10.566) / Math.tan(1.10 + a2) = 154.5
   }
 
   private static final double cameraToRobotCenterMeters = 0.1;

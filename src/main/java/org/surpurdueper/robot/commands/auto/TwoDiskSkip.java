@@ -30,7 +30,7 @@ public class TwoDiskSkip extends SequentialCommandGroup {
         Commands.deadline(
             AutoBuilder.followPath(toSecondDisk),
             intake.load()),
-        Autos.aimAndFireNoElevator(drivetrain, shooterTilt, elevator, shooter, limelight, intake).withTimeout(1.25));
+        Autos.aimAndFireNoElevator(drivetrain, shooterTilt, elevator, shooter, limelight, intake).withTimeout(1));
 
       }
     
