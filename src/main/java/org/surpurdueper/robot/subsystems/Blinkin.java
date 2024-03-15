@@ -18,7 +18,7 @@ public class Blinkin extends VirtualSubsystem {
   public static final double black = .99;
   public static final double rainbow = -0.99;
 
-  private double currentLights = 0;
+  private double currentLights = strobeGold;
 
   public Blinkin() {
     super();
@@ -34,9 +34,9 @@ public class Blinkin extends VirtualSubsystem {
     return Commands.runOnce(() -> currentLights = strobeGold);
   }
 
-  public Command setLightsOff() {
-    return Commands.runOnce(() -> currentLights = black);
-  }
+  // public Command setLightsOff() {
+  //   return Commands.runOnce(() -> currentLights = black);
+  // }
 
   public Command setLightsRainbow() {
     return Commands.runOnce(() -> currentLights = rainbow);

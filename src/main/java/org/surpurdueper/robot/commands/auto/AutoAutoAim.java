@@ -42,8 +42,8 @@ public class AutoAutoAim extends Command {
       Limelight limelight,
       DoubleSupplier xVelocitySupplier,
       DoubleSupplier yVelocitySupplier) {
-        this(drivetrain, shooterTilt, elevator, limelight, xVelocitySupplier, yVelocitySupplier, true);
-      }
+    this(drivetrain, shooterTilt, elevator, limelight, xVelocitySupplier, yVelocitySupplier, true);
+  }
 
   public AutoAutoAim(
       CommandSwerveDrivetrain drivetrain,
@@ -51,7 +51,7 @@ public class AutoAutoAim extends Command {
       Elevator elevator,
       Limelight limelight,
       DoubleSupplier xVelocitySupplier,
-      DoubleSupplier yVelocitySupplier, 
+      DoubleSupplier yVelocitySupplier,
       boolean shouldElevatorFollow) {
     this.drivetrain = drivetrain;
     this.shooterTilt = shooterTilt;

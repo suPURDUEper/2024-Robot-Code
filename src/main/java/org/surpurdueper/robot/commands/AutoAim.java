@@ -2,7 +2,6 @@ package org.surpurdueper.robot.commands;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import java.util.Optional;
@@ -44,8 +43,16 @@ public class AutoAim extends Command {
       Limelight limelight,
       DoubleSupplier xVelocitySupplier,
       DoubleSupplier yVelocitySupplier) {
-        this(drivetrain, shooterTilt, elevator, shooter, limelight, xVelocitySupplier, yVelocitySupplier, true);
-      }
+    this(
+        drivetrain,
+        shooterTilt,
+        elevator,
+        shooter,
+        limelight,
+        xVelocitySupplier,
+        yVelocitySupplier,
+        true);
+  }
 
   public AutoAim(
       CommandSwerveDrivetrain drivetrain,
@@ -54,7 +61,7 @@ public class AutoAim extends Command {
       Shooter shooter,
       Limelight limelight,
       DoubleSupplier xVelocitySupplier,
-      DoubleSupplier yVelocitySupplier, 
+      DoubleSupplier yVelocitySupplier,
       boolean shouldElevatorFollow) {
     this.drivetrain = drivetrain;
     this.shooterTilt = shooterTilt;

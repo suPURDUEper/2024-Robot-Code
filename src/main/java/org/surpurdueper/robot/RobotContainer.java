@@ -30,11 +30,11 @@ import org.surpurdueper.robot.commands.AutoAim;
 import org.surpurdueper.robot.commands.WheelRadiusCharacterization;
 import org.surpurdueper.robot.commands.auto.FourDisk;
 import org.surpurdueper.robot.commands.auto.FourDiskSkip;
+import org.surpurdueper.robot.commands.auto.OneDiskSkip;
 import org.surpurdueper.robot.commands.auto.ThreeDisk;
 import org.surpurdueper.robot.commands.auto.ThreeDiskSkip;
 import org.surpurdueper.robot.commands.auto.TwoDisk;
 import org.surpurdueper.robot.commands.auto.TwoDiskSkip;
-import org.surpurdueper.robot.commands.auto.OneDiskSkip;
 import org.surpurdueper.robot.subsystems.Amp;
 import org.surpurdueper.robot.subsystems.Blinkin;
 import org.surpurdueper.robot.subsystems.Climber;
@@ -85,7 +85,6 @@ public class RobotContainer {
 
   private final SendableChooser<Command> m_chooser = new SendableChooser<>();
 
-
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     SparkMax.burnFlashInSync();
@@ -101,13 +100,17 @@ public class RobotContainer {
 
     Command doNothingAuto = Commands.none();
     Command twoDisk = new TwoDisk(drivetrain, intake, shooterTilt, shooter, elevator, limelight);
-    Command threeDisk = new ThreeDisk(drivetrain, intake, shooterTilt, shooter, elevator, limelight);
+    Command threeDisk =
+        new ThreeDisk(drivetrain, intake, shooterTilt, shooter, elevator, limelight);
     Command fourDisk = new FourDisk(drivetrain, intake, shooterTilt, shooter, elevator, limelight);
-    Command oneDiskSkip = new OneDiskSkip(drivetrain, intake, shooterTilt, shooter, elevator, limelight);
-    Command twoDiskSkip = new TwoDiskSkip(drivetrain, intake, shooterTilt, shooter, elevator, limelight);
-    Command threeDiskSkip = new ThreeDiskSkip(drivetrain, intake, shooterTilt, shooter, elevator, limelight);
-    Command fourDiskSkip = new FourDiskSkip(drivetrain, intake, shooterTilt, shooter, elevator, limelight);
-
+    Command oneDiskSkip =
+        new OneDiskSkip(drivetrain, intake, shooterTilt, shooter, elevator, limelight);
+    Command twoDiskSkip =
+        new TwoDiskSkip(drivetrain, intake, shooterTilt, shooter, elevator, limelight);
+    Command threeDiskSkip =
+        new ThreeDiskSkip(drivetrain, intake, shooterTilt, shooter, elevator, limelight);
+    Command fourDiskSkip =
+        new FourDiskSkip(drivetrain, intake, shooterTilt, shooter, elevator, limelight);
 
     m_chooser.setDefaultOption("Do Nothing", doNothingAuto);
     m_chooser.addOption("Two Disk", twoDisk);
@@ -117,7 +120,6 @@ public class RobotContainer {
     m_chooser.addOption("Two Disk (Skip)", twoDiskSkip);
     m_chooser.addOption("Three Disk (Skip)", threeDiskSkip);
     m_chooser.addOption("Four Disk (Skip)", fourDiskSkip);
-
 
     SmartDashboard.putData("Autonomous Routine", m_chooser);
 

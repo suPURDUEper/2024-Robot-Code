@@ -2,11 +2,8 @@ package org.surpurdueper.robot.commands.auto;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.PathPlannerPath;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import java.util.function.Supplier;
-import org.surpurdueper.robot.Constants.TiltConstants;
 import org.surpurdueper.robot.subsystems.Elevator;
 import org.surpurdueper.robot.subsystems.Intake;
 import org.surpurdueper.robot.subsystems.Limelight;
@@ -28,9 +25,8 @@ public class ThreeDisk extends SequentialCommandGroup {
 
     addCommands(
         new TwoDisk(drivetrain, intake, shooterTilt, shooter, elevator, limelight),
-        Commands.deadline(
-            AutoBuilder.followPath(toThirdDisk),
-            intake.load()),
-        Autos.aimAndFireNoElevator(drivetrain, shooterTilt, elevator, shooter, limelight, intake).withTimeout(1.25));
+        Commands.deadline(AutoBuilder.followPath(toThirdDisk), intake.load()),
+        Autos.aimAndFireNoElevator(drivetrain, shooterTilt, elevator, shooter, limelight, intake)
+            .withTimeout(1.25));
   }
 }

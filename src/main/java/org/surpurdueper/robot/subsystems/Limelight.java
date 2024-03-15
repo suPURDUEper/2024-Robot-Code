@@ -55,7 +55,8 @@ public class Limelight extends VirtualSubsystem {
     if (!LimelightHelpers.getTV("")) {
       return Optional.empty();
     }
-    double lensToTagDistanceMeters = getDistance(Units.degreesToRadians(LimelightHelpers.getTY("")));
+    double lensToTagDistanceMeters =
+        getDistance(Units.degreesToRadians(LimelightHelpers.getTY("")));
 
     return Optional.of(lensToTagDistanceMeters + Units.inchesToMeters(5));
   }
