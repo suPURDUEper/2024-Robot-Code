@@ -229,7 +229,8 @@ public class RobotContainer {
                     elevator
                         .goToPositionBlocking(ElevatorConstants.kClimbHeight)
                         .andThen(climber.climb())
-                        .andThen(amp.trapScore())));
+                        .andThen(Commands.waitSeconds(1))
+                        .andThen(amp.trapScore().withTimeout(2))));
 
     // Purge
     joystick2
@@ -259,6 +260,8 @@ public class RobotContainer {
         .y()
         .or(joystick2.x())
         .whileTrue(shooter.startEnd(shooter::turnOn, shooter::turnOnIdle));
+
+    joystick2.rightBumper().onTrue(amp.trapLoad().andThen(amp.trapScore().withTimeout(2)));
 
     // Manual shooter tilt and climber control
     overDeadband(joystick2::getLeftY)
