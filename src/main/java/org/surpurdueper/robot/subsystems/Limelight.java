@@ -24,7 +24,7 @@ public class Limelight extends VirtualSubsystem {
   // https://docs.limelightvision.io/docs/docs-limelight/tutorials/tutorial-estimating-distance
   private static final double a1 = Units.degreesToRadians(15.70); // Camera Lens Angle
   private static final double h1 = Units.inchesToMeters(10.566051); // Camera Lens Height
-  private static final double h2 = Units.inchesToMeters(57.13); // Apriltag height
+  private static final double h2 = Units.inchesToMeters(58); // Apriltag height
 
   private static double getDistance(double a2) {
     return (h2 - h1) / Math.tan(a1 + a2);
@@ -58,7 +58,7 @@ public class Limelight extends VirtualSubsystem {
     double lensToTagDistanceMeters =
         getDistance(Units.degreesToRadians(LimelightHelpers.getTY("")));
 
-    return Optional.of(lensToTagDistanceMeters + Units.inchesToMeters(5));
+    return Optional.of(lensToTagDistanceMeters + Units.inchesToMeters(9));
   }
 
   public Optional<Rotation2d> getLatencyCompensatedAngleToGoal() {

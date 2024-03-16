@@ -103,7 +103,7 @@ public final class Constants {
     public static final double kStatorCurrentLimit = 100;
     public static final double kGearRatio = kPlanetaryGearRatio * kSprocketGearRatio;
     public static final double kPositionTolerance = 0;
-    public static final double kClimbPosition = Units.degreesToRotations(33.574219);
+    public static final double kClimbPosition = Units.degreesToRotations(39.814);
   }
 
   public static class TiltConstants {
