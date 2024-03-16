@@ -31,7 +31,7 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     // Start logging
-    SignalLogger.enableAutoLogging(true);
+    // SignalLogger.enableAutoLogging(true);
 
     // Enable camera server for driver station
     CameraServer.startAutomaticCapture();
@@ -72,7 +72,7 @@ public class Robot extends TimedRobot {
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
   public void disabledInit() {
-    SignalLogger.stop();
+    // SignalLogger.stop();
   }
 
   @Override
@@ -102,7 +102,7 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
-    SignalLogger.start();
+    // SignalLogger.start();
   }
 
   /** This function is called periodically during operator control. */
