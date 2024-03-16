@@ -1,5 +1,10 @@
 {
   "NetworkTables": {
+    "retained": {
+      "limelight": {
+        "open": true
+      }
+    },
     "transitory": {
       "LiveWindow": {
         ".status": {
@@ -16,16 +21,16 @@
         "Amp": {
           "open": true
         },
+        "Climber": {
+          "open": true
+        },
         "Elevator": {
           "open": true
         },
         "Intake": {
           "open": true
         },
-        "ShooterTilt": {
-          "open": true
-        },
-        "TunableNumbers": {
+        "Vision": {
           "open": true
         },
         "open": true
@@ -34,6 +39,7 @@
     "types": {
       "/FMSInfo": "FMSInfo",
       "/Pose": "Field2d",
+      "/SmartDashboard/Autonomous Routine": "String Chooser",
       "/SmartDashboard/Module 0": "Mechanism2d",
       "/SmartDashboard/Module 1": "Mechanism2d",
       "/SmartDashboard/Module 2": "Mechanism2d",
