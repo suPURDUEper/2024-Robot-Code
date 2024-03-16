@@ -34,6 +34,7 @@ public class AutoAim extends Command {
       new LoggedTunableNumber("ShooterTilt/AutoAim Angle", 30);
 
   private boolean shouldElevatorFollow;
+  private double distanceToSpeakerMeters = -1;
 
   public AutoAim(
       CommandSwerveDrivetrain drivetrain,
@@ -118,16 +119,17 @@ public class AutoAim extends Command {
     }
 
     // Use new pose estimation to set shooter angle
-    double distanceToSpeakerMeters;
     if (USE_LIMELIGHT && targetLimelightDistance.isPresent()) {
       distanceToSpeakerMeters = targetLimelightDistance.get();
-    } else {
+    } else if (distanceToSpeakerMeters < 0) {
       distanceToSpeakerMeters =
           drivetrain.getState().Pose.getTranslation().getDistance(speakerCenter);
     }
 
+    if (distanceToSpeakerMeters > 0) {
     shooterTilt.setPositionRotations(
         LookupTables.distanceToShooterAngle.get(distanceToSpeakerMeters));
+    }
 
     // shooterTilt.setPositionRotations(Units.degreesToRotations(shooterAngle.getAsDouble()));
     if (shouldElevatorFollow) {
