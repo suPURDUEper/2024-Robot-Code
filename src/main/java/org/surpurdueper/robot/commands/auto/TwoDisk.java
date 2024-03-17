@@ -40,7 +40,7 @@ public class TwoDisk extends SequentialCommandGroup {
         Autos.aimAndFireWithElevator(drivetrain, shooterTilt, elevator, shooter, limelight, intake)
             .withTimeout(1),
         shooterTilt.goToPositionBlocking(TiltConstants.kIntakeAngle),
-        Commands.parallel(intake.load(), AutoBuilder.followPath(toSecondDisk)),
+        Commands.deadline(AutoBuilder.followPath(toSecondDisk), intake.load()),
         Autos.aimAndFireWithElevator(drivetrain, shooterTilt, elevator, shooter, limelight, intake)
             .withTimeout(1));
   }

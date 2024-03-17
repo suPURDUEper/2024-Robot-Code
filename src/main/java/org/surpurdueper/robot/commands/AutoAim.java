@@ -127,8 +127,8 @@ public class AutoAim extends Command {
     }
 
     if (distanceToSpeakerMeters > 0) {
-    shooterTilt.setPositionRotations(
-        LookupTables.distanceToShooterAngle.get(distanceToSpeakerMeters));
+      shooterTilt.setPositionRotations(
+          LookupTables.distanceToShooterAngle.get(distanceToSpeakerMeters));
     }
 
     // shooterTilt.setPositionRotations(Units.degreesToRotations(shooterAngle.getAsDouble()));

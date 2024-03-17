@@ -4,7 +4,6 @@
 
 package org.surpurdueper.robot;
 
-import com.ctre.phoenix6.SignalLogger;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.net.PortForwarder;
 import edu.wpi.first.wpilibj.Threads;
@@ -47,7 +46,7 @@ public class Robot extends TimedRobot {
 
     // Forward limelight
     for (int port = 5800; port <= 5807; port++) {
-      PortForwarder.add(5800, "10.74.57.11", port);
+      PortForwarder.add(port, "10.74.57.11", port);
     }
   }
 
