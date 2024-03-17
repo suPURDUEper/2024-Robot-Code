@@ -1,5 +1,8 @@
 {
   "NetworkTables": {
+    "Retained Values": {
+      "open": false
+    },
     "retained": {
       "limelight": {
         "open": true
@@ -28,6 +31,9 @@
           "open": true
         },
         "Intake": {
+          "open": true
+        },
+        "ShooterTilt": {
           "open": true
         },
         "Vision": {

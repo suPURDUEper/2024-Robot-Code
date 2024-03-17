@@ -113,7 +113,7 @@ public final class Constants {
     public static final double kForwardSoftLimit = Units.degreesToRotations(62.5);
     public static final double kReverseSoftLimit = Units.degreesToRotations(26.2);
     public static final double kAbsoluteEncoderOffset =
-        (Units.degreesToRotations(8.079120) - 0.25) + 1;
+        (Units.degreesToRotations(-1.058593) - Units.degreesToRotations(90.5)) + 1;
     public static final double kEncoderPositionConversion = 0;
     public static final boolean kAbsoluteEncoderInverted = false;
     public static final int kStatorCurrentLimit = 60;
