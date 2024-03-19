@@ -30,11 +30,14 @@ import org.surpurdueper.robot.commands.AutoAim;
 import org.surpurdueper.robot.commands.WheelRadiusCharacterization;
 import org.surpurdueper.robot.commands.auto.FourDisk;
 import org.surpurdueper.robot.commands.auto.FourDiskSkip;
+import org.surpurdueper.robot.commands.auto.FourDiskSource;
 import org.surpurdueper.robot.commands.auto.OneDiskSkip;
 import org.surpurdueper.robot.commands.auto.ThreeDisk;
 import org.surpurdueper.robot.commands.auto.ThreeDiskSkip;
+import org.surpurdueper.robot.commands.auto.ThreeDiskSource;
 import org.surpurdueper.robot.commands.auto.TwoDisk;
 import org.surpurdueper.robot.commands.auto.TwoDiskSkip;
+import org.surpurdueper.robot.commands.auto.TwoDiskSource;
 import org.surpurdueper.robot.subsystems.Amp;
 import org.surpurdueper.robot.subsystems.Blinkin;
 import org.surpurdueper.robot.subsystems.Climber;
@@ -111,6 +114,12 @@ public class RobotContainer {
         new ThreeDiskSkip(drivetrain, intake, shooterTilt, shooter, elevator, limelight);
     Command fourDiskSkip =
         new FourDiskSkip(drivetrain, intake, shooterTilt, shooter, elevator, limelight);
+    Command TwoDiskSource =
+        new TwoDiskSource(drivetrain, intake, shooterTilt, shooter, elevator, limelight);
+    Command ThreeDiskSource =
+        new ThreeDiskSource(drivetrain, intake, shooterTilt, shooter, elevator, limelight);
+    Command FourDiskSource =
+        new FourDiskSource(drivetrain, intake, shooterTilt, shooter, elevator, limelight);
 
     m_chooser.setDefaultOption("Do Nothing", doNothingAuto);
     m_chooser.addOption("Two Disk", twoDisk);
@@ -120,6 +129,10 @@ public class RobotContainer {
     m_chooser.addOption("Two Disk (Skip)", twoDiskSkip);
     m_chooser.addOption("Three Disk (Skip)", threeDiskSkip);
     m_chooser.addOption("Four Disk (Skip)", fourDiskSkip);
+    m_chooser.addOption("Two Disk (Source)", TwoDiskSource);
+    m_chooser.addOption("Three Disk (Source)", ThreeDiskSource);
+    m_chooser.addOption("Four Disk (Source)", FourDiskSource);
+
 
     SmartDashboard.putData("Autonomous Routine", m_chooser);
 

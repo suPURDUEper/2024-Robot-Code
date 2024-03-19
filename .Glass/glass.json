@@ -36,6 +36,9 @@
         "Intake": {
           "open": true
         },
+        "Shooter": {
+          "open": true
+        },
         "ShooterTilt": {
           "open": true
         },
