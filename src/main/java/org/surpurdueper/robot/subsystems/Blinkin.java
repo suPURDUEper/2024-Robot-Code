@@ -13,33 +13,22 @@ public class Blinkin extends VirtualSubsystem {
 
   private final Spark lights;
 
-  public static final double orange = 0.65;
-  public static final double strobeGold = -0.07;
-  public static final double black = .99;
-  public static final double rainbow = -0.99;
+  public static final double kOrange = 0.65;
+  public static final double kStrobeGold = -0.07;
+  public static final double kBlack = .99;
+  public static final double kRainbow = -0.99;
+  public static final double kRed = 0.61;
+  public static final double kGreen = 0.73;
 
-  private double currentLights = strobeGold;
+  public double currentLights = 0;
 
   public Blinkin() {
     super();
     lights = new Spark(9);
   }
 
-  /** Creates a new blinkin. */
-  public Command setLightsOrange() {
-    return Commands.runOnce(() -> currentLights = orange);
-  }
-
-  public Command setLightsStrobeGold() {
-    return Commands.runOnce(() -> currentLights = strobeGold);
-  }
-
-  // public Command setLightsOff() {
-  //   return Commands.runOnce(() -> currentLights = black);
-  // }
-
-  public Command setLightsRainbow() {
-    return Commands.runOnce(() -> currentLights = rainbow);
+  public Command setLightsTo(double lights) {
+    return Commands.runOnce(() -> currentLights = lights);
   }
 
   @Override

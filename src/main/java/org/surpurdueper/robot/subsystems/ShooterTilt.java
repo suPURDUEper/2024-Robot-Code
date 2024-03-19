@@ -23,8 +23,6 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import com.revrobotics.SparkAbsoluteEncoder;
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
@@ -51,9 +49,10 @@ public class ShooterTilt extends SubsystemBase {
 
   // Class variables
   private TalonFX tiltMotor;
-  private SparkAbsoluteEncoder tiltAbsoluteEncoder;
   private TalonFXConfiguration tiltConfig;
   private double targetRotations = -1;
+  private boolean isHomed = false;
+  private double lowestPosition = Double.MAX_VALUE;
 
   // Tunable numbers
   private static final LoggedTunableNumber kp = new LoggedTunableNumber("ShooterTilt/Kp");
@@ -115,11 +114,6 @@ public class ShooterTilt extends SubsystemBase {
   public ShooterTilt(Intake intake) {
     tiltMotor = new TalonFX(CANIDs.kTiltMotor, "canivore");
 
-    tiltAbsoluteEncoder = intake.intakeMotor.getAbsoluteEncoder();
-    tiltAbsoluteEncoder.setPositionConversionFactor(
-        TiltConstants.kAbsoluteEncoderInverted ? -1 : 1);
-    tiltAbsoluteEncoder.setZeroOffset(TiltConstants.kAbsoluteEncoderOffset);
-
     configureTalonFx();
     // setupSysIdTiming(tiltMotor);
 
@@ -127,15 +121,13 @@ public class ShooterTilt extends SubsystemBase {
     // updated
     BaseStatusSignal.setUpdateFrequencyForAll(
         250, tiltMotor.getPosition(), tiltMotor.getVelocity());
+    SmartDashboard.putBoolean("ShooterTilt/isHomed", isHomed);
+
   }
 
   @Override
   public void periodic() {
-    if (DriverStation.isDisabled()
-        && Math.abs(getPositionRotations() - getAbsoluteSensorAngle())
-            > Units.degreesToRotations(1)) {
-      syncMotorAndAbsEncoder();
-    }
+
     // Update tunable numbers
     for (LoggedTunableNumber gain : pidGains) {
       if (gain.hasChanged(hashCode())) {
@@ -161,15 +153,26 @@ public class ShooterTilt extends SubsystemBase {
       }
     }
 
+    if (DriverStation.isDisabled() && !isHomed) {
+      double motorPosition = tiltMotor.getPosition().getValueAsDouble();
+      if (motorPosition < lowestPosition) {
+        lowestPosition = motorPosition;
+      } else if (motorPosition > lowestPosition + Units.degreesToRotations(10)) {
+        tiltMotor.setPosition(TiltConstants.kHardStopPosition + (motorPosition - lowestPosition));
+        tiltMotor.getConfigurator().apply(new MotorOutputConfigs().withNeutralMode(NeutralModeValue.Brake));
+        isHomed = true;
+        SmartDashboard.putBoolean("ShooterTilt/isHomed", isHomed);
+      }
+    }
+
     // Log out to Glass for debugging
-    double armPositionAbs = Units.rotationsToDegrees(getAbsoluteSensorAngle());
     double armPositionMotor = Units.rotationsToDegrees(tiltMotor.getPosition().getValueAsDouble());
     double armPositionSetpoint =
         Units.rotationsToDegrees(tiltMotor.getClosedLoopReference().getValueAsDouble());
-    SmartDashboard.putNumber("ShooterTilt/Position (Abs)", armPositionAbs);
     SmartDashboard.putNumber("ShooterTilt/Position (Motor)", armPositionMotor);
     SmartDashboard.putNumber("ShooterTilt/Setpoint", targetRotations);
     SmartDashboard.putNumber("ShooterTilt/Profile Target", armPositionSetpoint);
+    SmartDashboard.putNumber("ShooterTilt/Lowest Position (Homing)", lowestPosition);
     SmartDashboard.putBoolean("ShooterTilt/AtIntakeAngle", !isNotAtIntakeHeight());
     SmartDashboard.putBoolean("ShooterTilt/AtPosition", isAtPosition());
   }
@@ -181,12 +184,6 @@ public class ShooterTilt extends SubsystemBase {
 
     /* Optimize out the other signals, since they're not particularly helpful for us */
     motorToTest.optimizeBusUtilization();
-  }
-
-  public double getAbsoluteSensorAngle() {
-    double wrappedAngle =
-        MathUtil.angleModulus(Units.rotationsToRadians(tiltAbsoluteEncoder.getPosition()));
-    return Units.radiansToRotations(wrappedAngle);
   }
 
   public void setVoltage(double volts) {
@@ -210,10 +207,6 @@ public class ShooterTilt extends SubsystemBase {
     return tiltMotor.getPosition().getValueAsDouble();
   }
 
-  public void syncMotorAndAbsEncoder() {
-    tiltMotor.setPosition(getAbsoluteSensorAngle());
-  }
-
   public StatusSignal<Double> getPositionSignal() {
     return tiltMotor.getPosition();
   }
@@ -232,27 +225,23 @@ public class ShooterTilt extends SubsystemBase {
   }
 
   public Command goToPosition(double rotations) {
-    return Commands.runOnce(() -> setPositionRotations(rotations), this);
+    return runOnce(() -> setPositionRotations(rotations));
   }
 
   public Command goToPositionBlocking(double rotations) {
-    return Commands.runOnce(() -> setPositionRotations(rotations), this)
+    return goToPosition(rotations)
         .andThen(Commands.waitUntil(this::isAtPosition));
   }
 
-  public Command goToShotAngle(Supplier<Pose2d> robotPoseSupplier) {
-    return runOnce(
-        () -> {
-          Translation2d speakerCenter =
-              AllianceFlipUtil.apply(FieldConstants.Speaker.centerSpeakerOpening.toTranslation2d());
-          double distanceToSpeakerMeters =
-              robotPoseSupplier.get().getTranslation().getDistance(speakerCenter);
-          setPositionRotations(LookupTables.distanceToShooterAngle.get(distanceToSpeakerMeters));
-        });
-  }
-
-  public Command goToShotAngleBlocking(Supplier<Pose2d> robotPoseSupplier) {
-    return goToShotAngle(robotPoseSupplier).andThen(Commands.waitUntil(this::isAtPosition));
+  public Command home() {
+    return runOnce(() -> setVoltage(-3))
+    .andThen(Commands.waitUntil(() -> tiltMotor.getStatorCurrent().getValueAsDouble() > 12.5))
+    .andThen(runOnce(this::stop))
+    .andThen(Commands.waitUntil(() -> Math.abs(tiltMotor.getStatorCurrent().getValueAsDouble()) < 0.1))
+    .andThen(runOnce(() -> {
+      tiltMotor.setPosition(TiltConstants.kHardStopPosition);
+      isHomed = true;
+    }));
   }
 
   public boolean isNotAtIntakeHeight() {
@@ -270,7 +259,7 @@ public class ShooterTilt extends SubsystemBase {
   public void configureTalonFx() {
     MotorOutputConfigs motorOutputConfigs =
         new MotorOutputConfigs()
-            .withNeutralMode(NeutralModeValue.Brake)
+            .withNeutralMode(NeutralModeValue.Coast)
             .withInverted(InvertedValue.CounterClockwise_Positive);
     CurrentLimitsConfigs currentConfig =
         new CurrentLimitsConfigs()
@@ -295,9 +284,7 @@ public class ShooterTilt extends SubsystemBase {
     SoftwareLimitSwitchConfigs softlimitConfig =
         new SoftwareLimitSwitchConfigs()
             .withForwardSoftLimitThreshold(TiltConstants.kForwardSoftLimit)
-            .withForwardSoftLimitEnable(true)
-            .withReverseSoftLimitThreshold(TiltConstants.kReverseSoftLimit)
-            .withReverseSoftLimitEnable(true);
+            .withForwardSoftLimitEnable(false);
     tiltConfig =
         new TalonFXConfiguration()
             .withMotorOutput(motorOutputConfigs)

@@ -35,6 +35,7 @@ public class AutoAim extends Command {
 
   private boolean shouldElevatorFollow;
   private double distanceToSpeakerMeters = -1;
+  private Rotation2d lastSeenLimelightAngle = null;
 
   public AutoAim(
       CommandSwerveDrivetrain drivetrain,
@@ -103,19 +104,18 @@ public class AutoAim extends Command {
     Optional<Rotation2d> targetLimelightAngle = limelight.getLatencyCompensatedAngleToGoal();
     Optional<Double> targetLimelightDistance = limelight.getDistanceToGoalMeters();
 
-    if (USE_LIMELIGHT && targetLimelightAngle.isPresent()) {
+    if (targetLimelightAngle.isPresent()) {
+      lastSeenLimelightAngle = Rotation2d.fromDegrees(targetLimelightAngle.get().getDegrees());
+    }
+
+    if (USE_LIMELIGHT) {
       drivetrain.setControl(
           limelightAimRequest
-              .withFieldCentricTargetDirection(targetLimelightAngle.get())
+              .withFieldCentricTargetDirection(lastSeenLimelightAngle)
               .withVelocityX(velocityX)
               .withVelocityY(velocityY));
       SmartDashboard.putNumber(
           "AutoAim/TargetDirection", limelightAimRequest.getTargetDirection().getDegrees());
-    } else {
-      drivetrain.setControl(
-          poseAimRequest.withVelocityX(velocityX).withVelocityY(velocityY).withDeadband(0.1));
-      SmartDashboard.putNumber(
-          "AutoAim/TargetDirection", poseAimRequest.getTargetDirection().getDegrees());
     }
 
     // Use new pose estimation to set shooter angle

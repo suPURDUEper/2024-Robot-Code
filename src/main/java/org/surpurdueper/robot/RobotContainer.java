@@ -54,14 +54,14 @@ import org.surpurdueper.robot.subsystems.drive.generated.TunerConstants;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
-  private final Intake intake;
-  private final Amp amp;
-  private final Climber climber;
-  private final Elevator elevator;
-  private final Shooter shooter;
-  private final ShooterTilt shooterTilt;
-  private final Blinkin blinkin;
-  private final Limelight limelight;
+  final Intake intake;
+  final Amp amp;
+  final Climber climber;
+  final Elevator elevator;
+  final Shooter shooter;
+  final ShooterTilt shooterTilt;
+  final Blinkin blinkin;
+  final Limelight limelight;
 
   /* Setting up bindings for necessary control of the swerve drive platform */
   private double MaxSpeed = Units.feetToMeters(14.5); // kSpeedAt12VoltsMps desired top speed
@@ -289,8 +289,8 @@ public class RobotContainer {
                 .goToPositionBlocking(TiltConstants.kSafeElevator)
                 .andThen(elevator.goToPosition(Units.inchesToMeters(0))));
 
-    // Resync shooter tilt to abs encoder
-    joystick2.start().onTrue(shooterTilt.runOnce(shooterTilt::syncMotorAndAbsEncoder));
+    // Home shooter tilt
+    joystick2.start().onTrue(shooterTilt.home());
 
     /* Bindings for characterization */
     /* These bindings require multiple buttons pushed to swap between quastatic and dynamic */
@@ -327,13 +327,7 @@ public class RobotContainer {
             shooterTilt
                 .goToPositionBlocking(TiltConstants.kIntakeAngle)
                 .onlyIf(shooterTilt::isNotAtIntakeHeight)
-                .andThen(
-                    intake.load(),
-                    new ScheduleCommand(
-                        Commands.sequence(
-                            blinkin.setLightsStrobeGold(),
-                            Commands.waitSeconds(2),
-                            blinkin.setLightsOrange()))));
+                .andThen(intake.load()));
   }
 
   /**

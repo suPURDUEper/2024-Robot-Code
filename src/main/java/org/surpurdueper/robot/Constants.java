@@ -116,28 +116,29 @@ public final class Constants {
         (Units.degreesToRotations(-1.058593) - Units.degreesToRotations(90.5)) + 1;
     public static final double kEncoderPositionConversion = 0;
     public static final boolean kAbsoluteEncoderInverted = false;
-    public static final int kStatorCurrentLimit = 60;
+    public static final int kStatorCurrentLimit = 14;
     public static final double kWallShot = Units.degreesToRotations(54.5);
     public static final double kStageShot = Units.degreesToRotations(29.25);
 
-    public static final double kp = 720.0; // amps applied per rotation of error
+    public static final double kp = 2000.0; // amps applied per rotation of error
     public static final double ki = 0; // leave at 0
     public static final double kd = 92.668; // amps applied per rps of error
     public static final double ks = 0.29174; // minimum amount of amps to move arm
     public static final double kv = 65.615; // Probably leave at 0
     public static final double ka = 0.70719; // Amps required to accelerate arm 1 rot/s^2
     public static final double kg = 0.33643; // Amps required to hold arm level at 0 degrees
-    public static final double profileKv = 80; // Kv of arm brushed motor model in volts/rps
+    public static final double profileKv = 70; // Kv of arm brushed motor model in volts/rps
     public static final double profileKa =
         0.70719; // Ka of arm brushed motor model in volts/(rps/s)
 
-    public static final double kPositionTolerance = Units.degreesToRotations(0.5);
+    public static final double kPositionTolerance = Units.degreesToRotations(0.6);
     public static final double kPodiumShot = Units.degreesToRotations(30.0);
     public static final double kSubwooferShot = Units.degreesToRotations(61.0);
     public static final double kMaxAutoAim = 0.0;
     public static final double kIntakeAngle = Units.degreesToRotations(40.0);
     public static final double kAmpHandOff = Units.degreesToRotations(48.0);
     public static final double kSafeElevator = Units.degreesToRotations(54);
+    public static final double kHardStopPosition = Units.degreesToRotations(18.17);
   }
 
   public static class ShooterConstants {

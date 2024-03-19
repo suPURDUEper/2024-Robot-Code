@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import org.littletonrobotics.util.VirtualSubsystem;
+import org.surpurdueper.robot.subsystems.Blinkin;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -32,8 +33,10 @@ public class Robot extends TimedRobot {
     // Start logging
     // SignalLogger.enableAutoLogging(true);
 
-    // Enable camera server for driver station
-    CameraServer.startAutomaticCapture();
+    // Forward limelight
+    for (int port = 5800; port <= 5807; port++) {
+      PortForwarder.add(port, "10.74.57.11", port);
+    }
 
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
@@ -44,10 +47,10 @@ public class Robot extends TimedRobot {
     // pdh.clearStickyFaults();
     // pdh.close();
 
-    // Forward limelight
-    for (int port = 5800; port <= 5807; port++) {
-      PortForwarder.add(port, "10.74.57.11", port);
-    }
+
+
+    // Set LEDs to red. Home shooter to set to green
+    m_robotContainer.blinkin.currentLights = Blinkin.kRed;
   }
 
   /**
