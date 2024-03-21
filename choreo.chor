@@ -112,6 +112,15 @@
                     "isInitialGuess": false,
                     "translationConstrained": true,
                     "headingConstrained": true,
+                    "controlIntervalCount": 27
+                },
+                {
+                    "x": 1.7911672592163086,
+                    "y": 2.619596481323242,
+                    "heading": -3.4756208688482597,
+                    "isInitialGuess": false,
+                    "translationConstrained": true,
+                    "headingConstrained": true,
                     "controlIntervalCount": 40
                 }
             ],
@@ -5424,7 +5433,7 @@
             "usesDefaultFieldObstacles": true,
             "circleObstacles": [],
             "eventMarkers": [],
-            "isTrajectoryStale": false
+            "isTrajectoryStale": true
         }
     },
     "splitTrajectoriesAtStopPoints": true,
