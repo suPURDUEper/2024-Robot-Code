@@ -31,4 +31,3 @@ public class FourDiskSource extends SequentialCommandGroup {
             .withTimeout(0.75));
   }
 }
-

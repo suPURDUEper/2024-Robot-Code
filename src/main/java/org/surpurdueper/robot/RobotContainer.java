@@ -15,7 +15,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
@@ -132,7 +131,6 @@ public class RobotContainer {
     m_chooser.addOption("Two Disk (Source)", TwoDiskSource);
     m_chooser.addOption("Three Disk (Source)", ThreeDiskSource);
     m_chooser.addOption("Four Disk (Source)", FourDiskSource);
-
 
     SmartDashboard.putData("Autonomous Routine", m_chooser);
 

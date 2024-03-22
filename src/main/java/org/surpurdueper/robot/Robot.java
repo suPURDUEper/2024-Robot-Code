@@ -4,7 +4,6 @@
 
 package org.surpurdueper.robot;
 
-import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.net.PortForwarder;
 import edu.wpi.first.wpilibj.Threads;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -46,8 +45,6 @@ public class Robot extends TimedRobot {
     // PowerDistribution pdh = new PowerDistribution(12, ModuleType.kRev);
     // pdh.clearStickyFaults();
     // pdh.close();
-
-
 
     // Set LEDs to red. Home shooter to set to green
     m_robotContainer.blinkin.currentLights = Blinkin.kRed;

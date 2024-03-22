@@ -2,6 +2,7 @@ package org.surpurdueper.robot.commands;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import java.util.Optional;
@@ -9,6 +10,7 @@ import java.util.function.DoubleSupplier;
 import org.littletonrobotics.util.AllianceFlipUtil;
 import org.littletonrobotics.util.FieldConstants;
 import org.littletonrobotics.util.LoggedTunableNumber;
+import org.surpurdueper.robot.Constants;
 import org.surpurdueper.robot.Constants.LookupTables;
 import org.surpurdueper.robot.subsystems.Elevator;
 import org.surpurdueper.robot.subsystems.Limelight;
@@ -109,6 +111,9 @@ public class AutoAim extends Command {
     }
 
     if (USE_LIMELIGHT) {
+      if (lastSeenLimelightAngle == null) {
+        lastSeenLimelightAngle = drivetrain.getState().Pose.getRotation();
+      }
       drivetrain.setControl(
           limelightAimRequest
               .withFieldCentricTargetDirection(lastSeenLimelightAngle)
@@ -120,10 +125,15 @@ public class AutoAim extends Command {
 
     // Use new pose estimation to set shooter angle
     if (USE_LIMELIGHT && targetLimelightDistance.isPresent()) {
-      distanceToSpeakerMeters = targetLimelightDistance.get();
+      distanceToSpeakerMeters = targetLimelightDistance.get() + FieldConstants.subwooferToSpeakerCenter;
     } else if (distanceToSpeakerMeters < 0) {
       distanceToSpeakerMeters =
-          drivetrain.getState().Pose.getTranslation().getDistance(speakerCenter);
+          drivetrain
+                  .getState()
+                  .Pose
+                  .getTranslation()
+                  .getDistance(speakerCenter)
+              - Constants.kBumperToRobotCenter;
     }
 
     if (distanceToSpeakerMeters > 0) {
