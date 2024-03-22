@@ -262,9 +262,7 @@ public class Climber extends SubsystemBase {
     SoftwareLimitSwitchConfigs softlimitConfig =
         new SoftwareLimitSwitchConfigs()
             .withForwardSoftLimitThreshold(ClimberConstants.kForwardSoftLimit)
-            .withForwardSoftLimitEnable(true)
-            .withReverseSoftLimitThreshold(ClimberConstants.kReverseSoftLimit)
-            .withReverseSoftLimitEnable(true);
+            .withForwardSoftLimitEnable(true);
     climberConfig =
         new TalonFXConfiguration()
             .withMotorOutput(motorOutputConfigs)
@@ -274,6 +272,6 @@ public class Climber extends SubsystemBase {
             .withSlot0(slot0config)
             .withMotionMagic(motionMagicConfigs);
     climberMotor.getConfigurator().apply(climberConfig);
-    climberFollower.getConfigurator().apply(new TalonFXConfiguration());
+    climberFollower.getConfigurator().apply(new TalonFXConfiguration().withMotorOutput(new MotorOutputConfigs().withNeutralMode(NeutralModeValue.Brake)));
   }
 }

@@ -27,6 +27,7 @@ import org.surpurdueper.robot.Constants.ElevatorConstants;
 import org.surpurdueper.robot.Constants.TiltConstants;
 import org.surpurdueper.robot.commands.AutoAim;
 import org.surpurdueper.robot.commands.WheelRadiusCharacterization;
+import org.surpurdueper.robot.commands.auto.FiveDisk;
 import org.surpurdueper.robot.commands.auto.FourDisk;
 import org.surpurdueper.robot.commands.auto.FourDiskSkip;
 import org.surpurdueper.robot.commands.auto.FourDiskSource;
@@ -105,6 +106,7 @@ public class RobotContainer {
     Command threeDisk =
         new ThreeDisk(drivetrain, intake, shooterTilt, shooter, elevator, limelight);
     Command fourDisk = new FourDisk(drivetrain, intake, shooterTilt, shooter, elevator, limelight);
+    Command fiveDisk = new FiveDisk(drivetrain, intake, shooterTilt, shooter, elevator, limelight);
     Command oneDiskSkip =
         new OneDiskSkip(drivetrain, intake, shooterTilt, shooter, elevator, limelight);
     Command twoDiskSkip =
@@ -124,6 +126,7 @@ public class RobotContainer {
     m_chooser.addOption("Two Disk", twoDisk);
     m_chooser.addOption("Three Disk", threeDisk);
     m_chooser.addOption("Four Disk", fourDisk);
+    m_chooser.addOption("Five Disk", fiveDisk);
     m_chooser.addOption("One Disk (Skip)", oneDiskSkip);
     m_chooser.addOption("Two Disk (Skip)", twoDiskSkip);
     m_chooser.addOption("Three Disk (Skip)", threeDiskSkip);
@@ -227,7 +230,6 @@ public class RobotContainer {
                 .goToPosition(0)
                 .andThen(shooterTilt.goToPositionBlocking(TiltConstants.kAmpHandOff))
                 .andThen(Commands.deadline(amp.load(), intake.feedAmp(), shooter.feedAmp()))
-                .andThen(shooterTilt.goToPositionBlocking(TiltConstants.kSafeElevator))
                 .andThen(Commands.deadline(amp.trapLoad())));
 
     // Climb
@@ -315,7 +317,7 @@ public class RobotContainer {
                 .goToPosition(0)
                 .andThen(shooterTilt.goToPositionBlocking(TiltConstants.kAmpHandOff))
                 .andThen(Commands.deadline(amp.load(), intake.feedAmp(), shooter.feedAmp()))
-                .andThen(shooterTilt.goToPositionBlocking(TiltConstants.kSafeElevator))
+.andThen(shooterTilt.goToPositionBlocking(TiltConstants.kSafeElevator))
                 .andThen(amp.trapLoad()));
     joystick3.start().and(joystick2.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
     joystick3.start().and(joystick2.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
