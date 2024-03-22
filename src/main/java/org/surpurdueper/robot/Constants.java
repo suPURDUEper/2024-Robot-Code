@@ -4,9 +4,10 @@
 
 package org.surpurdueper.robot;
 
+import org.littletonrobotics.util.FieldConstants;
+
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.util.Units;
-import org.littletonrobotics.util.FieldConstants;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -22,7 +23,8 @@ public final class Constants {
 
   public static final double kRobotLengthInches = 30.5;
   public static final double kRobotWidthInches = 29.5;
-  public static final double kBumperWidthInches = 3.375;
+  public static final double kBumperWidthInches = 3.25;
+  public static final double kBumperWidthMeters = Units.inchesToMeters(kBumperWidthInches);
   public static final double kBumperToRobotCenter =
       Units.inchesToMeters(kRobotLengthInches / 2.0) + Units.inchesToMeters(kBumperWidthInches);
 
@@ -69,7 +71,7 @@ public final class Constants {
     public static final float kReverseSoftLimit = 0;
     public static final double kClimbHeight = Units.inchesToMeters(20.5);
     public static final double kAfterClimbHeight = Units.inchesToMeters(14);
-    public static final double kAmpScoreHeight = Units.inchesToMeters(18.0);
+    public static final double kAmpScoreHeight = Units.inchesToMeters(17.75);
 
     // Feedforward gains from sysId
     public static final double kg = 0.31678; // volts
@@ -87,7 +89,7 @@ public final class Constants {
   public static class ClimberConstants {
     public static final double kPlanetaryGearRatio = (125.0 / 1.0);
     public static final double kSprocketGearRatio = (34.0 / 10.0);
-    public static final double kAbsoluteEncoderOffset = Units.degreesToRotations(27.050374);
+    public static final double kAbsoluteEncoderOffset = Units.degreesToRotations(-84.805409);
     public static final double kForwardSoftLimit = Units.degreesToRotations(70);
     public static final double kReverseSoftLimit = Units.degreesToRotations(-20);
     public static final double kp = 67.136;
@@ -133,7 +135,7 @@ public final class Constants {
 
     public static final double kPositionTolerance = Units.degreesToRotations(0.6);
     public static final double kPodiumShot = Units.degreesToRotations(30.0);
-    public static final double kSubwooferShot = Units.degreesToRotations(61.0);
+    public static final double kSubwooferShot = Units.degreesToRotations(51.0);
     public static final double kMaxAutoAim = 0.0;
     public static final double kIntakeAngle = Units.degreesToRotations(40.0);
     public static final double kAmpHandOff = Units.degreesToRotations(48.0);
@@ -168,17 +170,15 @@ public final class Constants {
         new InterpolatingDoubleTreeMap();
 
     static {
-      elevatorShooterClearance.put(Units.degreesToRotations(34.821), Units.inchesToMeters(0.000));
-      elevatorShooterClearance.put(Units.degreesToRotations(36.000), Units.inchesToMeters(2.037));
-      elevatorShooterClearance.put(Units.degreesToRotations(38.000), Units.inchesToMeters(3.835));
-      elevatorShooterClearance.put(Units.degreesToRotations(40.000), Units.inchesToMeters(4.984));
-      elevatorShooterClearance.put(Units.degreesToRotations(42.000), Units.inchesToMeters(6.451));
-      elevatorShooterClearance.put(Units.degreesToRotations(44.000), Units.inchesToMeters(8.324));
-      elevatorShooterClearance.put(Units.degreesToRotations(46.000), Units.inchesToMeters(10.640));
-      elevatorShooterClearance.put(Units.degreesToRotations(48.000), Units.inchesToMeters(13.291));
-      elevatorShooterClearance.put(Units.degreesToRotations(52.000), Units.inchesToMeters(15.5));
-      elevatorShooterClearance.put(Units.degreesToRotations(53.400), Units.inchesToMeters(18.5));
-      elevatorShooterClearance.put(Units.degreesToRotations(54.500), Units.inchesToMeters(20));
+      elevatorShooterClearance.put(Units.degreesToRotations(32.821), Units.inchesToMeters(0.000));
+      elevatorShooterClearance.put(Units.degreesToRotations(34.000), Units.inchesToMeters(2.037));
+      elevatorShooterClearance.put(Units.degreesToRotations(36.000), Units.inchesToMeters(3.835));
+      elevatorShooterClearance.put(Units.degreesToRotations(38.000), Units.inchesToMeters(4.984));
+      elevatorShooterClearance.put(Units.degreesToRotations(40.000), Units.inchesToMeters(6.451));
+      elevatorShooterClearance.put(Units.degreesToRotations(42.000), Units.inchesToMeters(8.324));
+      elevatorShooterClearance.put(Units.degreesToRotations(44.000), Units.inchesToMeters(12.640));
+      elevatorShooterClearance.put(Units.degreesToRotations(49.5), Units.inchesToMeters(20));
+      elevatorShooterClearance.put(Units.degreesToRotations(50.5), Units.inchesToMeters(20.75));
     }
 
     public static final InterpolatingDoubleTreeMap distanceToShooterAngle =
@@ -187,27 +187,43 @@ public final class Constants {
     private static void addPointToDistanceToShooterAngle(
         double distanceInches, double angleDegrees) {
       distanceToShooterAngle.put(
-          Units.inchesToMeters(distanceInches)
-              + kBumperToRobotCenter
-              + FieldConstants.subwooferToSpeakerCenter,
+          Units.inchesToMeters(distanceInches) + FieldConstants.subwooferToSpeakerCenter, 
           Units.degreesToRotations(angleDegrees));
     }
 
     static {
-      addPointToDistanceToShooterAngle(00, 54.5);
-      addPointToDistanceToShooterAngle(12, 53.0);
-      addPointToDistanceToShooterAngle(24, 46.5);
-      addPointToDistanceToShooterAngle(36, 42.5);
-      addPointToDistanceToShooterAngle(48, 39.5);
-      addPointToDistanceToShooterAngle(60, 37.0);
-      addPointToDistanceToShooterAngle(72, 34.5);
-      addPointToDistanceToShooterAngle(84, 31.75);
-      addPointToDistanceToShooterAngle(96, 29.25);
-      addPointToDistanceToShooterAngle(112, 28.5);
-      addPointToDistanceToShooterAngle(120, 27.5);
-      addPointToDistanceToShooterAngle(132, 26.375);
-      addPointToDistanceToShooterAngle(144, 25.25);
-      addPointToDistanceToShooterAngle(156, 24.25);
+      addPointToDistanceToShooterAngle(00, 51.0);
+      addPointToDistanceToShooterAngle(12, 48.5);
+      addPointToDistanceToShooterAngle(24, 42.5);
+      addPointToDistanceToShooterAngle(36, 38.5);
+      addPointToDistanceToShooterAngle(48, 35.5);
+      addPointToDistanceToShooterAngle(60, 33.5);
+      addPointToDistanceToShooterAngle(72, 31.5);
+      addPointToDistanceToShooterAngle(84, 29.5);
+      addPointToDistanceToShooterAngle(96, 27);
+      addPointToDistanceToShooterAngle(108, 25.5);
+      addPointToDistanceToShooterAngle(120, 24.5);
+      addPointToDistanceToShooterAngle(132, 24);
+      addPointToDistanceToShooterAngle(144, 23);
+      addPointToDistanceToShooterAngle(156, 22);
+    }
+
+    public static final InterpolatingDoubleTreeMap limelightTyToDistance = new InterpolatingDoubleTreeMap();
+
+    static {
+      limelightTyToDistance.put(25.54, Units.inchesToMeters(14.0));
+      limelightTyToDistance.put(21.0, Units.inchesToMeters(24));
+      limelightTyToDistance.put(16.65, Units.inchesToMeters(34));
+      limelightTyToDistance.put(13.75, Units.inchesToMeters(45));
+      limelightTyToDistance.put(9.35, Units.inchesToMeters(61));
+      limelightTyToDistance.put(5.08, Units.inchesToMeters(72.5));
+      limelightTyToDistance.put(6.92, Units.inchesToMeters(83));
+      limelightTyToDistance.put(3.74, Units.inchesToMeters(92.5));
+      limelightTyToDistance.put(2.35, Units.inchesToMeters(102.5));
+      limelightTyToDistance.put(0.95, Units.inchesToMeters(116.5));
+      limelightTyToDistance.put(0.26, Units.inchesToMeters(123));
+      limelightTyToDistance.put(-0.75, Units.inchesToMeters(136));
+      limelightTyToDistance.put(-2.50, Units.inchesToMeters(158));
     }
   }
 }

@@ -11,9 +11,9 @@ import org.surpurdueper.robot.subsystems.Shooter;
 import org.surpurdueper.robot.subsystems.ShooterTilt;
 import org.surpurdueper.robot.subsystems.drive.CommandSwerveDrivetrain;
 
-public class FourDiskSource extends SequentialCommandGroup {
+public class FiveDisk extends SequentialCommandGroup {
 
-  public FourDiskSource(
+  public FiveDisk(
       CommandSwerveDrivetrain drivetrain,
       Intake intake,
       ShooterTilt shooterTilt,
@@ -21,13 +21,13 @@ public class FourDiskSource extends SequentialCommandGroup {
       Elevator elevator,
       Limelight limelight) {
 
-    PathPlannerPath toFourthDisk = PathPlannerPath.fromChoreoTrajectory("5 source side.4");
+    PathPlannerPath toFifthDisk = PathPlannerPath.fromChoreoTrajectory("5 Standard.5");
 
     addCommands(
-        new ThreeDiskSource(drivetrain, intake, shooterTilt, shooter, elevator, limelight),
-        Commands.deadline(AutoBuilder.followPath(toFourthDisk), intake.load()),
+        new FourDisk(drivetrain, intake, shooterTilt, shooter, elevator, limelight),
+        Commands.deadline(AutoBuilder.followPath(toFifthDisk), intake.load()),
         Autos.aimAndFireNoElevator(
                 drivetrain, shooterTilt, elevator, shooter, limelight, intake, 1.0)
-            .withTimeout(0.75));
+            .withTimeout(1.25));
   }
 }

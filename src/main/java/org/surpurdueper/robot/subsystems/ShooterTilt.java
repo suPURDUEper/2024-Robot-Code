@@ -23,8 +23,6 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.Velocity;
@@ -37,12 +35,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
-import org.littletonrobotics.util.AllianceFlipUtil;
-import org.littletonrobotics.util.FieldConstants;
 import org.littletonrobotics.util.LoggedTunableNumber;
 import org.surpurdueper.robot.Constants.CANIDs;
-import org.surpurdueper.robot.Constants.LookupTables;
 import org.surpurdueper.robot.Constants.TiltConstants;
 
 public class ShooterTilt extends SubsystemBase {
@@ -122,7 +116,6 @@ public class ShooterTilt extends SubsystemBase {
     BaseStatusSignal.setUpdateFrequencyForAll(
         250, tiltMotor.getPosition(), tiltMotor.getVelocity());
     SmartDashboard.putBoolean("ShooterTilt/isHomed", isHomed);
-
   }
 
   @Override
@@ -159,7 +152,9 @@ public class ShooterTilt extends SubsystemBase {
         lowestPosition = motorPosition;
       } else if (motorPosition > lowestPosition + Units.degreesToRotations(10)) {
         tiltMotor.setPosition(TiltConstants.kHardStopPosition + (motorPosition - lowestPosition));
-        tiltMotor.getConfigurator().apply(new MotorOutputConfigs().withNeutralMode(NeutralModeValue.Brake));
+        tiltMotor
+            .getConfigurator()
+            .apply(new MotorOutputConfigs().withNeutralMode(NeutralModeValue.Brake));
         isHomed = true;
         SmartDashboard.putBoolean("ShooterTilt/isHomed", isHomed);
       }
@@ -229,19 +224,22 @@ public class ShooterTilt extends SubsystemBase {
   }
 
   public Command goToPositionBlocking(double rotations) {
-    return goToPosition(rotations)
-        .andThen(Commands.waitUntil(this::isAtPosition));
+    return goToPosition(rotations).andThen(Commands.waitUntil(this::isAtPosition));
   }
 
   public Command home() {
     return runOnce(() -> setVoltage(-3))
-    .andThen(Commands.waitUntil(() -> tiltMotor.getStatorCurrent().getValueAsDouble() > 12.5))
-    .andThen(runOnce(this::stop))
-    .andThen(Commands.waitUntil(() -> Math.abs(tiltMotor.getStatorCurrent().getValueAsDouble()) < 0.1))
-    .andThen(runOnce(() -> {
-      tiltMotor.setPosition(TiltConstants.kHardStopPosition);
-      isHomed = true;
-    }));
+        .andThen(Commands.waitUntil(() -> tiltMotor.getStatorCurrent().getValueAsDouble() > 12.5))
+        .andThen(runOnce(this::stop))
+        .andThen(
+            Commands.waitUntil(
+                () -> Math.abs(tiltMotor.getStatorCurrent().getValueAsDouble()) < 0.2))
+        .andThen(
+            runOnce(
+                () -> {
+                  tiltMotor.setPosition(TiltConstants.kHardStopPosition);
+                  isHomed = true;
+                }));
   }
 
   public boolean isNotAtIntakeHeight() {
