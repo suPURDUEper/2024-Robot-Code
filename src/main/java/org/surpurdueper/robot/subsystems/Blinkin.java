@@ -19,20 +19,35 @@ public class Blinkin extends VirtualSubsystem {
   public static final double kRainbow = -0.99;
   public static final double kRed = 0.61;
   public static final double kGreen = 0.73;
+  public Intake intake;
 
   public double currentLights = 0;
 
-  public Blinkin() {
+  public Blinkin(Intake intake) {
     super();
     lights = new Spark(9);
+    this.intake = intake;
   }
 
   public Command setLightsTo(double lights) {
     return Commands.runOnce(() -> currentLights = lights);
   }
 
+  public void SetLightsGreen() {
+    lights.set(kGreen);
+  }
+
+  public void SetLightsRed() {
+    lights.set(kRed);
+  }
+
   @Override
   public void periodic() {
+    if (intake.isFeederBreakBeamTriggered()) {
+      currentLights = kGreen;
+    } else {
+      currentLights = kRed;
+    }
     lights.set(currentLights);
   }
 }

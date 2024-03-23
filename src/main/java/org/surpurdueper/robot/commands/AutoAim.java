@@ -2,7 +2,6 @@ package org.surpurdueper.robot.commands;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import java.util.Optional;
@@ -125,14 +124,11 @@ public class AutoAim extends Command {
 
     // Use new pose estimation to set shooter angle
     if (USE_LIMELIGHT && targetLimelightDistance.isPresent()) {
-      distanceToSpeakerMeters = targetLimelightDistance.get() + FieldConstants.subwooferToSpeakerCenter;
+      distanceToSpeakerMeters =
+          targetLimelightDistance.get() + FieldConstants.subwooferToSpeakerCenter;
     } else if (distanceToSpeakerMeters < 0) {
       distanceToSpeakerMeters =
-          drivetrain
-                  .getState()
-                  .Pose
-                  .getTranslation()
-                  .getDistance(speakerCenter)
+          drivetrain.getState().Pose.getTranslation().getDistance(speakerCenter)
               - Constants.kBumperToRobotCenter;
     }
 

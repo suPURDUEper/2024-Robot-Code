@@ -98,7 +98,7 @@ public class RobotContainer {
     elevator = new Elevator();
     shooter = new Shooter();
     shooterTilt = new ShooterTilt(intake);
-    blinkin = new Blinkin();
+    blinkin = new Blinkin(intake);
     limelight = new Limelight(drivetrain);
 
     Command doNothingAuto = Commands.none();
@@ -317,7 +317,7 @@ public class RobotContainer {
                 .goToPosition(0)
                 .andThen(shooterTilt.goToPositionBlocking(TiltConstants.kAmpHandOff))
                 .andThen(Commands.deadline(amp.load(), intake.feedAmp(), shooter.feedAmp()))
-.andThen(shooterTilt.goToPositionBlocking(TiltConstants.kSafeElevator))
+                .andThen(shooterTilt.goToPositionBlocking(TiltConstants.kSafeElevator))
                 .andThen(amp.trapLoad()));
     joystick3.start().and(joystick2.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
     joystick3.start().and(joystick2.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));

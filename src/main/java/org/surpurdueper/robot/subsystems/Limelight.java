@@ -5,18 +5,12 @@
 package org.surpurdueper.robot.subsystems;
 
 import edu.wpi.first.math.MathSharedStore;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.TimeInterpolatableBuffer;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.Optional;
-import org.littletonrobotics.util.FieldConstants;
 import org.littletonrobotics.util.VirtualSubsystem;
-import org.surpurdueper.robot.Constants;
 import org.surpurdueper.robot.Constants.LookupTables;
 import org.surpurdueper.robot.subsystems.drive.CommandSwerveDrivetrain;
 import org.surpurdueper.robot.utils.LimelightHelpers;
@@ -45,9 +39,9 @@ public class Limelight extends VirtualSubsystem {
     if (!LimelightHelpers.getTV("")) {
       return Optional.empty();
     }
-    double distance =
-        LookupTables.limelightTyToDistance.get(LimelightHelpers.getTY(""));
-    SmartDashboard.putNumber("Vision/Bumper to Subwoofer Distance (in)", Units.metersToInches(distance));
+    double distance = LookupTables.limelightTyToDistance.get(LimelightHelpers.getTY(""));
+    SmartDashboard.putNumber(
+        "Vision/Bumper to Subwoofer Distance (in)", Units.metersToInches(distance));
 
     return Optional.of(distance);
   }

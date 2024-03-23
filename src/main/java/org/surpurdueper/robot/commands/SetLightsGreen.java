@@ -11,10 +11,10 @@ import org.surpurdueper.robot.subsystems.Intake;
 public class SetLightsGreen extends Command {
   private Blinkin blinkin;
   private Intake intake;
+
   public SetLightsGreen(Blinkin blinkin, Intake intake) {
     if (intake.isFeederBreakBeamTriggered() == true) {
       blinkin.SetLightsGreen();
     }
-    
   }
 }

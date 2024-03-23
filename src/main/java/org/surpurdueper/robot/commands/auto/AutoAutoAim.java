@@ -4,8 +4,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-
-import java.lang.constant.Constable;
 import java.util.Optional;
 import java.util.function.DoubleSupplier;
 import org.littletonrobotics.util.AllianceFlipUtil;
@@ -111,10 +109,12 @@ public class AutoAutoAim extends Command {
     // Use new pose estimation to set shooter angle
     double distanceToSpeakerMeters;
     if (USE_LIMELIGHT && targetLimelightDistance.isPresent()) {
-      distanceToSpeakerMeters = targetLimelightDistance.get() + FieldConstants.subwooferToSpeakerCenter;
+      distanceToSpeakerMeters =
+          targetLimelightDistance.get() + FieldConstants.subwooferToSpeakerCenter;
     } else {
       distanceToSpeakerMeters =
-          drivetrain.getState().Pose.getTranslation().getDistance(speakerCenter) - Constants.kBumperToRobotCenter;
+          drivetrain.getState().Pose.getTranslation().getDistance(speakerCenter)
+              - Constants.kBumperToRobotCenter;
     }
 
     shooterTilt.setPositionRotations(

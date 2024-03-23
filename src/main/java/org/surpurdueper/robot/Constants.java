@@ -4,10 +4,9 @@
 
 package org.surpurdueper.robot;
 
-import org.littletonrobotics.util.FieldConstants;
-
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.util.Units;
+import org.littletonrobotics.util.FieldConstants;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -138,7 +137,7 @@ public final class Constants {
     public static final double kSubwooferShot = Units.degreesToRotations(51.0);
     public static final double kMaxAutoAim = 0.0;
     public static final double kIntakeAngle = Units.degreesToRotations(40.0);
-    public static final double kAmpHandOff = Units.degreesToRotations(48.0);
+    public static final double kAmpHandOff = Units.degreesToRotations(45.5);
     public static final double kSafeElevator = Units.degreesToRotations(54);
     public static final double kHardStopPosition = Units.degreesToRotations(18.17);
   }
@@ -187,7 +186,7 @@ public final class Constants {
     private static void addPointToDistanceToShooterAngle(
         double distanceInches, double angleDegrees) {
       distanceToShooterAngle.put(
-          Units.inchesToMeters(distanceInches) + FieldConstants.subwooferToSpeakerCenter, 
+          Units.inchesToMeters(distanceInches) + FieldConstants.subwooferToSpeakerCenter,
           Units.degreesToRotations(angleDegrees));
     }
 
@@ -208,7 +207,8 @@ public final class Constants {
       addPointToDistanceToShooterAngle(156, 22);
     }
 
-    public static final InterpolatingDoubleTreeMap limelightTyToDistance = new InterpolatingDoubleTreeMap();
+    public static final InterpolatingDoubleTreeMap limelightTyToDistance =
+        new InterpolatingDoubleTreeMap();
 
     static {
       limelightTyToDistance.put(25.54, Units.inchesToMeters(14.0));
