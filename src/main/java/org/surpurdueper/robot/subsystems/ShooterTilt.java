@@ -229,7 +229,7 @@ public class ShooterTilt extends SubsystemBase {
 
   public Command home() {
     return runOnce(() -> setVoltage(-3))
-        .andThen(Commands.waitUntil(() -> tiltMotor.getStatorCurrent().getValueAsDouble() > 12.5))
+        .andThen(Commands.waitUntil(() -> tiltMotor.getStatorCurrent().getValueAsDouble() > 11.5))
         .andThen(runOnce(this::stop))
         .andThen(
             Commands.waitUntil(
@@ -239,6 +239,7 @@ public class ShooterTilt extends SubsystemBase {
                 () -> {
                   tiltMotor.setPosition(TiltConstants.kHardStopPosition);
                   isHomed = true;
+                  SmartDashboard.putBoolean("ShooterTilt/isHomed", isHomed);
                 }));
   }
 
