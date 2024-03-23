@@ -37,10 +37,10 @@ public class TwoDiskSource extends SequentialCommandGroup {
         shooter.on(),
         AutoBuilder.followPath(lineupFirstShot),
         Autos.aimAndFireWithElevator(drivetrain, shooterTilt, elevator, shooter, limelight, intake)
-            .withTimeout(0.75),
+            .withTimeout(1),
         shooterTilt.goToPositionBlocking(TiltConstants.kIntakeAngle),
         Commands.deadline(AutoBuilder.followPath(linupSecondShot), intake.load()),
         Autos.aimAndFireWithElevator(drivetrain, shooterTilt, elevator, shooter, limelight, intake)
-            .withTimeout(0.75));
+            .withTimeout(1));
   }
 }

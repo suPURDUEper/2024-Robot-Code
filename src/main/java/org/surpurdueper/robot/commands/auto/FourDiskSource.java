@@ -28,6 +28,6 @@ public class FourDiskSource extends SequentialCommandGroup {
         Commands.deadline(AutoBuilder.followPath(toFourthDisk), intake.load()),
         Autos.aimAndFireNoElevator(
                 drivetrain, shooterTilt, elevator, shooter, limelight, intake, 1.0)
-            .withTimeout(0.75));
+            .withTimeout(1));
   }
 }
