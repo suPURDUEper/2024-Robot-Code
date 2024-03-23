@@ -207,23 +207,53 @@ public final class Constants {
       addPointToDistanceToShooterAngle(156, 22);
     }
 
-    public static final InterpolatingDoubleTreeMap limelightTyToDistance =
+    public static final InterpolatingDoubleTreeMap limelightTyToDistanceHome =
         new InterpolatingDoubleTreeMap();
 
     static {
-      limelightTyToDistance.put(25.54, Units.inchesToMeters(14.0));
-      limelightTyToDistance.put(21.0, Units.inchesToMeters(24));
-      limelightTyToDistance.put(16.65, Units.inchesToMeters(34));
-      limelightTyToDistance.put(13.75, Units.inchesToMeters(45));
-      limelightTyToDistance.put(9.35, Units.inchesToMeters(61));
-      limelightTyToDistance.put(5.08, Units.inchesToMeters(72.5));
-      limelightTyToDistance.put(6.92, Units.inchesToMeters(83));
-      limelightTyToDistance.put(3.74, Units.inchesToMeters(92.5));
-      limelightTyToDistance.put(2.35, Units.inchesToMeters(102.5));
-      limelightTyToDistance.put(0.95, Units.inchesToMeters(116.5));
-      limelightTyToDistance.put(0.26, Units.inchesToMeters(123));
-      limelightTyToDistance.put(-0.75, Units.inchesToMeters(136));
-      limelightTyToDistance.put(-2.50, Units.inchesToMeters(158));
+      limelightTyToDistanceHome.put(25.54, Units.inchesToMeters(14.0));
+      limelightTyToDistanceHome.put(21.0, Units.inchesToMeters(24));
+      limelightTyToDistanceHome.put(16.65, Units.inchesToMeters(34));
+      limelightTyToDistanceHome.put(13.75, Units.inchesToMeters(45));
+      limelightTyToDistanceHome.put(9.35, Units.inchesToMeters(61));
+      limelightTyToDistanceHome.put(5.08, Units.inchesToMeters(72.5));
+      limelightTyToDistanceHome.put(6.92, Units.inchesToMeters(83));
+      limelightTyToDistanceHome.put(3.74, Units.inchesToMeters(92.5));
+      limelightTyToDistanceHome.put(2.35, Units.inchesToMeters(102.5));
+      limelightTyToDistanceHome.put(0.95, Units.inchesToMeters(116.5));
+      limelightTyToDistanceHome.put(0.26, Units.inchesToMeters(123));
+      limelightTyToDistanceHome.put(-0.75, Units.inchesToMeters(136));
+      limelightTyToDistanceHome.put(-2.50, Units.inchesToMeters(158));
+    }
+
+    public static final InterpolatingDoubleTreeMap limelightTyToDistanceRed =
+        new InterpolatingDoubleTreeMap();
+
+    static {
+      limelightTyToDistanceRed.put(24.96, Units.inchesToMeters(15));
+      limelightTyToDistanceRed.put(22.52, Units.inchesToMeters(20));
+      limelightTyToDistanceRed.put(15.75, Units.inchesToMeters(37));
+      limelightTyToDistanceRed.put(12.45, Units.inchesToMeters(48));
+      limelightTyToDistanceRed.put(10.45, Units.inchesToMeters(56));
+      limelightTyToDistanceRed.put(6.4, Units.inchesToMeters(76));
+      limelightTyToDistanceRed.put(3.37, Units.inchesToMeters(96));
+      limelightTyToDistanceRed.put(1.57, Units.inchesToMeters(111));
+      limelightTyToDistanceRed.put(-0.62, Units.inchesToMeters(132));
+    }
+
+    public static final InterpolatingDoubleTreeMap limelightTyToDistanceBlue =
+        new InterpolatingDoubleTreeMap();
+
+    static {
+      limelightTyToDistanceBlue.put(24.96, Units.inchesToMeters(15));
+      limelightTyToDistanceBlue.put(23.33, Units.inchesToMeters(20));
+      limelightTyToDistanceBlue.put(16.39, Units.inchesToMeters(37));
+      limelightTyToDistanceBlue.put(12.45, Units.inchesToMeters(48));
+      limelightTyToDistanceBlue.put(10.83, Units.inchesToMeters(56));
+      limelightTyToDistanceBlue.put(6.73, Units.inchesToMeters(76));
+      limelightTyToDistanceBlue.put(3.53, Units.inchesToMeters(96));
+      limelightTyToDistanceBlue.put(2.75, Units.inchesToMeters(111));
+      limelightTyToDistanceBlue.put(-0.43, Units.inchesToMeters(132));
     }
   }
 }

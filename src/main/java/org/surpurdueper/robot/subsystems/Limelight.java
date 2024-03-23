@@ -8,6 +8,8 @@ import edu.wpi.first.math.MathSharedStore;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.interpolation.TimeInterpolatableBuffer;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.Optional;
 import org.littletonrobotics.util.VirtualSubsystem;
@@ -32,6 +34,7 @@ public class Limelight extends VirtualSubsystem {
     // Update gyro angle buffer
     robotAngleBuffer.addSample(
         MathSharedStore.getTimestamp(), drivetrain.getState().Pose.getRotation());
+        getDistanceToGoalMeters();
     // updatePose2DAprilTag();
   }
 
@@ -39,7 +42,17 @@ public class Limelight extends VirtualSubsystem {
     if (!LimelightHelpers.getTV("")) {
       return Optional.empty();
     }
-    double distance = LookupTables.limelightTyToDistance.get(LimelightHelpers.getTY(""));
+    double distance;
+    Optional<Alliance> alliance = DriverStation.getAlliance();
+    if (DriverStation.getAlliance().isEmpty()) {
+     distance = LookupTables.limelightTyToDistanceHome.get(LimelightHelpers.getTY(""));
+    } else {
+      if (alliance.get() == Alliance.Red) {
+          distance = LookupTables.limelightTyToDistanceRed.get(LimelightHelpers.getTY(""));
+      } else {
+          distance = LookupTables.limelightTyToDistanceHome.get(LimelightHelpers.getTY(""));
+      }
+    }
     SmartDashboard.putNumber(
         "Vision/Bumper to Subwoofer Distance (in)", Units.metersToInches(distance));
 
