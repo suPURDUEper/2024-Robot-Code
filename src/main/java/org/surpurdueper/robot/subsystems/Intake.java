@@ -65,24 +65,27 @@ public class Intake extends SubsystemBase {
   }
 
   public Command fire() {
-    // Start async limelight capture
-    String snapshotName = "";
-    if (DriverStation.isFMSAttached()) {
-      try {
-        StringBuilder builder = new StringBuilder();
-        builder.append("Match ");
-        builder.append(DriverStation.getMatchNumber());
-        builder.append(": ");
-        builder.append(DriverStation.getMatchTime());
-        snapshotName = builder.toString();
-      } catch (Exception e) {
+    return Commands.startEnd(() -> {
+      feederMotor.setVoltage(12);
+      // Start async limelight capture
+      String snapshotName = "";
+      if (DriverStation.isFMSAttached()) {
+        try {
+          StringBuilder builder = new StringBuilder();
+          builder.append("Match ");
+          builder.append(DriverStation.getMatchNumber());
+          builder.append(": ");
+          builder.append(DriverStation.getMatchTime());
+          snapshotName = builder.toString();
+        } catch (Exception e) {
+          snapshotName = UUID.randomUUID().toString();
+        }
+      } else {
         snapshotName = UUID.randomUUID().toString();
       }
-    } else {
-      snapshotName = UUID.randomUUID().toString();
-    }
-    LimelightHelpers.takeSnapshot("limelight", snapshotName);
-    return Commands.startEnd(() -> feederMotor.setVoltage(12), feederMotor::stopMotor, this);
+      LimelightHelpers.takeSnapshot("limelight", snapshotName);
+      
+    }, feederMotor::stopMotor, this);
   }
 
   public Command feedAmp() {
