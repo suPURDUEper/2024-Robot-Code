@@ -34,7 +34,7 @@ public class Limelight extends VirtualSubsystem {
     // Update gyro angle buffer
     robotAngleBuffer.addSample(
         MathSharedStore.getTimestamp(), drivetrain.getState().Pose.getRotation());
-        getDistanceToGoalMeters();
+    getDistanceToGoalMeters();
     // updatePose2DAprilTag();
   }
 
@@ -45,12 +45,12 @@ public class Limelight extends VirtualSubsystem {
     double distance;
     Optional<Alliance> alliance = DriverStation.getAlliance();
     if (DriverStation.getAlliance().isEmpty()) {
-     distance = LookupTables.limelightTyToDistanceHome.get(LimelightHelpers.getTY(""));
+      distance = LookupTables.limelightTyToDistanceHome.get(LimelightHelpers.getTY(""));
     } else {
       if (alliance.get() == Alliance.Red) {
-          distance = LookupTables.limelightTyToDistanceRed.get(LimelightHelpers.getTY(""));
+        distance = LookupTables.limelightTyToDistanceRed.get(LimelightHelpers.getTY(""));
       } else {
-          distance = LookupTables.limelightTyToDistanceHome.get(LimelightHelpers.getTY(""));
+        distance = LookupTables.limelightTyToDistanceHome.get(LimelightHelpers.getTY(""));
       }
     }
     SmartDashboard.putNumber(

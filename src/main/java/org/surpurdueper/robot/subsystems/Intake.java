@@ -9,9 +9,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
 import java.util.UUID;
-
 import org.frc3005.lib.vendor.motorcontroller.SparkMax;
 import org.frc3005.lib.vendor.motorcontroller.SparkMaxUtils;
 import org.surpurdueper.robot.Constants.CANIDs;
@@ -65,27 +63,29 @@ public class Intake extends SubsystemBase {
   }
 
   public Command fire() {
-    return Commands.startEnd(() -> {
-      feederMotor.setVoltage(12);
-      // Start async limelight capture
-      String snapshotName = "";
-      if (DriverStation.isFMSAttached()) {
-        try {
-          StringBuilder builder = new StringBuilder();
-          builder.append("Match ");
-          builder.append(DriverStation.getMatchNumber());
-          builder.append(": ");
-          builder.append(DriverStation.getMatchTime());
-          snapshotName = builder.toString();
-        } catch (Exception e) {
-          snapshotName = UUID.randomUUID().toString();
-        }
-      } else {
-        snapshotName = UUID.randomUUID().toString();
-      }
-      LimelightHelpers.takeSnapshot("limelight", snapshotName);
-      
-    }, feederMotor::stopMotor, this);
+    return Commands.startEnd(
+        () -> {
+          feederMotor.setVoltage(12);
+          // Start async limelight capture
+          String snapshotName = "";
+          if (DriverStation.isFMSAttached()) {
+            try {
+              StringBuilder builder = new StringBuilder();
+              builder.append("Match ");
+              builder.append(DriverStation.getMatchNumber());
+              builder.append(": ");
+              builder.append(DriverStation.getMatchTime());
+              snapshotName = builder.toString();
+            } catch (Exception e) {
+              snapshotName = UUID.randomUUID().toString();
+            }
+          } else {
+            snapshotName = UUID.randomUUID().toString();
+          }
+          LimelightHelpers.takeSnapshot("limelight", snapshotName);
+        },
+        feederMotor::stopMotor,
+        this);
   }
 
   public Command feedAmp() {
