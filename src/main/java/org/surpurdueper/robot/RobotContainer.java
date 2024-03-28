@@ -67,9 +67,8 @@ public class RobotContainer {
   final Limelight limelight;
 
   /* Setting up bindings for necessary control of the swerve drive platform */
-  private double MaxSpeed = TunerConstants.kSpeedAt12VoltsMps;
-  private double MaxAngularRate =
-      1.5 * Math.PI; // 3/4 of a rotation per second max angular velocity
+  public double MaxSpeed = TunerConstants.kSpeedAt12VoltsMps;
+  public double MaxAngularRate = 1.5 * Math.PI; // 3/4 of a rotation per second max angular velocity
   private final CommandXboxController joystick = new CommandXboxController(0); // My joystick
   private final CommandXboxController joystick2 = new CommandXboxController(1); // My joystick
   private final CommandXboxController joystick3 = new CommandXboxController(2); // My joystick

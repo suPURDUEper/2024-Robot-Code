@@ -16,10 +16,9 @@ import org.surpurdueper.robot.subsystems.Limelight;
 import org.surpurdueper.robot.subsystems.Shooter;
 import org.surpurdueper.robot.subsystems.ShooterTilt;
 import org.surpurdueper.robot.subsystems.drive.CommandSwerveDrivetrain;
+import org.surpurdueper.robot.subsystems.drive.generated.TunerConstants;
 
 public class AutoAim extends Command {
-
-  private static final boolean USE_LIMELIGHT = true;
 
   private CommandSwerveDrivetrain drivetrain;
   private ShooterTilt shooterTilt;
@@ -78,11 +77,17 @@ public class AutoAim extends Command {
 
     // Setup request to control drive always facing the speaker
     poseAimRequest = new FieldCentricFacingPoint();
-    poseAimRequest.HeadingController.setPID(10, 0, 0);
+    poseAimRequest.HeadingController.setPID(
+        TunerConstants.headingGains.kP,
+        TunerConstants.headingGains.kI,
+        TunerConstants.headingGains.kD);
     poseAimRequest.HeadingController.enableContinuousInput(-Math.PI, Math.PI);
 
     limelightAimRequest = new FieldCentricFacingFieldAngle();
-    limelightAimRequest.HeadingController.setPID(5, 0, 0);
+    poseAimRequest.HeadingController.setPID(
+        TunerConstants.headingGains.kP,
+        TunerConstants.headingGains.kI,
+        TunerConstants.headingGains.kD);
     limelightAimRequest.HeadingController.enableContinuousInput(-Math.PI, Math.PI);
   }
 
@@ -105,25 +110,26 @@ public class AutoAim extends Command {
     Optional<Rotation2d> targetLimelightAngle = limelight.getLatencyCompensatedAngleToGoal();
     Optional<Double> targetLimelightDistance = limelight.getDistanceToGoalMeters();
 
+    // Update the last seen angle if we see an apriltag
     if (targetLimelightAngle.isPresent()) {
       lastSeenLimelightAngle = Rotation2d.fromDegrees(targetLimelightAngle.get().getDegrees());
     }
 
-    if (USE_LIMELIGHT) {
-      if (lastSeenLimelightAngle == null) {
-        lastSeenLimelightAngle = drivetrain.getState().Pose.getRotation();
-      }
-      drivetrain.setControl(
-          limelightAimRequest
-              .withFieldCentricTargetDirection(lastSeenLimelightAngle)
-              .withVelocityX(velocityX)
-              .withVelocityY(velocityY));
-      SmartDashboard.putNumber(
-          "AutoAim/TargetDirection", limelightAimRequest.getTargetDirection().getDegrees());
+    // If we've never seen an apriltag, use pose to aim
+    if (lastSeenLimelightAngle == null) {
+      lastSeenLimelightAngle = drivetrain.getState().Pose.getRotation();
     }
 
+    drivetrain.setControl(
+        limelightAimRequest
+            .withFieldCentricTargetDirection(lastSeenLimelightAngle)
+            .withVelocityX(velocityX)
+            .withVelocityY(velocityY));
+    SmartDashboard.putNumber(
+        "AutoAim/TargetDirection", limelightAimRequest.getTargetDirection().getDegrees());
+
     // Use new pose estimation to set shooter angle
-    if (USE_LIMELIGHT && targetLimelightDistance.isPresent()) {
+    if (targetLimelightDistance.isPresent()) {
       distanceToSpeakerMeters =
           targetLimelightDistance.get() + FieldConstants.subwooferToSpeakerCenter;
     } else if (distanceToSpeakerMeters < 0) {

@@ -17,6 +17,7 @@ import org.surpurdueper.robot.subsystems.Elevator;
 import org.surpurdueper.robot.subsystems.Limelight;
 import org.surpurdueper.robot.subsystems.ShooterTilt;
 import org.surpurdueper.robot.subsystems.drive.CommandSwerveDrivetrain;
+import org.surpurdueper.robot.subsystems.drive.generated.TunerConstants;
 
 public class AutoAutoAim extends Command {
 
@@ -65,11 +66,17 @@ public class AutoAutoAim extends Command {
 
     // Setup request to control drive always facing the speaker
     poseAimRequest = new FieldCentricFacingPoint();
-    poseAimRequest.HeadingController.setPID(10, 0, 0);
+    poseAimRequest.HeadingController.setPID(
+        TunerConstants.headingGains.kP,
+        TunerConstants.headingGains.kI,
+        TunerConstants.headingGains.kD);
     poseAimRequest.HeadingController.enableContinuousInput(-Math.PI, Math.PI);
 
     limelightAimRequest = new FieldCentricFacingFieldAngle();
-    limelightAimRequest.HeadingController.setPID(5, 0, 0);
+    poseAimRequest.HeadingController.setPID(
+        TunerConstants.headingGains.kP,
+        TunerConstants.headingGains.kI,
+        TunerConstants.headingGains.kD);
     limelightAimRequest.HeadingController.enableContinuousInput(-Math.PI, Math.PI);
   }
 
