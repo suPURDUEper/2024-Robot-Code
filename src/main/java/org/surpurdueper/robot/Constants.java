@@ -152,7 +152,7 @@ public final class Constants {
     public static final double ks = 10.0; // minimum amount of amps to move arm
     public static final double kv = 0.1; // Probably leave at 0
     public static final double ka = 0.0; // Amps required to accelerate arm 1 rot/s^2
-    public static final double kShooterRpsTolerance = 10;
+    public static final double kShooterRpsTolerance = 2.5;
 
     public static final double kLeftShooterSpeedRps = 6000 / 60.0;
     public static final double kRightShooterSpeedRps = 3000 / 60.0;
