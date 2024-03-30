@@ -4,6 +4,7 @@
 
 package org.surpurdueper.robot;
 
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.net.PortForwarder;
 import edu.wpi.first.wpilibj.Threads;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -19,6 +20,7 @@ import org.surpurdueper.robot.subsystems.Blinkin;
  * project.
  */
 public class Robot extends TimedRobot {
+
   private Command m_autonomousCommand;
 
   private RobotContainer m_robotContainer;
@@ -31,7 +33,7 @@ public class Robot extends TimedRobot {
   public void robotInit() {
     // Start logging
     // SignalLogger.enableAutoLogging(true);
-
+    CameraServer.startAutomaticCapture();
     // Forward limelight
     for (int port = 5800; port <= 5807; port++) {
       PortForwarder.add(port, "10.74.57.11", port);
