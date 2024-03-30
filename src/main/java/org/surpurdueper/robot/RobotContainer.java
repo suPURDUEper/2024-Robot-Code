@@ -137,7 +137,6 @@ public class RobotContainer {
 
     SmartDashboard.putData("Autonomous Routine", m_chooser);
 
-
     configureBindings();
     DriverStation.silenceJoystickConnectionWarning(true);
   }

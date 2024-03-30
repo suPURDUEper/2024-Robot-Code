@@ -9,7 +9,6 @@ import java.util.function.DoubleSupplier;
 import org.littletonrobotics.util.AllianceFlipUtil;
 import org.littletonrobotics.util.FieldConstants;
 import org.littletonrobotics.util.LoggedTunableNumber;
-import org.surpurdueper.robot.Constants;
 import org.surpurdueper.robot.Constants.LookupTables;
 import org.surpurdueper.robot.subsystems.Elevator;
 import org.surpurdueper.robot.subsystems.Limelight;
@@ -126,21 +125,17 @@ public class AutoAim extends Command {
     if (USE_LIMELIGHT && targetLimelightDistance.isPresent()) {
       distanceToSpeakerMeters =
           targetLimelightDistance.get() + FieldConstants.subwooferToSpeakerCenter;
-    } else if (distanceToSpeakerMeters < 0) {
-      distanceToSpeakerMeters =
-          drivetrain.getState().Pose.getTranslation().getDistance(speakerCenter)
-              - Constants.kBumperToRobotCenter;
     }
-
     if (distanceToSpeakerMeters > 0) {
       shooterTilt.setPositionRotations(
           LookupTables.distanceToShooterAngle.get(distanceToSpeakerMeters));
+      if (shouldElevatorFollow) {
+        elevator.followShooter(shooterTilt.getPositionRotations());
+      }
     }
 
     // shooterTilt.setPositionRotations(Units.degreesToRotations(shooterAngle.getAsDouble()));
-    if (shouldElevatorFollow) {
-      elevator.followShooter(shooterTilt.getPositionRotations());
-    }
+
   }
 
   @Override
