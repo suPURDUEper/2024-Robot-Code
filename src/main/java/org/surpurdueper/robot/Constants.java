@@ -136,7 +136,7 @@ public final class Constants {
     public static final double kPodiumShot = Units.degreesToRotations(30.0);
     public static final double kSubwooferShot = Units.degreesToRotations(51.0);
     public static final double kMaxAutoAim = 0.0;
-    public static final double kIntakeAngle = Units.degreesToRotations(40.0);
+    public static final double kIntakeAngle = Units.degreesToRotations(32);
     public static final double kAmpHandOff = Units.degreesToRotations(45.5);
     public static final double kSafeElevator = Units.degreesToRotations(54);
     public static final double kHardStopPosition = Units.degreesToRotations(18.17);
