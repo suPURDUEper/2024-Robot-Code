@@ -18,8 +18,6 @@ import org.surpurdueper.robot.subsystems.drive.CommandSwerveDrivetrain;
 
 public class AutoAutoAim extends Command {
 
-  private static final boolean USE_LIMELIGHT = true;
-
   private CommandSwerveDrivetrain drivetrain;
   private ShooterTilt shooterTilt;
   private Elevator elevator;
@@ -75,7 +73,7 @@ public class AutoAutoAim extends Command {
     Optional<Rotation2d> targetLimelightAngle = limelight.getLatencyCompensatedAngleToGoal();
     Optional<Double> targetLimelightDistance = limelight.getDistanceToGoalMeters();
 
-    if (USE_LIMELIGHT && targetLimelightAngle.isPresent()) {
+    if (targetLimelightAngle.isPresent()) {
       drivetrain.setControl(
           limelightAimRequest.withFieldCentricTargetDirection(targetLimelightAngle.get()));
       SmartDashboard.putNumber(
@@ -88,7 +86,7 @@ public class AutoAutoAim extends Command {
 
     // Use new pose estimation to set shooter angle
     double distanceToSpeakerMeters;
-    if (USE_LIMELIGHT && targetLimelightDistance.isPresent()) {
+    if (targetLimelightDistance.isPresent()) {
       distanceToSpeakerMeters =
           targetLimelightDistance.get() + FieldConstants.subwooferToSpeakerCenter;
     } else {

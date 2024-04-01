@@ -19,8 +19,6 @@ import org.surpurdueper.robot.subsystems.drive.CommandSwerveDrivetrain;
 
 public class AutoAim extends Command {
 
-  private static final boolean USE_LIMELIGHT = true;
-
   private CommandSwerveDrivetrain drivetrain;
   private ShooterTilt shooterTilt;
   private Elevator elevator;
@@ -109,21 +107,19 @@ public class AutoAim extends Command {
       lastSeenLimelightAngle = Rotation2d.fromDegrees(targetLimelightAngle.get().getDegrees());
     }
 
-    if (USE_LIMELIGHT) {
-      if (lastSeenLimelightAngle == null) {
-        lastSeenLimelightAngle = drivetrain.getState().Pose.getRotation();
-      }
-      drivetrain.setControl(
-          limelightAimRequest
-              .withFieldCentricTargetDirection(lastSeenLimelightAngle)
-              .withVelocityX(velocityX)
-              .withVelocityY(velocityY));
-      SmartDashboard.putNumber(
-          "AutoAim/TargetDirection", limelightAimRequest.getTargetDirection().getDegrees());
+    if (lastSeenLimelightAngle == null) {
+      lastSeenLimelightAngle = drivetrain.getState().Pose.getRotation();
     }
+    drivetrain.setControl(
+        limelightAimRequest
+            .withFieldCentricTargetDirection(lastSeenLimelightAngle)
+            .withVelocityX(velocityX)
+            .withVelocityY(velocityY));
+    SmartDashboard.putNumber(
+        "AutoAim/TargetDirection", limelightAimRequest.getTargetDirection().getDegrees());
 
     // Use new pose estimation to set shooter angle
-    if (USE_LIMELIGHT && targetLimelightDistance.isPresent()) {
+    if (targetLimelightDistance.isPresent()) {
       distanceToSpeakerMeters =
           targetLimelightDistance.get() + FieldConstants.subwooferToSpeakerCenter;
     } else if (distanceToSpeakerMeters < 0) {
