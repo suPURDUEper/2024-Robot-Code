@@ -13,7 +13,7 @@ public class SetLightsGreen extends Command {
   private Intake intake;
 
   public SetLightsGreen(Blinkin blinkin, Intake intake) {
-    if (intake.isFeederBreakBeamTriggered() == true) {
+    if (intake.hasDisk() == true) {
       blinkin.SetLightsGreen();
     }
   }

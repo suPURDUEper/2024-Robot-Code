@@ -37,11 +37,10 @@ public class TwoDisk extends SequentialCommandGroup {
         Commands.runOnce(() -> drivetrain.seedFieldRelative(AllianceFlipUtil.apply(startingPose))),
         shooter.on(),
         AutoBuilder.followPath(lineupFirstShot),
-        Autos.aimAndFireWithElevator(drivetrain, shooterTilt, elevator, shooter, limelight, intake)
-            .withTimeout(1),
+        Autos.aimAndFireWithElevator(drivetrain, shooterTilt, elevator, shooter, limelight, intake),
         shooterTilt.goToPositionBlocking(TiltConstants.kIntakeAngle),
         Commands.deadline(AutoBuilder.followPath(toSecondDisk), intake.load()),
-        Autos.aimAndFireWithElevator(drivetrain, shooterTilt, elevator, shooter, limelight, intake)
-            .withTimeout(1));
+        Autos.aimAndFireWithElevator(
+            drivetrain, shooterTilt, elevator, shooter, limelight, intake));
   }
 }

@@ -5,7 +5,6 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import java.util.Optional;
-import java.util.function.DoubleSupplier;
 import org.littletonrobotics.util.AllianceFlipUtil;
 import org.littletonrobotics.util.FieldConstants;
 import org.littletonrobotics.util.LoggedTunableNumber;
@@ -26,8 +25,6 @@ public class AutoAutoAim extends Command {
   private ShooterTilt shooterTilt;
   private Elevator elevator;
   private Limelight limelight;
-  private DoubleSupplier xVelocitySupplier;
-  private DoubleSupplier yVelocitySupplier;
   private Translation2d speakerCenter;
   private FieldCentricFacingPoint poseAimRequest;
   private FieldCentricFacingFieldAngle limelightAimRequest;
@@ -40,10 +37,8 @@ public class AutoAutoAim extends Command {
       CommandSwerveDrivetrain drivetrain,
       ShooterTilt shooterTilt,
       Elevator elevator,
-      Limelight limelight,
-      DoubleSupplier xVelocitySupplier,
-      DoubleSupplier yVelocitySupplier) {
-    this(drivetrain, shooterTilt, elevator, limelight, xVelocitySupplier, yVelocitySupplier, true);
+      Limelight limelight) {
+    this(drivetrain, shooterTilt, elevator, limelight, true);
   }
 
   public AutoAutoAim(
@@ -51,15 +46,11 @@ public class AutoAutoAim extends Command {
       ShooterTilt shooterTilt,
       Elevator elevator,
       Limelight limelight,
-      DoubleSupplier xVelocitySupplier,
-      DoubleSupplier yVelocitySupplier,
       boolean shouldElevatorFollow) {
     this.drivetrain = drivetrain;
     this.shooterTilt = shooterTilt;
     this.elevator = elevator;
     this.limelight = limelight;
-    this.xVelocitySupplier = xVelocitySupplier;
-    this.yVelocitySupplier = yVelocitySupplier;
     this.shouldElevatorFollow = shouldElevatorFollow;
     addRequirements(drivetrain, elevator, shooterTilt);
 
@@ -84,24 +75,17 @@ public class AutoAutoAim extends Command {
 
   @Override
   public void execute() {
-    // Update drivetrain with new joystick values
-    double velocityX = xVelocitySupplier.getAsDouble();
-    double velocityY = yVelocitySupplier.getAsDouble();
 
     Optional<Rotation2d> targetLimelightAngle = limelight.getLatencyCompensatedAngleToGoal();
     Optional<Double> targetLimelightDistance = limelight.getDistanceToGoalMeters();
 
     if (USE_LIMELIGHT && targetLimelightAngle.isPresent()) {
       drivetrain.setControl(
-          limelightAimRequest
-              .withFieldCentricTargetDirection(targetLimelightAngle.get())
-              .withVelocityX(velocityX)
-              .withVelocityY(velocityY));
+          limelightAimRequest.withFieldCentricTargetDirection(targetLimelightAngle.get()));
       SmartDashboard.putNumber(
           "AutoAim/TargetDirection", limelightAimRequest.getTargetDirection().getDegrees());
     } else {
-      drivetrain.setControl(
-          poseAimRequest.withVelocityX(velocityX).withVelocityY(velocityY).withDeadband(0.1));
+      drivetrain.setControl(poseAimRequest);
       SmartDashboard.putNumber(
           "AutoAim/TargetDirection", poseAimRequest.getTargetDirection().getDegrees());
     }

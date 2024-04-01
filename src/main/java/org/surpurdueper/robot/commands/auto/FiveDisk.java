@@ -27,7 +27,6 @@ public class FiveDisk extends SequentialCommandGroup {
         new FourDisk(drivetrain, intake, shooterTilt, shooter, elevator, limelight),
         Commands.deadline(AutoBuilder.followPath(toFifthDisk), intake.load()),
         Autos.aimAndFireNoElevator(
-                drivetrain, shooterTilt, elevator, shooter, limelight, intake, 1.0)
-            .withTimeout(1.25));
+            drivetrain, shooterTilt, elevator, shooter, limelight, intake, 1.0));
   }
 }

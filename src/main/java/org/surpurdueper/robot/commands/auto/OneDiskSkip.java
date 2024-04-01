@@ -35,7 +35,6 @@ public class OneDiskSkip extends SequentialCommandGroup {
         Commands.runOnce(() -> drivetrain.seedFieldRelative(AllianceFlipUtil.apply(startingPose))),
         shooter.on(),
         AutoBuilder.followPath(lineupFirstShot),
-        Autos.aimAndFireNoElevator(drivetrain, shooterTilt, elevator, shooter, limelight, intake, 1)
-            .withTimeout(1.2));
+        Autos.aimAndFireNoElevator(drivetrain, shooterTilt, elevator, shooter, limelight, intake));
   }
 }
