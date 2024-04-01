@@ -14,7 +14,6 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.Optional;
-
 import org.littletonrobotics.util.FieldConstants;
 import org.littletonrobotics.util.VirtualSubsystem;
 import org.surpurdueper.robot.Constants.LookupTables;
@@ -114,8 +113,7 @@ public class Limelight extends VirtualSubsystem {
             ? FieldConstants.aprilTag4
             : FieldConstants.aprilTag7;
     Translation2d tagToCameraTranslation = new Translation2d(distance, angle);
-    Translation2d cameraToRobotCenterTranslation =
-        new Translation2d(0, robotAngle);
+    Translation2d cameraToRobotCenterTranslation = new Translation2d(0, robotAngle);
     Translation2d robot =
         apriltag.plus(tagToCameraTranslation).plus(cameraToRobotCenterTranslation);
     Pose2d poseEstimate = new Pose2d(robot, robotAngle);

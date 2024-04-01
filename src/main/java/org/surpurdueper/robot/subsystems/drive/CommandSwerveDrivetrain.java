@@ -116,31 +116,30 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     }
 
     AutoBuilder.configureHolonomic(
-      () -> this.getState().Pose, // Supplier of current robot pose
-      this::seedFieldRelative, // Consumer for seeding pose against auto
-      this::getCurrentRobotChassisSpeeds,
-      (speeds) ->
-          this.setControl(
-              AutoRequest.withSpeeds(speeds)), // Consumer of ChassisSpeeds to drive the robot
-      new HolonomicPathFollowerConfig(
-          new PIDConstants(10, 0, 0),
-          new PIDConstants(10, 0, 0),
-          TunerConstants.kSpeedAt12VoltsMps,
-          driveBaseRadius,
-          new ReplanningConfig()),
-      () -> {
-        // Boolean supplier that controls when the path will be mirrored for the red alliance
-        // This will flip the path being followed to the red side of the field.
-        // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
+        () -> this.getState().Pose, // Supplier of current robot pose
+        this::seedFieldRelative, // Consumer for seeding pose against auto
+        this::getCurrentRobotChassisSpeeds,
+        (speeds) ->
+            this.setControl(
+                AutoRequest.withSpeeds(speeds)), // Consumer of ChassisSpeeds to drive the robot
+        new HolonomicPathFollowerConfig(
+            new PIDConstants(10, 0, 0),
+            new PIDConstants(10, 0, 0),
+            TunerConstants.kSpeedAt12VoltsMps,
+            driveBaseRadius,
+            new ReplanningConfig()),
+        () -> {
+          // Boolean supplier that controls when the path will be mirrored for the red alliance
+          // This will flip the path being followed to the red side of the field.
+          // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
 
-        var alliance = DriverStation.getAlliance();
-        if (alliance.isPresent()) {
-          return alliance.get() == DriverStation.Alliance.Red;
-        }
-        return false;
-      }, // Change this if the path needs to be flipped on red vs blue
-      this // Subsystem for requirements
-    );
+          var alliance = DriverStation.getAlliance();
+          if (alliance.isPresent()) {
+            return alliance.get() == DriverStation.Alliance.Red;
+          }
+          return false;
+        }, // Change this if the path needs to be flipped on red vs blue
+        this);
   }
 
   public Command applyRequest(Supplier<SwerveRequest> requestSupplier) {

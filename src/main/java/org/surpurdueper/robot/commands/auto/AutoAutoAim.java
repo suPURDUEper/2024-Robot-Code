@@ -7,7 +7,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import java.util.Optional;
 import org.littletonrobotics.util.AllianceFlipUtil;
 import org.littletonrobotics.util.FieldConstants;
-import org.littletonrobotics.util.LoggedTunableNumber;
 import org.surpurdueper.robot.Constants;
 import org.surpurdueper.robot.Constants.LookupTables;
 import org.surpurdueper.robot.commands.FieldCentricFacingFieldAngle;
@@ -28,9 +27,6 @@ public class AutoAutoAim extends Command {
   private Translation2d speakerCenter;
   private FieldCentricFacingPoint poseAimRequest;
   private FieldCentricFacingFieldAngle limelightAimRequest;
-  private LoggedTunableNumber shooterAngle =
-      new LoggedTunableNumber("ShooterTilt/AutoAim Angle", 30);
-
   private boolean shouldElevatorFollow;
 
   public AutoAutoAim(
@@ -104,7 +100,6 @@ public class AutoAutoAim extends Command {
     shooterTilt.setPositionRotations(
         LookupTables.distanceToShooterAngle.get(distanceToSpeakerMeters));
 
-    // shooterTilt.setPositionRotations(Units.degreesToRotations(shooterAngle.getAsDouble()));
     if (shouldElevatorFollow) {
       elevator.followShooter(shooterTilt.getPositionRotations());
     }
