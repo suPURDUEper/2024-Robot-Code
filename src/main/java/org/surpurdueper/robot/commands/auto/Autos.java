@@ -41,7 +41,7 @@ public class Autos {
       Limelight limelight,
       Intake intake) {
     return aimAndFireIfDisk(
-        drivetrain, shooterTilt, elevator, shooter, limelight, intake, false, 1);
+        drivetrain, shooterTilt, elevator, shooter, limelight, intake, true, 1);
   }
 
   public static Command aimAndFireNoElevator(
