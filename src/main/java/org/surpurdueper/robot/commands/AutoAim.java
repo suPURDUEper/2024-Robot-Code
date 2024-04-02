@@ -2,6 +2,7 @@ package org.surpurdueper.robot.commands;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import java.util.Optional;
@@ -17,8 +18,6 @@ import org.surpurdueper.robot.subsystems.ShooterTilt;
 import org.surpurdueper.robot.subsystems.drive.CommandSwerveDrivetrain;
 
 public class AutoAim extends Command {
-
-  private static final boolean USE_LIMELIGHT = true;
 
   private CommandSwerveDrivetrain drivetrain;
   private ShooterTilt shooterTilt;
@@ -81,7 +80,7 @@ public class AutoAim extends Command {
     poseAimRequest.HeadingController.enableContinuousInput(-Math.PI, Math.PI);
 
     limelightAimRequest = new FieldCentricFacingFieldAngle();
-    limelightAimRequest.HeadingController.setPID(10, 0, 0);
+    limelightAimRequest.HeadingController.setPID(10, 0, .75);
     limelightAimRequest.HeadingController.enableContinuousInput(-Math.PI, Math.PI);
   }
 
@@ -109,21 +108,19 @@ public class AutoAim extends Command {
       lastSeenLimelightAngle = Rotation2d.fromDegrees(targetLimelightAngle.get().getDegrees());
     }
 
-    if (USE_LIMELIGHT) {
-      if (lastSeenLimelightAngle == null) {
-        lastSeenLimelightAngle = drivetrain.getState().Pose.getRotation();
-      }
-      drivetrain.setControl(
-          limelightAimRequest
-              .withFieldCentricTargetDirection(lastSeenLimelightAngle)
-              .withVelocityX(velocityX)
-              .withVelocityY(velocityY));
-      SmartDashboard.putNumber(
-          "AutoAim/TargetDirection", limelightAimRequest.getTargetDirection().getDegrees());
+    if (lastSeenLimelightAngle == null) {
+      lastSeenLimelightAngle = drivetrain.getState().Pose.getRotation();
     }
+    drivetrain.setControl(
+        limelightAimRequest
+            .withFieldCentricTargetDirection(lastSeenLimelightAngle)
+            .withVelocityX(velocityX)
+            .withVelocityY(velocityY));
+    SmartDashboard.putNumber(
+        "AutoAim/TargetDirection", limelightAimRequest.getTargetDirection().getDegrees());
 
     // Use new pose estimation to set shooter angle
-    if (USE_LIMELIGHT && targetLimelightDistance.isPresent()) {
+    if (targetLimelightDistance.isPresent()) {
       distanceToSpeakerMeters =
           targetLimelightDistance.get() + FieldConstants.subwooferToSpeakerCenter;
     }

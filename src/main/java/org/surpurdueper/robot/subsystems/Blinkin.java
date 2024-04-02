@@ -43,7 +43,7 @@ public class Blinkin extends VirtualSubsystem {
 
   @Override
   public void periodic() {
-    if (intake.isFeederBreakBeamTriggered()) {
+    if (intake.hasDisk()) {
       currentLights = kGreen;
     } else {
       currentLights = kRed;

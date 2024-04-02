@@ -38,7 +38,7 @@ public class Intake extends SubsystemBase {
     SmartDashboard.putBoolean("Intake/BreakBeam2", feederBreakBeam2.get());
   }
 
-  public boolean isFeederBreakBeamTriggered() {
+  public boolean hasDisk() {
     return !feederBreakBeam1.get() || !feederBreakBeam2.get();
   }
 
@@ -58,34 +58,36 @@ public class Intake extends SubsystemBase {
   }
 
   public Command load() {
-    return Commands.startEnd(this::runForward, this::stop, this)
-        .until(this::isFeederBreakBeamTriggered);
+    return Commands.startEnd(this::runForward, this::stop, this).until(this::hasDisk);
   }
 
   public Command fire() {
     return Commands.startEnd(
         () -> {
           feederMotor.setVoltage(12);
-          // Start async limelight capture
-          String snapshotName = "";
-          if (DriverStation.isFMSAttached()) {
-            try {
-              StringBuilder builder = new StringBuilder();
-              builder.append("Match ");
-              builder.append(DriverStation.getMatchNumber());
-              builder.append(": ");
-              builder.append(DriverStation.getMatchTime());
-              snapshotName = builder.toString();
-            } catch (Exception e) {
-              snapshotName = UUID.randomUUID().toString();
-            }
-          } else {
-            snapshotName = UUID.randomUUID().toString();
-          }
-          LimelightHelpers.takeSnapshot("limelight", snapshotName);
+          takeLimelightSnapshot(); // Start async limelight capture
         },
         feederMotor::stopMotor,
         this);
+  }
+
+  private void takeLimelightSnapshot() {
+    String snapshotName = "";
+    if (DriverStation.isFMSAttached()) {
+      try {
+        StringBuilder builder = new StringBuilder();
+        builder.append("Match ");
+        builder.append(DriverStation.getMatchNumber());
+        builder.append(": ");
+        builder.append(DriverStation.getMatchTime());
+        snapshotName = builder.toString();
+      } catch (Exception e) {
+        snapshotName = UUID.randomUUID().toString();
+      }
+    } else {
+      snapshotName = UUID.randomUUID().toString();
+    }
+    LimelightHelpers.takeSnapshot("limelight", snapshotName);
   }
 
   public Command feedAmp() {

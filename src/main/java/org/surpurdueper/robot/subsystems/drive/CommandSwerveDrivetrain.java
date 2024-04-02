@@ -8,6 +8,7 @@ import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrain;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
@@ -95,6 +96,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     if (Utils.isSimulation()) {
       startSimThread();
     }
+    configNeutralMode(NeutralModeValue.Brake);
   }
 
   public CommandSwerveDrivetrain(
@@ -104,6 +106,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     if (Utils.isSimulation()) {
       startSimThread();
     }
+    configNeutralMode(NeutralModeValue.Brake);
   }
 
   private void configurePathPlanner() {
@@ -136,7 +139,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
           }
           return false;
         }, // Change this if the path needs to be flipped on red vs blue
-        this); // Subsystem for requirements
+        this);
   }
 
   public Command applyRequest(Supplier<SwerveRequest> requestSupplier) {

@@ -5,10 +5,8 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import java.util.Optional;
-import java.util.function.DoubleSupplier;
 import org.littletonrobotics.util.AllianceFlipUtil;
 import org.littletonrobotics.util.FieldConstants;
-import org.littletonrobotics.util.LoggedTunableNumber;
 import org.surpurdueper.robot.Constants;
 import org.surpurdueper.robot.Constants.LookupTables;
 import org.surpurdueper.robot.commands.FieldCentricFacingFieldAngle;
@@ -20,30 +18,21 @@ import org.surpurdueper.robot.subsystems.drive.CommandSwerveDrivetrain;
 
 public class AutoAutoAim extends Command {
 
-  private static final boolean USE_LIMELIGHT = true;
-
   private CommandSwerveDrivetrain drivetrain;
   private ShooterTilt shooterTilt;
   private Elevator elevator;
   private Limelight limelight;
-  private DoubleSupplier xVelocitySupplier;
-  private DoubleSupplier yVelocitySupplier;
   private Translation2d speakerCenter;
   private FieldCentricFacingPoint poseAimRequest;
   private FieldCentricFacingFieldAngle limelightAimRequest;
-  private LoggedTunableNumber shooterAngle =
-      new LoggedTunableNumber("ShooterTilt/AutoAim Angle", 30);
-
   private boolean shouldElevatorFollow;
 
   public AutoAutoAim(
       CommandSwerveDrivetrain drivetrain,
       ShooterTilt shooterTilt,
       Elevator elevator,
-      Limelight limelight,
-      DoubleSupplier xVelocitySupplier,
-      DoubleSupplier yVelocitySupplier) {
-    this(drivetrain, shooterTilt, elevator, limelight, xVelocitySupplier, yVelocitySupplier, true);
+      Limelight limelight) {
+    this(drivetrain, shooterTilt, elevator, limelight, true);
   }
 
   public AutoAutoAim(
@@ -51,15 +40,11 @@ public class AutoAutoAim extends Command {
       ShooterTilt shooterTilt,
       Elevator elevator,
       Limelight limelight,
-      DoubleSupplier xVelocitySupplier,
-      DoubleSupplier yVelocitySupplier,
       boolean shouldElevatorFollow) {
     this.drivetrain = drivetrain;
     this.shooterTilt = shooterTilt;
     this.elevator = elevator;
     this.limelight = limelight;
-    this.xVelocitySupplier = xVelocitySupplier;
-    this.yVelocitySupplier = yVelocitySupplier;
     this.shouldElevatorFollow = shouldElevatorFollow;
     addRequirements(drivetrain, elevator, shooterTilt);
 
@@ -84,31 +69,24 @@ public class AutoAutoAim extends Command {
 
   @Override
   public void execute() {
-    // Update drivetrain with new joystick values
-    double velocityX = xVelocitySupplier.getAsDouble();
-    double velocityY = yVelocitySupplier.getAsDouble();
 
     Optional<Rotation2d> targetLimelightAngle = limelight.getLatencyCompensatedAngleToGoal();
     Optional<Double> targetLimelightDistance = limelight.getDistanceToGoalMeters();
 
-    if (USE_LIMELIGHT && targetLimelightAngle.isPresent()) {
+    if (targetLimelightAngle.isPresent()) {
       drivetrain.setControl(
-          limelightAimRequest
-              .withFieldCentricTargetDirection(targetLimelightAngle.get())
-              .withVelocityX(velocityX)
-              .withVelocityY(velocityY));
+          limelightAimRequest.withFieldCentricTargetDirection(targetLimelightAngle.get()));
       SmartDashboard.putNumber(
           "AutoAim/TargetDirection", limelightAimRequest.getTargetDirection().getDegrees());
     } else {
-      drivetrain.setControl(
-          poseAimRequest.withVelocityX(velocityX).withVelocityY(velocityY).withDeadband(0.1));
+      drivetrain.setControl(poseAimRequest);
       SmartDashboard.putNumber(
           "AutoAim/TargetDirection", poseAimRequest.getTargetDirection().getDegrees());
     }
 
     // Use new pose estimation to set shooter angle
     double distanceToSpeakerMeters;
-    if (USE_LIMELIGHT && targetLimelightDistance.isPresent()) {
+    if (targetLimelightDistance.isPresent()) {
       distanceToSpeakerMeters =
           targetLimelightDistance.get() + FieldConstants.subwooferToSpeakerCenter;
     } else {
@@ -120,7 +98,6 @@ public class AutoAutoAim extends Command {
     shooterTilt.setPositionRotations(
         LookupTables.distanceToShooterAngle.get(distanceToSpeakerMeters));
 
-    // shooterTilt.setPositionRotations(Units.degreesToRotations(shooterAngle.getAsDouble()));
     if (shouldElevatorFollow) {
       elevator.followShooter(shooterTilt.getPositionRotations());
     }
