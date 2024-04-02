@@ -80,7 +80,7 @@ public class AutoAim extends Command {
     poseAimRequest.HeadingController.enableContinuousInput(-Math.PI, Math.PI);
 
     limelightAimRequest = new FieldCentricFacingFieldAngle();
-    limelightAimRequest.HeadingController.setPID(5, 0, 0);
+    limelightAimRequest.HeadingController.setPID(10, 0, 0);
     limelightAimRequest.HeadingController.enableContinuousInput(-Math.PI, Math.PI);
   }
 

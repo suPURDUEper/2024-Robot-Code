@@ -13,7 +13,7 @@ import org.surpurdueper.robot.utils.LimelightHelpers;
 
 public class Autos {
 
-  public static final double fireTimeSeconds = 0.25;
+  public static final double fireTimeSeconds = 0.2;
 
   public static Command fire(
       ShooterTilt shooterTilt,
