@@ -34,7 +34,7 @@ public class AutoAim extends Command {
       new LoggedTunableNumber("ShooterTilt/AutoAim Angle", 30);
 
   private boolean shouldElevatorFollow;
-  private double distanceToSpeakerMeters = -1;
+  private double distanceToSpeakerMeters;
   private Rotation2d lastSeenLimelightAngle = null;
 
   public AutoAim(
@@ -81,7 +81,7 @@ public class AutoAim extends Command {
     poseAimRequest.HeadingController.enableContinuousInput(-Math.PI, Math.PI);
 
     limelightAimRequest = new FieldCentricFacingFieldAngle();
-    limelightAimRequest.HeadingController.setPID(5, 0, 0);
+    limelightAimRequest.HeadingController.setPID(10, 0, 0);
     limelightAimRequest.HeadingController.enableContinuousInput(-Math.PI, Math.PI);
   }
 
@@ -93,6 +93,7 @@ public class AutoAim extends Command {
         "Auto Aim/Speaker Center", new double[] {speakerCenter.getX(), speakerCenter.getY()});
     poseAimRequest.setPointToFace(speakerCenter);
     shooter.turnOn();
+    distanceToSpeakerMeters = -1.0;
   }
 
   @Override
@@ -133,9 +134,7 @@ public class AutoAim extends Command {
         elevator.followShooter(shooterTilt.getPositionRotations());
       }
     }
-
-    // shooterTilt.setPositionRotations(Units.degreesToRotations(shooterAngle.getAsDouble()));
-
+    SmartDashboard.putNumber("AutoAim/Distance to Speaker (m)", distanceToSpeakerMeters);
   }
 
   @Override
