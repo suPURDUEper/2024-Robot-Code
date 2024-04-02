@@ -23,13 +23,13 @@ public class Autos {
       Intake intake,
       double aimTimeSeconds) {
     return Commands.waitSeconds(aimTimeSeconds - fireTimeSeconds)
-        .onlyWhile(
-            () -> {
-              return !elevator.isAtPosition()
-                  || !shooter.isShooterAtSpeed()
-                  || !shooterTilt.isAtPosition()
-                  || LimelightHelpers.getTX("") > 1.0;
-            })
+        // .onlyWhile(
+        //     () -> {
+        //       return !elevator.isAtPosition()
+        //           || !shooter.isShooterAtSpeed()
+        //           || !shooterTilt.isAtPosition()
+        //           || LimelightHelpers.getTX("") > 1.0;
+        //     })
         .andThen(intake.fire().withTimeout(fireTimeSeconds));
   }
 
