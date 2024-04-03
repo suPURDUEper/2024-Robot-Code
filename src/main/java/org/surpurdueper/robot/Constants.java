@@ -205,6 +205,7 @@ public final class Constants {
       addPointToDistanceToShooterAngle(132, 24);
       addPointToDistanceToShooterAngle(144, 23);
       addPointToDistanceToShooterAngle(156, 22);
+      addPointToDistanceToShooterAngle(190, 21.4);
     }
 
     public static final InterpolatingDoubleTreeMap limelightTyToDistanceHome =
@@ -224,6 +225,7 @@ public final class Constants {
       limelightTyToDistanceHome.put(0.26, Units.inchesToMeters(123));
       limelightTyToDistanceHome.put(-0.75, Units.inchesToMeters(136));
       limelightTyToDistanceHome.put(-2.50, Units.inchesToMeters(158));
+      limelightTyToDistanceHome.put(-3.60, Units.inchesToMeters(190));
     }
 
     public static final InterpolatingDoubleTreeMap limelightTyToDistanceRed =
