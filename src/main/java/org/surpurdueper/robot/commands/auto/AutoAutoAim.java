@@ -1,10 +1,8 @@
 package org.surpurdueper.robot.commands.auto;
 
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import java.util.Optional;
 import org.littletonrobotics.util.AllianceFlipUtil;
 import org.littletonrobotics.util.FieldConstants;
 import org.surpurdueper.robot.Constants;
@@ -69,32 +67,14 @@ public class AutoAutoAim extends Command {
 
   @Override
   public void execute() {
-
-    Optional<Rotation2d> targetLimelightAngle = limelight.getLatencyCompensatedAngleToGoal();
-    Optional<Double> targetLimelightDistance = limelight.getDistanceToGoalMeters();
-
-    if (targetLimelightAngle.isPresent()) {
-      drivetrain.setControl(
-          limelightAimRequest.withFieldCentricTargetDirection(targetLimelightAngle.get()));
-      SmartDashboard.putNumber(
-          "AutoAim/TargetDirection", limelightAimRequest.getTargetDirection().getDegrees());
-    } else {
-      drivetrain.setControl(poseAimRequest);
-      SmartDashboard.putNumber(
-          "AutoAim/TargetDirection", poseAimRequest.getTargetDirection().getDegrees());
-    }
+    drivetrain.setControl(poseAimRequest);
+    SmartDashboard.putNumber(
+        "AutoAim/TargetDirection", poseAimRequest.getTargetDirection().getDegrees());
 
     // Use new pose estimation to set shooter angle
-    double distanceToSpeakerMeters;
-    if (targetLimelightDistance.isPresent()) {
-      distanceToSpeakerMeters =
-          targetLimelightDistance.get() + FieldConstants.subwooferToSpeakerCenter;
-    } else {
-      distanceToSpeakerMeters =
-          drivetrain.getState().Pose.getTranslation().getDistance(speakerCenter)
-              - Constants.kBumperToRobotCenter;
-    }
-
+    double distanceToSpeakerMeters =
+        drivetrain.getState().Pose.getTranslation().getDistance(speakerCenter)
+            - Constants.kBumperToRobotCenter;
     shooterTilt.setPositionRotations(
         LookupTables.distanceToShooterAngle.get(distanceToSpeakerMeters));
 

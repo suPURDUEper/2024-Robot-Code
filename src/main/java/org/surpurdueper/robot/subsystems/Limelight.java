@@ -5,6 +5,7 @@
 package org.surpurdueper.robot.subsystems;
 
 import edu.wpi.first.math.MathSharedStore;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -26,6 +27,8 @@ public class Limelight extends VirtualSubsystem {
   private static final double kBufferDuration = 1.5;
   private TimeInterpolatableBuffer<Rotation2d> robotAngleBuffer;
 
+  private double[] visionPose = new double[3];
+
   /** Creates a new LimeLight. */
   public Limelight(CommandSwerveDrivetrain drivetrain) {
     this.drivetrain = drivetrain;
@@ -35,10 +38,11 @@ public class Limelight extends VirtualSubsystem {
   @Override
   public void periodic() {
     // Update gyro angle buffer
-    robotAngleBuffer.addSample(
-        MathSharedStore.getTimestamp(), drivetrain.getState().Pose.getRotation());
-    getDistanceToGoalMeters();
+    // robotAngleBuffer.addSample(
+    //     MathSharedStore.getTimestamp(), drivetrain.getState().Pose.getRotation());
+    // getDistanceToGoalMeters();
     // updatePose2DAprilTag();
+    updatePose3dAprilTag();
   }
 
   public Optional<Double> getDistanceToGoalMeters() {
@@ -79,6 +83,30 @@ public class Limelight extends VirtualSubsystem {
     }
     Rotation2d angleToGoal = robotAngleOptional.get().minus(tx);
     return Optional.of(angleToGoal);
+  }
+
+  private void updatePose3dAprilTag() {
+    boolean doRejectUpdate = false;
+    LimelightHelpers.SetRobotOrientation(
+        "limelight", drivetrain.getState().Pose.getRotation().getDegrees(), 0, 0, 0, 0, 0);
+    LimelightHelpers.PoseEstimate mt2 =
+        LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
+    // if our angular velocity is greater than 720 degrees per second, ignore vision updates
+    if (Math.abs(drivetrain.getState().speeds.omegaRadiansPerSecond)
+        > Units.degreesToRadians(720)) {
+      doRejectUpdate = true;
+    }
+    if (mt2.tagCount == 0) {
+      doRejectUpdate = true;
+    }
+    if (!doRejectUpdate) {
+      drivetrain.setVisionMeasurementStdDevs(VecBuilder.fill(.6, .6, 9999999));
+      drivetrain.addVisionMeasurement(mt2.pose, mt2.timestampSeconds);
+    }
+    visionPose[0] = mt2.pose.getX();
+    visionPose[1] = mt2.pose.getY();
+    visionPose[2] = mt2.pose.getRotation().getDegrees();
+    SmartDashboard.putNumberArray("Vision/Pose (mt2)", visionPose);
   }
 
   private void updatePose2DAprilTag() {

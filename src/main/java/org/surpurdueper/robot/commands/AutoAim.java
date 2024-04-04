@@ -5,11 +5,11 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import java.util.Optional;
 import java.util.function.DoubleSupplier;
 import org.littletonrobotics.util.AllianceFlipUtil;
 import org.littletonrobotics.util.FieldConstants;
 import org.littletonrobotics.util.LoggedTunableNumber;
+import org.surpurdueper.robot.Constants;
 import org.surpurdueper.robot.Constants.LookupTables;
 import org.surpurdueper.robot.subsystems.Elevator;
 import org.surpurdueper.robot.subsystems.Limelight;
@@ -76,7 +76,7 @@ public class AutoAim extends Command {
 
     // Setup request to control drive always facing the speaker
     poseAimRequest = new FieldCentricFacingPoint();
-    poseAimRequest.HeadingController.setPID(10, 0, 0);
+    poseAimRequest.HeadingController.setPID(10, 0, .75);
     poseAimRequest.HeadingController.enableContinuousInput(-Math.PI, Math.PI);
 
     limelightAimRequest = new FieldCentricFacingFieldAngle();
@@ -101,29 +101,14 @@ public class AutoAim extends Command {
     double velocityX = xVelocitySupplier.getAsDouble();
     double velocityY = yVelocitySupplier.getAsDouble();
 
-    Optional<Rotation2d> targetLimelightAngle = limelight.getLatencyCompensatedAngleToGoal();
-    Optional<Double> targetLimelightDistance = limelight.getDistanceToGoalMeters();
-
-    if (targetLimelightAngle.isPresent()) {
-      lastSeenLimelightAngle = Rotation2d.fromDegrees(targetLimelightAngle.get().getDegrees());
-    }
-
-    if (lastSeenLimelightAngle == null) {
-      lastSeenLimelightAngle = drivetrain.getState().Pose.getRotation();
-    }
-    drivetrain.setControl(
-        limelightAimRequest
-            .withFieldCentricTargetDirection(lastSeenLimelightAngle)
-            .withVelocityX(velocityX)
-            .withVelocityY(velocityY));
+    drivetrain.setControl(poseAimRequest.withVelocityX(velocityX).withVelocityY(velocityY));
     SmartDashboard.putNumber(
-        "AutoAim/TargetDirection", limelightAimRequest.getTargetDirection().getDegrees());
+        "AutoAim/TargetDirection", poseAimRequest.getTargetDirection().getDegrees());
 
     // Use new pose estimation to set shooter angle
-    if (targetLimelightDistance.isPresent()) {
-      distanceToSpeakerMeters =
-          targetLimelightDistance.get() + FieldConstants.subwooferToSpeakerCenter;
-    }
+    distanceToSpeakerMeters =
+        drivetrain.getState().Pose.getTranslation().getDistance(speakerCenter)
+            - Constants.kBumperToRobotCenter;
     if (distanceToSpeakerMeters > 0) {
       shooterTilt.setPositionRotations(
           LookupTables.distanceToShooterAngle.get(distanceToSpeakerMeters));
@@ -131,7 +116,8 @@ public class AutoAim extends Command {
         elevator.followShooter(shooterTilt.getPositionRotations());
       }
     }
-    SmartDashboard.putNumber("AutoAim/Distance to Speaker (m)", distanceToSpeakerMeters);
+    SmartDashboard.putNumber(
+        "AutoAim/Distance to Speaker (in)", Units.metersToInches(distanceToSpeakerMeters));
   }
 
   @Override

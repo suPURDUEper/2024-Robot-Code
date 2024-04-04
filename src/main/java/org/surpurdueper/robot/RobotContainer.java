@@ -5,22 +5,21 @@
 package org.surpurdueper.robot;
 
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
-import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
-
-import java.util.Optional;
 import java.util.function.DoubleSupplier;
 import org.frc3005.lib.vendor.motorcontroller.SparkMax;
 import org.littletonrobotics.util.AllianceFlipUtil;
@@ -76,9 +75,7 @@ public class RobotContainer {
   private final CommandXboxController joystick = new CommandXboxController(0); // My joystick
   private final CommandXboxController joystick2 = new CommandXboxController(1); // My joystick
   private final CommandXboxController joystick3 = new CommandXboxController(2); // My joystick
-
   public final CommandSwerveDrivetrain drivetrain = TunerConstants.DriveTrain; // My drivetrain
-
   private final SwerveRequest.FieldCentric drive =
       new SwerveRequest.FieldCentric()
           .withDeadband(MaxSpeed * 0.1)
@@ -102,14 +99,7 @@ public class RobotContainer {
     shooter = new Shooter();
     shooterTilt = new ShooterTilt(intake);
     blinkin = new Blinkin(intake);
-    limelight = new Limelight(drivetrain);
-
-    PPHolonomicDriveController.setRotationTargetOverride(() -> {
-        if (!intake.hasDisk()) {
-            return Optional.empty();
-        }
-        return limelight.getLatencyCompensatedAngleToGoal();
-    });
+    limelight = new Limelight(drivetrain); 
 
     Command doNothingAuto = Commands.none();
     Command twoDisk = new TwoDisk(drivetrain, intake, shooterTilt, shooter, elevator, limelight);
@@ -350,10 +340,17 @@ public class RobotContainer {
             shooterTilt
                 .goToPositionBlocking(TiltConstants.kIntakeAngle)
                 .onlyIf(shooterTilt::isNotAtIntakeHeight)
-                .andThen(intake.load()));
+                .andThen(intake.load())
+                .andThen(rumbleDriverController()));
   }
 
-  /**
+  private Command rumbleDriverController() {
+    return new ScheduleCommand(Commands.runOnce(() -> joystick.getHID().setRumble(RumbleType.kBothRumble, 1))
+    .andThen(Commands.waitSeconds(0.75))
+    .andThen(Commands.runOnce(() -> joystick.getHID().setRumble(RumbleType.kBothRumble, 0))));
+  }
+
+/**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
    * @return the command to run in autonomous
