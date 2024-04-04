@@ -11,6 +11,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -76,9 +77,7 @@ public class RobotContainer {
   private final CommandXboxController joystick = new CommandXboxController(0); // My joystick
   private final CommandXboxController joystick2 = new CommandXboxController(1); // My joystick
   private final CommandXboxController joystick3 = new CommandXboxController(2); // My joystick
-
   public final CommandSwerveDrivetrain drivetrain = TunerConstants.DriveTrain; // My drivetrain
-
   private final SwerveRequest.FieldCentric drive =
       new SwerveRequest.FieldCentric()
           .withDeadband(MaxSpeed * 0.1)
@@ -102,7 +101,7 @@ public class RobotContainer {
     shooter = new Shooter();
     shooterTilt = new ShooterTilt(intake);
     blinkin = new Blinkin(intake);
-    limelight = new Limelight(drivetrain);
+    limelight = new Limelight(drivetrain); 
 
     PPHolonomicDriveController.setRotationTargetOverride(() -> {
         if (!intake.hasDisk()) {
@@ -350,10 +349,17 @@ public class RobotContainer {
             shooterTilt
                 .goToPositionBlocking(TiltConstants.kIntakeAngle)
                 .onlyIf(shooterTilt::isNotAtIntakeHeight)
-                .andThen(intake.load()));
+                .andThen(intake.load())
+                .andThen(rumbleDriverController()));
   }
 
-  /**
+  private Command rumbleDriverController() {
+    return Commands.runOnce(() -> joystick.getHID().setRumble(RumbleType.kBothRumble, 1))
+    .andThen(Commands.waitSeconds(1))
+    .andThen(Commands.runOnce(() -> joystick.getHID().setRumble(RumbleType.kBothRumble, 0)));
+  }
+
+/**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
    * @return the command to run in autonomous
