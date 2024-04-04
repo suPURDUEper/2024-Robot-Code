@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
@@ -344,9 +345,9 @@ public class RobotContainer {
   }
 
   private Command rumbleDriverController() {
-    return Commands.runOnce(() -> joystick.getHID().setRumble(RumbleType.kBothRumble, 1))
-    .andThen(Commands.waitSeconds(1))
-    .andThen(Commands.runOnce(() -> joystick.getHID().setRumble(RumbleType.kBothRumble, 0)));
+    return new ScheduleCommand(Commands.runOnce(() -> joystick.getHID().setRumble(RumbleType.kBothRumble, 1))
+    .andThen(Commands.waitSeconds(0.75))
+    .andThen(Commands.runOnce(() -> joystick.getHID().setRumble(RumbleType.kBothRumble, 0))));
   }
 
 /**

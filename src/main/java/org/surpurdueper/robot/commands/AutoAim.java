@@ -76,7 +76,7 @@ public class AutoAim extends Command {
 
     // Setup request to control drive always facing the speaker
     poseAimRequest = new FieldCentricFacingPoint();
-    poseAimRequest.HeadingController.setPID(10, 0, 0);
+    poseAimRequest.HeadingController.setPID(10, 0, .75);
     poseAimRequest.HeadingController.enableContinuousInput(-Math.PI, Math.PI);
 
     limelightAimRequest = new FieldCentricFacingFieldAngle();
