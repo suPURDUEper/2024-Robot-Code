@@ -5,7 +5,6 @@
 package org.surpurdueper.robot;
 
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
-import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -19,8 +18,6 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
-
-import java.util.Optional;
 import java.util.function.DoubleSupplier;
 import org.frc3005.lib.vendor.motorcontroller.SparkMax;
 import org.littletonrobotics.util.AllianceFlipUtil;
@@ -103,13 +100,6 @@ public class RobotContainer {
     shooterTilt = new ShooterTilt(intake);
     blinkin = new Blinkin(intake);
     limelight = new Limelight(drivetrain);
-
-    PPHolonomicDriveController.setRotationTargetOverride(() -> {
-        if (!intake.hasDisk()) {
-            return Optional.empty();
-        }
-        return limelight.getLatencyCompensatedAngleToGoal();
-    });
 
     Command doNothingAuto = Commands.none();
     Command twoDisk = new TwoDisk(drivetrain, intake, shooterTilt, shooter, elevator, limelight);

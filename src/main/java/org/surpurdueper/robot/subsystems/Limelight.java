@@ -5,6 +5,7 @@
 package org.surpurdueper.robot.subsystems;
 
 import edu.wpi.first.math.MathSharedStore;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -79,6 +80,23 @@ public class Limelight extends VirtualSubsystem {
     }
     Rotation2d angleToGoal = robotAngleOptional.get().minus(tx);
     return Optional.of(angleToGoal);
+  }
+
+  private void updatePose3dAprilTag() {
+    boolean doRejectUpdate = false;
+    LimelightHelpers.SetRobotOrientation(
+        "limelight", drivetrain.getState().Pose.getRotation().getDegrees(), 0, 0, 0, 0, 0);
+    LimelightHelpers.PoseEstimate mt2 =
+        LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
+    // if our angular velocity is greater than 720 degrees per second, ignore vision updates
+    if (Math.abs(drivetrain.getState().speeds.omegaRadiansPerSecond)
+        > Units.degreesToRadians(720)) {
+      doRejectUpdate = true;
+    }
+    if (!doRejectUpdate) {
+      drivetrain.setVisionMeasurementStdDevs(VecBuilder.fill(.6, .6, 9999999));
+      drivetrain.addVisionMeasurement(mt2.pose, mt2.timestampSeconds);
+    }
   }
 
   private void updatePose2DAprilTag() {
