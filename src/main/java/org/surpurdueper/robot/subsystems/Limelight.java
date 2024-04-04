@@ -27,6 +27,8 @@ public class Limelight extends VirtualSubsystem {
   private static final double kBufferDuration = 1.5;
   private TimeInterpolatableBuffer<Rotation2d> robotAngleBuffer;
 
+  private double[] visionPose = new double[3];
+
   /** Creates a new LimeLight. */
   public Limelight(CommandSwerveDrivetrain drivetrain) {
     this.drivetrain = drivetrain;
@@ -36,10 +38,11 @@ public class Limelight extends VirtualSubsystem {
   @Override
   public void periodic() {
     // Update gyro angle buffer
-    robotAngleBuffer.addSample(
-        MathSharedStore.getTimestamp(), drivetrain.getState().Pose.getRotation());
-    getDistanceToGoalMeters();
+    // robotAngleBuffer.addSample(
+    //     MathSharedStore.getTimestamp(), drivetrain.getState().Pose.getRotation());
+    // getDistanceToGoalMeters();
     // updatePose2DAprilTag();
+    updatePose3dAprilTag();
   }
 
   public Optional<Double> getDistanceToGoalMeters() {
@@ -93,10 +96,17 @@ public class Limelight extends VirtualSubsystem {
         > Units.degreesToRadians(720)) {
       doRejectUpdate = true;
     }
+    if (mt2.tagCount == 0) {
+      doRejectUpdate = true;
+    }
     if (!doRejectUpdate) {
       drivetrain.setVisionMeasurementStdDevs(VecBuilder.fill(.6, .6, 9999999));
       drivetrain.addVisionMeasurement(mt2.pose, mt2.timestampSeconds);
     }
+    visionPose[0] = mt2.pose.getX();
+    visionPose[1] = mt2.pose.getY();
+    visionPose[2] = mt2.pose.getRotation().getDegrees();
+    SmartDashboard.putNumberArray("Vision/Pose (mt2)", visionPose);
   }
 
   private void updatePose2DAprilTag() {
