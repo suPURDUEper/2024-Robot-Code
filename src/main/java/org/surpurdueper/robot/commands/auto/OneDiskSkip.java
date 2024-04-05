@@ -26,7 +26,7 @@ public class OneDiskSkip extends SequentialCommandGroup {
 
     PathPlannerPath lineupFirstShot = PathPlannerPath.fromChoreoTrajectory("5 Skip.1");
 
-    Rotation2d startingHeading = Rotation2d.fromRadians(-2.0848597284421473);
+    Rotation2d startingHeading = Rotation2d.fromRadians(Math.PI);
     Pose2d startingPose =
         new Pose2d(
             lineupFirstShot.getPreviewStartingHolonomicPose().getTranslation(), startingHeading);
@@ -34,7 +34,7 @@ public class OneDiskSkip extends SequentialCommandGroup {
     addCommands(
         Commands.runOnce(() -> drivetrain.seedFieldRelative(AllianceFlipUtil.apply(startingPose))),
         shooter.on(),
-        AutoBuilder.followPath(lineupFirstShot),
+        Commands.deadline(AutoBuilder.followPath(lineupFirstShot),intake.load()),
         Autos.aimAndFireNoElevator(drivetrain, shooterTilt, elevator, shooter, limelight, intake));
   }
 }

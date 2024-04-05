@@ -21,7 +21,7 @@ public class ThreeDiskSkip extends SequentialCommandGroup {
       Elevator elevator,
       Limelight limelight) {
 
-    PathPlannerPath toThirdDisk = PathPlannerPath.fromChoreoTrajectory("5 Standard.4");
+    PathPlannerPath toThirdDisk = PathPlannerPath.fromChoreoTrajectory("5 Standard.5");
 
     addCommands(
         new TwoDiskSkip(drivetrain, intake, shooterTilt, shooter, elevator, limelight),

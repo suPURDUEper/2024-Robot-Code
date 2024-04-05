@@ -31,7 +31,6 @@ import org.surpurdueper.robot.commands.AutoAim;
 import org.surpurdueper.robot.commands.WheelRadiusCharacterization;
 import org.surpurdueper.robot.commands.auto.FiveDisk;
 import org.surpurdueper.robot.commands.auto.FourDisk;
-import org.surpurdueper.robot.commands.auto.FourDiskSkip;
 import org.surpurdueper.robot.commands.auto.FourDiskSource;
 import org.surpurdueper.robot.commands.auto.OneDiskSkip;
 import org.surpurdueper.robot.commands.auto.ThreeDisk;
@@ -113,8 +112,6 @@ public class RobotContainer {
         new TwoDiskSkip(drivetrain, intake, shooterTilt, shooter, elevator, limelight);
     Command threeDiskSkip =
         new ThreeDiskSkip(drivetrain, intake, shooterTilt, shooter, elevator, limelight);
-    Command fourDiskSkip =
-        new FourDiskSkip(drivetrain, intake, shooterTilt, shooter, elevator, limelight);
     Command TwoDiskSource =
         new TwoDiskSource(drivetrain, intake, shooterTilt, shooter, elevator, limelight);
     Command ThreeDiskSource =
@@ -130,7 +127,6 @@ public class RobotContainer {
     m_chooser.addOption("One Disk (Skip)", oneDiskSkip);
     m_chooser.addOption("Two Disk (Skip)", twoDiskSkip);
     m_chooser.addOption("Three Disk (Skip)", threeDiskSkip);
-    m_chooser.addOption("Four Disk (Skip)", fourDiskSkip);
     m_chooser.addOption("Two Disk (Source)", TwoDiskSource);
     m_chooser.addOption("Three Disk (Source)", ThreeDiskSource);
     m_chooser.addOption("Four Disk (Source)", FourDiskSource);

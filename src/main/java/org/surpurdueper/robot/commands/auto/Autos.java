@@ -1,5 +1,6 @@
 package org.surpurdueper.robot.commands.auto;
 
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
@@ -21,14 +22,15 @@ public class Autos {
       Shooter shooter,
       Limelight limelight,
       Intake intake,
-      double aimTimeSeconds) {
+      double aimTimeSeconds, 
+      CommandSwerveDrivetrain drivetrain) {
     return Commands.waitSeconds(aimTimeSeconds - fireTimeSeconds)
         // .onlyWhile(
         //     () -> {
         //       return !elevator.isAtPosition()
         //           || !shooter.isShooterAtSpeed()
         //           || !shooterTilt.isAtPosition()
-        //           || LimelightHelpers.getTX("") > 1.0;
+        //           || drivetrain.getState().speeds.omegaRadiansPerSecond < Units.degreesToRadians(5);
         //     })
         .andThen(intake.fire().withTimeout(fireTimeSeconds));
   }
@@ -101,7 +103,7 @@ public class Autos {
       double aimTime) {
 
     return new ParallelDeadlineGroup(
-        fire(shooterTilt, elevator, shooter, limelight, intake, aimTime),
+        fire(shooterTilt, elevator, shooter, limelight, intake, aimTime, drivetrain),
         new AutoAutoAim(drivetrain, shooterTilt, elevator, limelight, shouldElevatorFollow));
   }
 }

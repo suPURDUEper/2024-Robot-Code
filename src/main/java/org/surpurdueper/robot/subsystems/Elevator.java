@@ -168,7 +168,7 @@ public class Elevator extends SubsystemBase {
 
   public boolean isAtPosition() {
     return Math.abs(targetHeight - elevatorMotor.getPosition().getValueAsDouble())
-        < ElevatorConstants.kPositionTolerance;
+        < ElevatorConstants.kPositionTolerance && elevatorMotor.getVelocity().getValueAsDouble() < 0.1;
   }
 
   public Command goToPosition(double meters) {
