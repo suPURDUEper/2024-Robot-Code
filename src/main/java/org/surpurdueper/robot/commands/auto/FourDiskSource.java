@@ -26,6 +26,7 @@ public class FourDiskSource extends SequentialCommandGroup {
     addCommands(
         new ThreeDiskSource(drivetrain, intake, shooterTilt, shooter, elevator, limelight),
         Commands.deadline(AutoBuilder.followPath(toFourthDisk), intake.load()),
-        Autos.aimAndFireNoElevator(drivetrain, shooterTilt, elevator, shooter, limelight, intake, 0.9));
+        Autos.aimAndFireNoElevator(
+            drivetrain, shooterTilt, elevator, shooter, limelight, intake, 0.9));
   }
 }

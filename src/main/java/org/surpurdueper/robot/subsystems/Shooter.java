@@ -170,6 +170,10 @@ public class Shooter extends SubsystemBase {
     setShooterRps(ShooterConstants.kLeftShooterIdleRps, ShooterConstants.kRightShooterIdleRps);
   }
 
+  public void turnOnFeedShot() {
+    setShooterRps(ShooterConstants.kLeftShooterFeedRps, ShooterConstants.kRightShooterFeedRps);
+  }
+
   public Command on() {
     return Commands.runOnce(this::turnOn, this);
   }
@@ -189,6 +193,10 @@ public class Shooter extends SubsystemBase {
                 ShooterConstants.kLeftShooterAmpRps, ShooterConstants.kRightShooterAmpRps),
         () -> stop(),
         this);
+  }
+
+  public Command onfeedShot() {
+    return Commands.runOnce(this::turnOnFeedShot, this);
   }
 
   public Command purge() {

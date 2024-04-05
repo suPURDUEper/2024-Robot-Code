@@ -216,7 +216,8 @@ public class ShooterTilt extends SubsystemBase {
 
   public boolean isAtPosition() {
     return Math.abs(targetRotations - tiltMotor.getPosition().getValueAsDouble())
-        < TiltConstants.kPositionTolerance && tiltMotor.getVelocity().getValueAsDouble() < 0.1;
+            < TiltConstants.kPositionTolerance
+        && tiltMotor.getVelocity().getValueAsDouble() < 0.1;
   }
 
   public Command goToPosition(double rotations) {

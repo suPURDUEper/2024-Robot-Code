@@ -1,6 +1,5 @@
 package org.surpurdueper.robot.commands.auto;
 
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
@@ -10,7 +9,6 @@ import org.surpurdueper.robot.subsystems.Limelight;
 import org.surpurdueper.robot.subsystems.Shooter;
 import org.surpurdueper.robot.subsystems.ShooterTilt;
 import org.surpurdueper.robot.subsystems.drive.CommandSwerveDrivetrain;
-import org.surpurdueper.robot.utils.LimelightHelpers;
 
 public class Autos {
 
@@ -22,7 +20,7 @@ public class Autos {
       Shooter shooter,
       Limelight limelight,
       Intake intake,
-      double aimTimeSeconds, 
+      double aimTimeSeconds,
       CommandSwerveDrivetrain drivetrain) {
     return Commands.waitSeconds(aimTimeSeconds - fireTimeSeconds)
         // .onlyWhile(
@@ -30,7 +28,8 @@ public class Autos {
         //       return !elevator.isAtPosition()
         //           || !shooter.isShooterAtSpeed()
         //           || !shooterTilt.isAtPosition()
-        //           || drivetrain.getState().speeds.omegaRadiansPerSecond < Units.degreesToRadians(5);
+        //           || drivetrain.getState().speeds.omegaRadiansPerSecond <
+        // Units.degreesToRadians(5);
         //     })
         .andThen(intake.fire().withTimeout(fireTimeSeconds));
   }
@@ -42,8 +41,7 @@ public class Autos {
       Shooter shooter,
       Limelight limelight,
       Intake intake) {
-    return aimAndFireIfDisk(
-        drivetrain, shooterTilt, elevator, shooter, limelight, intake, true, 1);
+    return aimAndFireIfDisk(drivetrain, shooterTilt, elevator, shooter, limelight, intake, true, 1);
   }
 
   public static Command aimAndFireNoElevator(

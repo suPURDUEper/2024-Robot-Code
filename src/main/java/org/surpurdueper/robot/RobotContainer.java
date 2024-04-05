@@ -98,7 +98,7 @@ public class RobotContainer {
     shooter = new Shooter();
     shooterTilt = new ShooterTilt(intake);
     blinkin = new Blinkin(intake);
-    limelight = new Limelight(drivetrain); 
+    limelight = new Limelight(drivetrain);
 
     Command doNothingAuto = Commands.none();
     Command twoDisk = new TwoDisk(drivetrain, intake, shooterTilt, shooter, elevator, limelight);
@@ -270,6 +270,9 @@ public class RobotContainer {
         .or(joystick2.x())
         .whileTrue(shooter.startEnd(shooter::turnOn, shooter::turnOnIdle));
 
+    joystick2.leftBumper().onTrue(shooterTilt.goToPosition(Constants.TiltConstants.kStageShot));
+    joystick2.leftBumper().whileTrue(shooterTilt.startEnd(shooter::onfeedShot, shooter::idle));
+
     joystick2.rightBumper().onTrue(amp.trapLoad().andThen(amp.trapScore().withTimeout(2)));
 
     // Manual shooter tilt and climber control
@@ -341,12 +344,14 @@ public class RobotContainer {
   }
 
   private Command rumbleDriverController() {
-    return new ScheduleCommand(Commands.runOnce(() -> joystick.getHID().setRumble(RumbleType.kBothRumble, 1))
-    .andThen(Commands.waitSeconds(0.75))
-    .andThen(Commands.runOnce(() -> joystick.getHID().setRumble(RumbleType.kBothRumble, 0))));
+    return new ScheduleCommand(
+        Commands.runOnce(() -> joystick.getHID().setRumble(RumbleType.kBothRumble, 1))
+            .andThen(Commands.waitSeconds(0.75))
+            .andThen(
+                Commands.runOnce(() -> joystick.getHID().setRumble(RumbleType.kBothRumble, 0))));
   }
 
-/**
+  /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
    * @return the command to run in autonomous

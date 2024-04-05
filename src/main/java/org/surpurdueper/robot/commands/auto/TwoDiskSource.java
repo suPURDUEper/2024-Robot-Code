@@ -8,7 +8,6 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import org.littletonrobotics.util.AllianceFlipUtil;
-import org.surpurdueper.robot.Constants.TiltConstants;
 import org.surpurdueper.robot.subsystems.Elevator;
 import org.surpurdueper.robot.subsystems.Intake;
 import org.surpurdueper.robot.subsystems.Limelight;
@@ -38,7 +37,10 @@ public class TwoDiskSource extends SequentialCommandGroup {
         shooter.on(),
         AutoBuilder.followPath(lineupFirstShot),
         Autos.aimAndFireWithElevator(drivetrain, shooterTilt, elevator, shooter, limelight, intake),
-        Commands.deadline(AutoBuilder.followPath(linupSecondShot), shooterTilt.goToPositionBlocking(Units.degreesToRotations(21.25)), intake.load()),
+        Commands.deadline(
+            AutoBuilder.followPath(linupSecondShot),
+            shooterTilt.goToPositionBlocking(Units.degreesToRotations(21.25)),
+            intake.load()),
         Autos.aimAndFireNoElevator(
             drivetrain, shooterTilt, elevator, shooter, limelight, intake, 0.9));
   }

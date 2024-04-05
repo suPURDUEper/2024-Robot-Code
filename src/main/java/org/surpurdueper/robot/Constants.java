@@ -160,6 +160,8 @@ public final class Constants {
     public static final double kRightShooterIdleRps = 1500 / 60.0;
     public static final double kLeftShooterAmpRps = 2000 / 60.0;
     public static final double kRightShooterAmpRps = 2000 / 60.0;
+    public static final double kLeftShooterFeedRps = 3000 / 60.0;
+    public static final double kRightShooterFeedRps = 1500 / 60.0;
   }
 
   public static class LookupTables {
