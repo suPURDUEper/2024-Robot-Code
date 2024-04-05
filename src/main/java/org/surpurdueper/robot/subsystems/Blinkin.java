@@ -18,15 +18,18 @@ public class Blinkin extends VirtualSubsystem {
   public static final double kBlack = .99;
   public static final double kRainbow = -0.99;
   public static final double kRed = 0.61;
-  public static final double kGreen = 0.73;
+  public static final double kGreen = 0.77;
+  public static final double kWhite = 0.93;
   public Intake intake;
+  public Shooter shooter;
 
   public double currentLights = 0;
 
-  public Blinkin(Intake intake) {
+  public Blinkin(Intake intake, Shooter shooter) {
     super();
     lights = new Spark(9);
     this.intake = intake;
+    this.shooter = shooter;
   }
 
   public Command setLightsTo(double lights) {
@@ -44,7 +47,12 @@ public class Blinkin extends VirtualSubsystem {
   @Override
   public void periodic() {
     if (intake.hasDisk()) {
-      currentLights = kGreen;
+      // Over 2000rpm for actual shots instead of idle speed
+      if (shooter.shooterLeftTargetRps > 2000 / 60.0 && shooter.isShooterAtSpeed()) {
+        currentLights = kWhite;
+      } else {
+        currentLights = kGreen;
+      }
     } else {
       currentLights = kRed;
     }

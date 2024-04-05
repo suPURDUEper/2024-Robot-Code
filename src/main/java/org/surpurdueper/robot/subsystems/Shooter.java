@@ -41,7 +41,7 @@ public class Shooter extends SubsystemBase {
   private TalonFX shooterLeft;
   private TalonFX shooterRight;
   private TalonFXConfiguration config;
-  private double shooterLeftTargetRps = 0;
+  public double shooterLeftTargetRps = 0;
   private double shooterRightTargetRps = 0;
 
   // Tunable numbers

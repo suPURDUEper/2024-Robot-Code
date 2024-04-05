@@ -97,7 +97,7 @@ public class RobotContainer {
     elevator = new Elevator();
     shooter = new Shooter();
     shooterTilt = new ShooterTilt(intake);
-    blinkin = new Blinkin(intake);
+    blinkin = new Blinkin(intake, shooter);
     limelight = new Limelight(drivetrain);
 
     Command doNothingAuto = Commands.none();
