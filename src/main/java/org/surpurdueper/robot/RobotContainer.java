@@ -304,6 +304,15 @@ public class RobotContainer {
     // Home shooter tilt
     joystick2.start().onTrue(shooterTilt.home());
 
+    // Manual shooter elevator unjam
+    joystick2.povLeft().whileTrue(Commands.startEnd(() -> {
+        shooterTilt.setVoltage(3);
+        elevator.setVoltage(3);
+    }, () -> {
+        shooterTilt.stop();
+        elevator.stop();
+    }, shooterTilt, elevator));
+
     /* Bindings for characterization */
     /* These bindings require multiple buttons pushed to swap between quastatic and dynamic */
     /* Back/Start select dynamic/quasistatic, Y/X select forward/reverse direction */

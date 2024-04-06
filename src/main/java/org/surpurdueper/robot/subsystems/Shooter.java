@@ -14,6 +14,7 @@ import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.configs.TorqueCurrentConfigs;
 import com.ctre.phoenix6.controls.ControlRequest;
 import com.ctre.phoenix6.controls.NeutralOut;
 import com.ctre.phoenix6.controls.TorqueCurrentFOC;
@@ -220,6 +221,10 @@ public class Shooter extends SubsystemBase {
         new CurrentLimitsConfigs()
             .withStatorCurrentLimit(ShooterConstants.kStatorCurrentLimit)
             .withStatorCurrentLimitEnable(true);
+    TorqueCurrentConfigs torqueCurrentConfigs = 
+      new TorqueCurrentConfigs() 
+        .withPeakForwardTorqueCurrent(120)
+        .withPeakReverseTorqueCurrent(-120);
     FeedbackConfigs feedbackConfig =
         new FeedbackConfigs().withSensorToMechanismRatio(ShooterConstants.kGearRatio);
     Slot0Configs slot0config =
@@ -234,7 +239,8 @@ public class Shooter extends SubsystemBase {
         new TalonFXConfiguration()
             .withSlot0(slot0config)
             .withCurrentLimits(currentConfig)
-            .withFeedback(feedbackConfig);
+            .withFeedback(feedbackConfig)
+            .withTorqueCurrent(torqueCurrentConfigs);
     shooterLeft.getConfigurator().apply(config.withMotorOutput(motorOutputConfigs));
     shooterRight
         .getConfigurator()
