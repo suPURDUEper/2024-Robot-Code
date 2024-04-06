@@ -26,7 +26,7 @@ public class Limelight extends VirtualSubsystem {
   private CommandSwerveDrivetrain drivetrain;
   private static final double kBufferDuration = 1.5;
   private TimeInterpolatableBuffer<Rotation2d> robotAngleBuffer;
-
+  private int[] validIDs = {3, 4, 7, 8};
   private double[] visionPose = new double[3];
 
   /** Creates a new LimeLight. */
@@ -87,6 +87,7 @@ public class Limelight extends VirtualSubsystem {
 
   private void updatePose3dAprilTag() {
     boolean doRejectUpdate = false;
+    LimelightHelpers.SetFiducialIDFiltersOverride("limelight", validIDs);
     LimelightHelpers.SetRobotOrientation(
         "limelight", drivetrain.getState().Pose.getRotation().getDegrees(), 0, 0, 0, 0, 0);
     LimelightHelpers.PoseEstimate mt2 =
