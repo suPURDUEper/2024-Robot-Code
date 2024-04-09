@@ -204,10 +204,10 @@ public final class Constants {
       addPointToDistanceToShooterAngle(96, 27);
       addPointToDistanceToShooterAngle(108, 25.5);
       addPointToDistanceToShooterAngle(120, 24.5);
-      addPointToDistanceToShooterAngle(132, 24);
+      addPointToDistanceToShooterAngle(132, 24.5);
       addPointToDistanceToShooterAngle(144, 23);
-      addPointToDistanceToShooterAngle(156, 22);
-      addPointToDistanceToShooterAngle(190, 21.4);
+      addPointToDistanceToShooterAngle(156, 22.5);
+      addPointToDistanceToShooterAngle(190, 22);
     }
 
     public static final InterpolatingDoubleTreeMap limelightTyToDistanceHome =
