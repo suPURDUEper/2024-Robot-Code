@@ -221,10 +221,10 @@ public class Shooter extends SubsystemBase {
         new CurrentLimitsConfigs()
             .withStatorCurrentLimit(ShooterConstants.kStatorCurrentLimit)
             .withStatorCurrentLimitEnable(true);
-    TorqueCurrentConfigs torqueCurrentConfigs = 
-      new TorqueCurrentConfigs() 
-        .withPeakForwardTorqueCurrent(120)
-        .withPeakReverseTorqueCurrent(-120);
+    TorqueCurrentConfigs torqueCurrentConfigs =
+        new TorqueCurrentConfigs()
+            .withPeakForwardTorqueCurrent(120)
+            .withPeakReverseTorqueCurrent(-120);
     FeedbackConfigs feedbackConfig =
         new FeedbackConfigs().withSensorToMechanismRatio(ShooterConstants.kGearRatio);
     Slot0Configs slot0config =

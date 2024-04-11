@@ -1,5 +1,6 @@
 package org.surpurdueper.robot.commands;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
@@ -11,6 +12,7 @@ import org.littletonrobotics.util.FieldConstants;
 import org.littletonrobotics.util.LoggedTunableNumber;
 import org.surpurdueper.robot.Constants;
 import org.surpurdueper.robot.Constants.LookupTables;
+import org.surpurdueper.robot.Constants.TiltConstants;
 import org.surpurdueper.robot.subsystems.Elevator;
 import org.surpurdueper.robot.subsystems.Limelight;
 import org.surpurdueper.robot.subsystems.Shooter;
@@ -27,6 +29,7 @@ public class AutoAim extends Command {
   private DoubleSupplier xVelocitySupplier;
   private DoubleSupplier yVelocitySupplier;
   private Translation2d speakerCenter;
+  private Translation2d feedShotTarget;
   private FieldCentricFacingPoint poseAimRequest;
   private FieldCentricFacingFieldAngle limelightAimRequest;
   private LoggedTunableNumber shooterAngle =
@@ -90,8 +93,7 @@ public class AutoAim extends Command {
         AllianceFlipUtil.apply(FieldConstants.Speaker.centerSpeakerOpening.toTranslation2d());
     SmartDashboard.putNumberArray(
         "Auto Aim/Speaker Center", new double[] {speakerCenter.getX(), speakerCenter.getY()});
-    poseAimRequest.setPointToFace(speakerCenter);
-    shooter.turnOn();
+    feedShotTarget = AllianceFlipUtil.apply(FieldConstants.feedShotLocation);
     distanceToSpeakerMeters = -1.0;
   }
 
@@ -100,24 +102,34 @@ public class AutoAim extends Command {
     // Update drivetrain with new joystick values
     double velocityX = xVelocitySupplier.getAsDouble();
     double velocityY = yVelocitySupplier.getAsDouble();
+    Pose2d robotPose = drivetrain.getState().Pose;
 
+    if (AllianceFlipUtil.apply(robotPose.getX()) < FieldConstants.fieldLength / 2) {
+      poseAimRequest.setPointToFace(speakerCenter);
+      shooter.turnOn();
+      // Use new pose estimation to set shooter angle
+      distanceToSpeakerMeters =
+          drivetrain.getState().Pose.getTranslation().getDistance(speakerCenter)
+              - Constants.kBumperToRobotCenter;
+      if (distanceToSpeakerMeters > 0) {
+        shooterTilt.setPositionRotations(
+            LookupTables.distanceToShooterAngle.get(distanceToSpeakerMeters));
+        if (shouldElevatorFollow) {
+          elevator.followShooter(shooterTilt.getPositionRotations());
+        }
+      }
+      SmartDashboard.putNumber(
+          "AutoAim/Distance to Speaker (in)", Units.metersToInches(distanceToSpeakerMeters));
+    } else {
+      poseAimRequest.setPointToFace(feedShotTarget);
+      shooter.turnOnFeedShot();
+      shooterTilt.setPositionRotations(TiltConstants.kFeedShot);
+      elevator.followShooter(shooterTilt.getPositionRotations());
+
+    }
     drivetrain.setControl(poseAimRequest.withVelocityX(velocityX).withVelocityY(velocityY));
     SmartDashboard.putNumber(
         "AutoAim/TargetDirection", poseAimRequest.getTargetDirection().getDegrees());
-
-    // Use new pose estimation to set shooter angle
-    distanceToSpeakerMeters =
-        drivetrain.getState().Pose.getTranslation().getDistance(speakerCenter)
-            - Constants.kBumperToRobotCenter;
-    if (distanceToSpeakerMeters > 0) {
-      shooterTilt.setPositionRotations(
-          LookupTables.distanceToShooterAngle.get(distanceToSpeakerMeters));
-      if (shouldElevatorFollow) {
-        elevator.followShooter(shooterTilt.getPositionRotations());
-      }
-    }
-    SmartDashboard.putNumber(
-        "AutoAim/Distance to Speaker (in)", Units.metersToInches(distanceToSpeakerMeters));
   }
 
   @Override
