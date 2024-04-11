@@ -195,10 +195,9 @@ public class RobotContainer {
     // Score
     joystick
         .rightBumper()
-        .and(amp::isAmpLoaded)
         .onTrue(amp.score().andThen(elevator.goToPosition(0)));
 
-    joystick.rightBumper().and(amp::isAmpNotLoaded).onTrue(intake.fire());
+    joystick.rightBumper().onTrue(intake.fire());
 
     joystick
         .leftTrigger()
@@ -305,13 +304,20 @@ public class RobotContainer {
     joystick2.start().onTrue(shooterTilt.home());
 
     // Manual shooter elevator unjam
-    joystick2.povLeft().whileTrue(Commands.startEnd(() -> {
-        shooterTilt.setVoltage(3);
-        elevator.setVoltage(3);
-    }, () -> {
-        shooterTilt.stop();
-        elevator.stop();
-    }, shooterTilt, elevator));
+    joystick2
+        .povLeft()
+        .whileTrue(
+            Commands.startEnd(
+                () -> {
+                  shooterTilt.setVoltage(3);
+                  elevator.setVoltage(3);
+                },
+                () -> {
+                  shooterTilt.stop();
+                  elevator.stop();
+                },
+                shooterTilt,
+                elevator));
 
     /* Bindings for characterization */
     /* These bindings require multiple buttons pushed to swap between quastatic and dynamic */

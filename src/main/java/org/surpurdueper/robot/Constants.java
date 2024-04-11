@@ -134,6 +134,7 @@ public final class Constants {
 
     public static final double kPositionTolerance = Units.degreesToRotations(0.6);
     public static final double kPodiumShot = Units.degreesToRotations(30.0);
+    public static final double kFeedShot = Units.degreesToRotations(35.0);
     public static final double kSubwooferShot = Units.degreesToRotations(51.0);
     public static final double kMaxAutoAim = 0.0;
     public static final double kIntakeAngle = Units.degreesToRotations(32);
@@ -160,8 +161,8 @@ public final class Constants {
     public static final double kRightShooterIdleRps = 1500 / 60.0;
     public static final double kLeftShooterAmpRps = 2000 / 60.0;
     public static final double kRightShooterAmpRps = 2000 / 60.0;
-    public static final double kLeftShooterFeedRps = 3000 / 60.0;
-    public static final double kRightShooterFeedRps = 1500 / 60.0;
+    public static final double kLeftShooterFeedRps = 4000 / 60.0;
+    public static final double kRightShooterFeedRps = 2000 / 60.0;
   }
 
   public static class LookupTables {
