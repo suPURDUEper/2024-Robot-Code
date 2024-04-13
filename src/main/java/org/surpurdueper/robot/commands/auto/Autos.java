@@ -102,6 +102,6 @@ public class Autos {
 
     return new ParallelDeadlineGroup(
         fire(shooterTilt, elevator, shooter, limelight, intake, aimTime, drivetrain),
-        new AutoAutoAim(drivetrain, shooterTilt, elevator, limelight, shouldElevatorFollow));
+        new AutoAutoAim(drivetrain, shooterTilt, elevator, shouldElevatorFollow));
   }
 }

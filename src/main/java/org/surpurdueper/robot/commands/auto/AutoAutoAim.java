@@ -1,5 +1,6 @@
 package org.surpurdueper.robot.commands.auto;
 
+import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest.ForwardReference;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -7,10 +8,8 @@ import org.littletonrobotics.util.AllianceFlipUtil;
 import org.littletonrobotics.util.FieldConstants;
 import org.surpurdueper.robot.Constants;
 import org.surpurdueper.robot.Constants.LookupTables;
-import org.surpurdueper.robot.commands.FieldCentricFacingFieldAngle;
 import org.surpurdueper.robot.commands.FieldCentricFacingPoint;
 import org.surpurdueper.robot.subsystems.Elevator;
-import org.surpurdueper.robot.subsystems.Limelight;
 import org.surpurdueper.robot.subsystems.ShooterTilt;
 import org.surpurdueper.robot.subsystems.drive.CommandSwerveDrivetrain;
 
@@ -19,49 +18,37 @@ public class AutoAutoAim extends Command {
   private CommandSwerveDrivetrain drivetrain;
   private ShooterTilt shooterTilt;
   private Elevator elevator;
-  private Limelight limelight;
   private Translation2d speakerCenter;
   private FieldCentricFacingPoint poseAimRequest;
-  private FieldCentricFacingFieldAngle limelightAimRequest;
   private boolean shouldElevatorFollow;
 
   public AutoAutoAim(
-      CommandSwerveDrivetrain drivetrain,
-      ShooterTilt shooterTilt,
-      Elevator elevator,
-      Limelight limelight) {
-    this(drivetrain, shooterTilt, elevator, limelight, true);
+      CommandSwerveDrivetrain drivetrain, ShooterTilt shooterTilt, Elevator elevator) {
+    this(drivetrain, shooterTilt, elevator, true);
   }
 
   public AutoAutoAim(
       CommandSwerveDrivetrain drivetrain,
       ShooterTilt shooterTilt,
       Elevator elevator,
-      Limelight limelight,
       boolean shouldElevatorFollow) {
     this.drivetrain = drivetrain;
     this.shooterTilt = shooterTilt;
     this.elevator = elevator;
-    this.limelight = limelight;
     this.shouldElevatorFollow = shouldElevatorFollow;
     addRequirements(drivetrain, elevator, shooterTilt);
 
     // Setup request to control drive always facing the speaker
     poseAimRequest = new FieldCentricFacingPoint();
-    poseAimRequest.HeadingController.setPID(10, 0, 0);
+    poseAimRequest.ForwardReference = ForwardReference.RedAlliance;
+    poseAimRequest.HeadingController.setPID(10, 0, .75);
     poseAimRequest.HeadingController.enableContinuousInput(-Math.PI, Math.PI);
-
-    limelightAimRequest = new FieldCentricFacingFieldAngle();
-    limelightAimRequest.HeadingController.setPID(10, 0, .75);
-    limelightAimRequest.HeadingController.enableContinuousInput(-Math.PI, Math.PI);
   }
 
   @Override
   public void initialize() {
     speakerCenter =
         AllianceFlipUtil.apply(FieldConstants.Speaker.centerSpeakerOpening.toTranslation2d());
-    SmartDashboard.putNumberArray(
-        "Auto Aim/Speaker Center", new double[] {speakerCenter.getX(), speakerCenter.getY()});
     poseAimRequest.setPointToFace(speakerCenter);
   }
 
@@ -70,7 +57,6 @@ public class AutoAutoAim extends Command {
     drivetrain.setControl(poseAimRequest);
     SmartDashboard.putNumber(
         "AutoAim/TargetDirection", poseAimRequest.getTargetDirection().getDegrees());
-
     // Use new pose estimation to set shooter angle
     double distanceToSpeakerMeters =
         drivetrain.getState().Pose.getTranslation().getDistance(speakerCenter)
