@@ -17,8 +17,9 @@ import org.surpurdueper.robot.subsystems.drive.CommandSwerveDrivetrain;
 public class CenterFiveDisk extends SequentialCommandGroup {
 
   PathPlannerPath toCenterDisk = PathPlannerPath.fromChoreoTrajectory("front 3.1");
-  PathPlannerPath toPodiumDisk = PathPlannerPath.fromChoreoTrajectory("front 3.2");
-  PathPlannerPath toAmpDisk = PathPlannerPath.fromChoreoTrajectory("front 3.3");
+  PathPlannerPath backFromCenter = PathPlannerPath.fromChoreoTrajectory("front 3.2");
+  PathPlannerPath toPodiumDisk = PathPlannerPath.fromChoreoTrajectory("front 3.3");
+  PathPlannerPath toAmpDisk = PathPlannerPath.fromChoreoTrajectory("front 3.4");
   Rotation2d startingHeading = Rotation2d.fromRadians(Math.PI);
   Pose2d startingPose =
       new Pose2d(toCenterDisk.getPreviewStartingHolonomicPose().getTranslation(), startingHeading);
@@ -35,20 +36,19 @@ public class CenterFiveDisk extends SequentialCommandGroup {
         Commands.runOnce(() -> drivetrain.seedFieldRelative(AllianceFlipUtil.apply(startingPose))),
         shooter.on(),
         Commands.deadline(
-            AutoBuilder.followPath(toCenterDisk),
-            Commands.deadline(
+            AutoBuilder.followPath(toCenterDisk).andThen(AutoBuilder.followPath(backFromCenter)),
+            Commands.sequence(
+                Commands.deadline(
                     Commands.sequence(
-                        Commands.waitSeconds(0.4), // Wait to shoot first shot
+                        Commands.waitSeconds(0.6), // Wait to shoot first shot
                         intake.runOnce(intake::runForward), // Turn on intake and feeder continously
-                        Commands.waitSeconds(1) // Wait until second shot clears the shooter
+                        Commands.waitSeconds(0.5) // Wait until second shot clears the shooter
                         ),
                     // Aim the shooter tilt continously until second shot is gone
-                    new AutoAimNoDrive(drivetrain, shooterTilt, elevator))
-                .andThen(
-                    intake
-                        .load())), // Change to normal intaking after second shot clears the shooter
+                    new AutoAimNoDrive(drivetrain, shooterTilt, elevator)),
+                intake.load())), // Change to normal intaking after second shot clears the shooter
         Autos.aimAndFireWithElevator(drivetrain, shooterTilt, elevator, shooter, limelight, intake),
-        Commands.deadline(AutoBuilder.followPath(toPodiumDisk), intake.load()),
+        Commands.deadline(AutoBuilder.followPath(toPodiumDisk).andThen(Commands.waitSeconds(0.5)), intake.load()),
         Autos.aimAndFireWithElevator(drivetrain, shooterTilt, elevator, shooter, limelight, intake),
         Commands.deadline(AutoBuilder.followPath(toAmpDisk), intake.load()),
         Autos.aimAndFireWithElevator(

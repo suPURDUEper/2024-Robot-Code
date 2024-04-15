@@ -29,6 +29,7 @@ import org.surpurdueper.robot.Constants.ElevatorConstants;
 import org.surpurdueper.robot.Constants.TiltConstants;
 import org.surpurdueper.robot.commands.AutoAim;
 import org.surpurdueper.robot.commands.WheelRadiusCharacterization;
+import org.surpurdueper.robot.commands.auto.CenterFiveDisk;
 import org.surpurdueper.robot.commands.auto.FiveDisk;
 import org.surpurdueper.robot.commands.auto.FourDisk;
 import org.surpurdueper.robot.commands.auto.FourDiskSource;
@@ -116,8 +117,10 @@ public class RobotContainer {
         new TwoDiskSource(drivetrain, intake, shooterTilt, shooter, elevator, limelight);
     Command ThreeDiskSource =
         new ThreeDiskSource(drivetrain, intake, shooterTilt, shooter, elevator, limelight);
-    Command FourDiskSource =
+    Command fourDiskSource =
         new FourDiskSource(drivetrain, intake, shooterTilt, shooter, elevator, limelight);
+    Command fiveDiskCenter =
+        new CenterFiveDisk(drivetrain, intake, shooterTilt, shooter, elevator, limelight);
 
     m_chooser.setDefaultOption("Do Nothing", doNothingAuto);
     m_chooser.addOption("Two Disk", twoDisk);
@@ -129,7 +132,8 @@ public class RobotContainer {
     m_chooser.addOption("Three Disk (Skip)", threeDiskSkip);
     m_chooser.addOption("Two Disk (Source)", TwoDiskSource);
     m_chooser.addOption("Three Disk (Source)", ThreeDiskSource);
-    m_chooser.addOption("Four Disk (Source)", FourDiskSource);
+    m_chooser.addOption("Four Disk (Source)", fourDiskSource);
+    m_chooser.addOption("Five Disk (Center)", fiveDiskCenter);
 
     SmartDashboard.putData("Autonomous Routine", m_chooser);
 

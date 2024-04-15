@@ -33,7 +33,6 @@ public class Robot extends TimedRobot {
   public void robotInit() {
     // Start logging
     // SignalLogger.enableAutoLogging(true);
-    CameraServer.startAutomaticCapture();
     // Forward limelight
     for (int port = 5800; port <= 5807; port++) {
       PortForwarder.add(port, "10.74.57.11", port);

@@ -1,13 +1,11 @@
 package org.surpurdueper.robot.commands.auto;
 
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import org.littletonrobotics.util.AllianceFlipUtil;
 import org.littletonrobotics.util.FieldConstants;
 import org.surpurdueper.robot.Constants;
 import org.surpurdueper.robot.Constants.LookupTables;
-import org.surpurdueper.robot.commands.FieldCentricFacingPoint;
 import org.surpurdueper.robot.subsystems.Elevator;
 import org.surpurdueper.robot.subsystems.ShooterTilt;
 import org.surpurdueper.robot.subsystems.drive.CommandSwerveDrivetrain;
@@ -18,7 +16,6 @@ public class AutoAimNoDrive extends Command {
   private ShooterTilt shooterTilt;
   private Elevator elevator;
   private Translation2d speakerCenter;
-  private FieldCentricFacingPoint poseAimRequest;
   private boolean shouldElevatorFollow;
 
   public AutoAimNoDrive(
@@ -46,8 +43,6 @@ public class AutoAimNoDrive extends Command {
 
   @Override
   public void execute() {
-    SmartDashboard.putNumber(
-        "AutoAim/TargetDirection", poseAimRequest.getTargetDirection().getDegrees());
 
     // Use new pose estimation to set shooter angle
     double distanceToSpeakerMeters =
