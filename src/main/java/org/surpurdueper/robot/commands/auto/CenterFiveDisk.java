@@ -37,14 +37,16 @@ public class CenterFiveDisk extends SequentialCommandGroup {
         Commands.deadline(
             AutoBuilder.followPath(toCenterDisk),
             Commands.deadline(
-                Commands.sequence(
-                    Commands.waitSeconds(0.4), // Wait to shoot first shot
-                    intake.runOnce(intake::runForward), // Turn on intake and feeder continously
-                    Commands.waitSeconds(1) // Wait until second shot clears the shooter
-                    ),
-                // Aim the shooter tilt continously until second shot is gone
-                new AutoAimNoDrive(drivetrain, shooterTilt, elevator)),
-            intake.load()), // Change to normal intaking after second shot clears the shooter
+                    Commands.sequence(
+                        Commands.waitSeconds(0.4), // Wait to shoot first shot
+                        intake.runOnce(intake::runForward), // Turn on intake and feeder continously
+                        Commands.waitSeconds(1) // Wait until second shot clears the shooter
+                        ),
+                    // Aim the shooter tilt continously until second shot is gone
+                    new AutoAimNoDrive(drivetrain, shooterTilt, elevator))
+                .andThen(
+                    intake
+                        .load())), // Change to normal intaking after second shot clears the shooter
         Autos.aimAndFireWithElevator(drivetrain, shooterTilt, elevator, shooter, limelight, intake),
         Commands.deadline(AutoBuilder.followPath(toPodiumDisk), intake.load()),
         Autos.aimAndFireWithElevator(drivetrain, shooterTilt, elevator, shooter, limelight, intake),
