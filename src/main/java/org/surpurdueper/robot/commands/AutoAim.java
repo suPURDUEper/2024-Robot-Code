@@ -125,7 +125,6 @@ public class AutoAim extends Command {
       shooter.turnOnFeedShot();
       shooterTilt.setPositionRotations(TiltConstants.kFeedShot);
       elevator.followShooter(shooterTilt.getPositionRotations());
-
     }
     drivetrain.setControl(poseAimRequest.withVelocityX(velocityX).withVelocityY(velocityY));
     SmartDashboard.putNumber(

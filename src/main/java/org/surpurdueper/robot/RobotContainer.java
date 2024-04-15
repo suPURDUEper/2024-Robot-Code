@@ -193,9 +193,7 @@ public class RobotContainer {
     joystick.leftBumper().onTrue(intake());
 
     // Score
-    joystick
-        .rightBumper()
-        .onTrue(amp.score().andThen(elevator.goToPosition(0)));
+    joystick.rightBumper().onTrue(amp.score().andThen(elevator.goToPosition(0)));
 
     joystick.rightBumper().onTrue(intake.fire());
 
