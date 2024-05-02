@@ -39,6 +39,7 @@ import org.surpurdueper.robot.commands.auto.ThreeDiskSkip;
 import org.surpurdueper.robot.commands.auto.ThreeDiskSource;
 import org.surpurdueper.robot.commands.auto.TwoDisk;
 import org.surpurdueper.robot.commands.auto.TwoDiskSkip;
+import org.surpurdueper.robot.commands.auto.TwoDiskSkipSkip;
 import org.surpurdueper.robot.commands.auto.TwoDiskSource;
 import org.surpurdueper.robot.subsystems.Amp;
 import org.surpurdueper.robot.subsystems.Blinkin;
@@ -121,6 +122,7 @@ public class RobotContainer {
         new FourDiskSource(drivetrain, intake, shooterTilt, shooter, elevator, limelight);
     Command fiveDiskCenter =
         new CenterFiveDisk(drivetrain, intake, shooterTilt, shooter, elevator, limelight);
+        Command twoDiskSkipSkip = new TwoDiskSkipSkip(drivetrain, intake, shooterTilt, shooter, elevator, limelight);
 
     m_chooser.setDefaultOption("Do Nothing", doNothingAuto);
     m_chooser.addOption("Two Disk", twoDisk);
@@ -132,8 +134,9 @@ public class RobotContainer {
     m_chooser.addOption("Three Disk (Skip)", threeDiskSkip);
     m_chooser.addOption("Two Disk (Source)", TwoDiskSource);
     m_chooser.addOption("Three Disk (Source)", ThreeDiskSource);
-    m_chooser.addOption("Four Disk (Source)", fourDiskSource);
+    // m_chooser.addOption("Four Disk (Source)", fourDiskSource);
     m_chooser.addOption("Five Disk (Center)", fiveDiskCenter);
+    m_chooser.addOption("Two Disk Skip Skip", twoDiskSkipSkip);
 
     SmartDashboard.putData("Autonomous Routine", m_chooser);
 
@@ -239,7 +242,7 @@ public class RobotContainer {
                     elevator
                         .goToPositionBlocking(ElevatorConstants.kClimbHeight)
                         .andThen(climber.climb())
-                        .andThen(Commands.waitSeconds(1))
+                        .andThen(Commands.waitSeconds(.2))
                         .andThen(amp.trapScore().withTimeout(2))));
 
     // Purge
@@ -362,10 +365,18 @@ public class RobotContainer {
 
   private Command rumbleDriverController() {
     return new ScheduleCommand(
-        Commands.runOnce(() -> joystick.getHID().setRumble(RumbleType.kBothRumble, 1))
+        Commands.runOnce(
+                () -> {
+                  joystick.getHID().setRumble(RumbleType.kBothRumble, 1);
+                  joystick2.getHID().setRumble(RumbleType.kBothRumble, 1);
+                })
             .andThen(Commands.waitSeconds(0.75))
             .andThen(
-                Commands.runOnce(() -> joystick.getHID().setRumble(RumbleType.kBothRumble, 0))));
+                Commands.runOnce(
+                    () -> {
+                      joystick.getHID().setRumble(RumbleType.kBothRumble, 0);
+                      joystick2.getHID().setRumble(RumbleType.kBothRumble, 0);
+                    })));
   }
 
   /**

@@ -12,7 +12,7 @@ import org.surpurdueper.robot.subsystems.drive.CommandSwerveDrivetrain;
 
 public class Autos {
 
-  public static final double fireTimeSeconds = 0.15;
+  public static final double fireTimeSeconds = 0.2;
 
   public static Command fire(
       ShooterTilt shooterTilt,

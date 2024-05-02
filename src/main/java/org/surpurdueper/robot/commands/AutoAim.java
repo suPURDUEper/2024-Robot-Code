@@ -104,7 +104,8 @@ public class AutoAim extends Command {
     double velocityY = yVelocitySupplier.getAsDouble();
     Pose2d robotPose = drivetrain.getState().Pose;
 
-    if (AllianceFlipUtil.apply(robotPose.getX()) < FieldConstants.fieldLength / 2) {
+    if (AllianceFlipUtil.apply(robotPose.getX())
+        < (FieldConstants.fieldLength / 2) - Units.inchesToMeters(30)) {
       poseAimRequest.setPointToFace(speakerCenter);
       shooter.turnOn();
       // Use new pose estimation to set shooter angle

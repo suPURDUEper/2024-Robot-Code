@@ -26,7 +26,7 @@ public class Limelight extends VirtualSubsystem {
   private CommandSwerveDrivetrain drivetrain;
   private static final double kBufferDuration = 1.5;
   private TimeInterpolatableBuffer<Rotation2d> robotAngleBuffer;
-  private int[] validIDs = {3, 4, 7, 8};
+  private int[] validIDs = {3, 4, 7, 8, 13, 14, 1, 2, 9, 10};
   private double[] visionPose = new double[3];
 
   /** Creates a new LimeLight. */

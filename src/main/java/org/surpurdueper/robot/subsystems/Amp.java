@@ -66,13 +66,13 @@ public class Amp extends SubsystemBase {
   }
 
   public Command score() {
-    return Commands.startEnd(
-            () -> ampMotor.setControl(voltageRequest.withOutput(AmpConstants.kScoreVoltage)),
-            () -> ampMotor.setControl(coastRequest),
-            this)
-        .until(this::isAmpNotLoaded);
+    return Commands.sequence(
+            runOnce(() -> ampMotor.setControl(voltageRequest.withOutput(AmpConstants.kScoreVoltage))),
+            Commands.waitSeconds(.2),
+            Commands.waitUntil(this::isAmpNotLoaded),
+            runOnce(() -> ampMotor.setControl(coastRequest)));
   }
-
+  
   public Command trapScore() {
     return load().andThen(score());
   }

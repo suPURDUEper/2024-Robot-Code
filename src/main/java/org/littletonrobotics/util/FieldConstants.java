@@ -32,7 +32,7 @@ public class FieldConstants {
       new Translation2d(Units.inchesToMeters(72.455), fieldWidth);
 
   public static final Translation2d feedShotLocation =
-      new Translation2d(0, Units.inchesToMeters(300));
+      new Translation2d(0, Units.inchesToMeters(290));
 
   /** Staging locations for each note */
   public static final class StagingLocations {

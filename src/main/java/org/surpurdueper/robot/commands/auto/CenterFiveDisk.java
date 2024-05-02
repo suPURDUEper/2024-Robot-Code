@@ -48,7 +48,8 @@ public class CenterFiveDisk extends SequentialCommandGroup {
                     new AutoAimNoDrive(drivetrain, shooterTilt, elevator)),
                 intake.load())), // Change to normal intaking after second shot clears the shooter
         Autos.aimAndFireWithElevator(drivetrain, shooterTilt, elevator, shooter, limelight, intake),
-        Commands.deadline(AutoBuilder.followPath(toPodiumDisk).andThen(Commands.waitSeconds(0.5)), intake.load()),
+        Commands.deadline(
+            AutoBuilder.followPath(toPodiumDisk).andThen(Commands.waitSeconds(0.5)), intake.load()),
         Autos.aimAndFireWithElevator(drivetrain, shooterTilt, elevator, shooter, limelight, intake),
         Commands.deadline(AutoBuilder.followPath(toAmpDisk), intake.load()),
         Autos.aimAndFireWithElevator(
